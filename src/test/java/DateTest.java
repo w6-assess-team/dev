@@ -28,9 +28,9 @@ public class DateTest {
         List<String> res = DateTimeParser.parseDateAndTimeFromString("I will come back on 1st july of 2016.");
         List<String> howItShouldBe = new ArrayList<String>();
         howItShouldBe.add("1st");
-         howItShouldBe.add("july");
-         howItShouldBe.add("of");
-          howItShouldBe.add("2016");
+        howItShouldBe.add("july");
+        howItShouldBe.add("of");
+        howItShouldBe.add("2016");
           
         assertTrue(res.equals(howItShouldBe));
     }
