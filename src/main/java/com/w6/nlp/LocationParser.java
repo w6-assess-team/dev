@@ -1,20 +1,15 @@
+package com.w6.nlp;
+
 import edu.stanford.nlp.simple.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- *Class to parse locations
- */
+import javax.validation.constraints.NotNull;
 
 public class LocationParser {
-
-    /**
-     * String location parser
-     * @param text  This is the text to parse
-     * @return  arraylist of locations
-     */
-
+    
+    @NotNull
     public static List<String> parseLocationFromString(String text) {
         List<String> locations = new ArrayList<String>();
         Document doc = new Document(text);

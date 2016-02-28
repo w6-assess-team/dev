@@ -50,6 +50,8 @@ public class Parser {
             text.add(new Word(leaf.label().value(), label));
         }
         
+        where = LocationParser.parseLocationFromString(input);
+        
         return new Response(text, new Table(who, weapon, what, whom, where, when));
     }
 }
