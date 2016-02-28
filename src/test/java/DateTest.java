@@ -8,26 +8,30 @@ import java.util.List;
 
 public class DateTest {
     @Test
-    public void testDate0() {
-        List<String> res = DateTimeParser.parseDateAndDateFromString("I wend to school yesterday.");
+    public void testDateYesterday() {
+        List<String> res = DateTimeParser.parseDateAndTimeFromString("I went to school yesterday.");
         List<String> howItShouldBe = new ArrayList<String>();
         howItShouldBe.add("yesterday");
         assertTrue(res.equals(howItShouldBe));
     }
     
     @Test
-    public void testDate1() {
-        List<String> res = DateTimeParser.parseDateAndDateFromString("Who will meet you tomorrow?");
+    public void testDateTomorrow() {
+        List<String> res = DateTimeParser.parseDateAndTimeFromString("Who will meet you tomorrow?");
         List<String> howItShouldBe = new ArrayList<String>();
         howItShouldBe.add("tomorrow");
         assertTrue(res.equals(howItShouldBe));
     }
     
     @Test
-    public void testDate2() {
-        List<String> res = DateTimeParser.parseDateAndDateFromString("I am going home now.");
+    public void testComplexDate() {
+        List<String> res = DateTimeParser.parseDateAndTimeFromString("I will come back on 1st july of 2016.");
         List<String> howItShouldBe = new ArrayList<String>();
-        howItShouldBe.add("now");
+        howItShouldBe.add("1st");
+        howItShouldBe.add("july");
+        howItShouldBe.add("of");
+        howItShouldBe.add("2016");
+          
         assertTrue(res.equals(howItShouldBe));
     }
 }
