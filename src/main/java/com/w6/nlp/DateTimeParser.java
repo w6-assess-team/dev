@@ -18,7 +18,7 @@ public class DateTimeParser {
             List<String> words = sent.lemmas();
             List<String> tags = sent.nerTags();
             for (int i = 0; i < tags.size(); ++i) {
-                if (tags.get(i).equals("DATE")) {
+                if (tags.get(i).equals("DATE") || tags.get(i).equals("TIME")) {
                     dates.add(words.get(i));
                 }
             }
