@@ -50,7 +50,11 @@ public class Parser {
             text.add(new Word(leaf.label().value(), label));
         }
         
+<<<<<<< HEAD
         when = DateTimeParser.parseDateAndDateFromString(input);
+=======
+        where = LocationParser.parseLocationFromString(input);
+>>>>>>> a809a7463eeaf337cc9e83e7c04ec01bbd93c68e
         
         return new Response(text, new Table(who, weapon, what, whom, where, when));
     }
