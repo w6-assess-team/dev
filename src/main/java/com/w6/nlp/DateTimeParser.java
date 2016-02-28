@@ -10,7 +10,7 @@ import javax.validation.constraints.NotNull;
 public class DateTimeParser {
 
     
-    public static List<String> parseDateAndDateFromString(@NotNull String text) {
+    public static List<String> parseDateAndTimeFromString(@NotNull String text) {
     
         List<String> dates = new ArrayList<String>();
         Document doc = new Document(text);

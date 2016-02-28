@@ -50,7 +50,7 @@ public class Parser {
             text.add(new Word(leaf.label().value(), label));
         }
         
-        when = DateTimeParser.parseDateAndDateFromString(input);
+        when = DateTimeParser.parseDateAndTimeFromString(input);
         
         return new Response(text, new Table(who, weapon, what, whom, where, when));
     }
