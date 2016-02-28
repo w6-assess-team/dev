@@ -17,8 +17,8 @@ import org.springframework.web.servlet.view.JstlView;
 @ImportResource("classpath:applicationContext.xml")
 public class AppContext {
 
-    private static final String VIEW_RESOLVER_PREFIX = "/WEB-INF/";
-    private static final String VIEW_RESOLVER_SUFFIX = ".html";
+    private static final String VIEW_RESOLVER_PREFIX = "/WEB-INF/jsp/";
+    private static final String VIEW_RESOLVER_SUFFIX = ".jsp";
 
     @Bean
     public ViewResolver viewResolver() {
