@@ -29,9 +29,9 @@ public class LocationTest {
     
     @Test
     public void testComplexCity() {
-		List<String> res = LocationParser.parseLocationFromString("Hellow to you from New-York!");
+		List<String> res = LocationParser.parseLocationFromString("Hellow to you from New York!");
 		List<String> correct= new ArrayList<String>();
-		correct.add("New-York");
+		correct.add("New"); correct.add("York");
 		assertTrue(res.equals(correct));
     }
 
