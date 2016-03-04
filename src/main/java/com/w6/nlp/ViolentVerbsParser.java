@@ -1,18 +1,20 @@
 package com.w6.nlp;
 
 import edu.stanford.nlp.ling.CoreLabel;
+import edu.stanford.nlp.ling.WordTag;
 import edu.stanford.nlp.parser.lexparser.LexicalizedParser;
 import edu.stanford.nlp.process.CoreLabelTokenFactory;
+import edu.stanford.nlp.process.Morphology;
 import edu.stanford.nlp.process.PTBTokenizer;
 import edu.stanford.nlp.process.Tokenizer;
 import edu.stanford.nlp.process.TokenizerFactory;
-import static edu.stanford.nlp.util.logging.RedwoodConfiguration.Handlers.file;
+import edu.stanford.nlp.trees.Tree;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.file.Files;
+import java.io.StringReader;
+
 import java.util.*;
 
 public class ViolentVerbsParser {
@@ -36,7 +38,8 @@ public class ViolentVerbsParser {
         }
    }
    
-   private  static List<CoreLabel> tokenize(String str) {
+   private  static List<CoreLabel> tokenize(String str, 
+           TokenizerFactory<CoreLabel> tokenizerFactory) {
         Tokenizer<CoreLabel> tokenizer =
                 tokenizerFactory.getTokenizer(
                         new StringReader(str));
@@ -49,11 +52,25 @@ public class ViolentVerbsParser {
         } catch (Exception e) {}
         
         List<String> result = new ArrayList<>();
-    
 
-        TokenizerFactory<CoreLabel> tokenizerFactory = PTBTokenizer.factory(new CoreLabelTokenFactory(), "invertible=true");
+        TokenizerFactory<CoreLabel> tokenizerFactory = 
+                PTBTokenizer.factory(new CoreLabelTokenFactory(),
+                        "invertible=true");
         LexicalizedParser parser = LexicalizedParser.loadModel(PCG_MODEL);
-        List<CoreLabel> tokens = tokenize(str);
+        List<CoreLabel> tokens = tokenize(text, tokenizerFactory);
+        Tree tree = parser.apply(tokens);
+        List<Tree> leaves = tree.getLeaves();
+        
+        for(Tree leave : leaves){
+            Tree parent = leave.parent(tree);
+            WordTag tag = Morphology.stemStatic(leave.label().value()
+                    ,parent.label().value());
+            if(parent.label().value().contains("VB")){
+                if(violentWords.contains(tag.value())){
+                    result.add(leave.label().value());
+                }
+            }
+        }
     
         return result;
        
