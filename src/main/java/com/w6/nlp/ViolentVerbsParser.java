@@ -19,23 +19,20 @@ import java.util.*;
 
 public class ViolentVerbsParser {
     
-   static Set violentWords = null;
-   static String globalPpath = "/src/resources/violentVerbsDictionary.txt";
+   static Set violentWords;
+   static String globalPpath = "./src/main/resources/violentVerbsDictionary.txt";
    static final String PCG_MODEL = "edu/stanford/nlp/models/lexparser/englishPCFG.ser.gz";
    
    private static void setViolentDictionary() throws IOException{
-       if(violentWords == null){
-           violentWords = new HashSet<String>();
-       }
+        violentWords = new HashSet<String>();
+        
         try{
             BufferedReader br = new BufferedReader(new FileReader(globalPpath));
             String str;
             while ((str = br.readLine()) != null) {
                 violentWords.add(str);
             }
-        } catch (IOException e){
-            
-        }
+        } catch (IOException e){}
    }
    
    private  static List<CoreLabel> tokenize(String str, 
@@ -48,10 +45,11 @@ public class ViolentVerbsParser {
    
    public static List<String> getAllViolentVerbs(String text){
         try {
-          setViolentDictionary();
+            if(violentWords == null)
+               setViolentDictionary();
         } catch (Exception e) {}
         
-        List<String> result = new ArrayList<>();
+        List<String> result = new ArrayList<String>();
 
         TokenizerFactory<CoreLabel> tokenizerFactory = 
                 PTBTokenizer.factory(new CoreLabelTokenFactory(),
