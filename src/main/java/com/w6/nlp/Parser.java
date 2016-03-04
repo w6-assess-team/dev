@@ -3,8 +3,8 @@ package com.w6.nlp;
 import com.w6.data.Table;
 import com.w6.data.Response;
 import com.w6.data.Word;
-import edu.stanford.nlp.ling.CoreLabel;
 
+import edu.stanford.nlp.ling.CoreLabel;
 import edu.stanford.nlp.parser.lexparser.LexicalizedParser;
 import edu.stanford.nlp.process.CoreLabelTokenFactory;
 import edu.stanford.nlp.process.PTBTokenizer;

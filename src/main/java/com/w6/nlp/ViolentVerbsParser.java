@@ -24,6 +24,7 @@ public class ViolentVerbsParser {
    static final String PCG_MODEL = "edu/stanford/nlp/models/lexparser/englishPCFG.ser.gz";
    
    private static void setViolentDictionary() throws IOException{
+       
         violentWords = new HashSet<String>();
         
         try{
@@ -36,17 +37,20 @@ public class ViolentVerbsParser {
    }
    
    private  static List<CoreLabel> tokenize(String str, 
-           TokenizerFactory<CoreLabel> tokenizerFactory) {
+            TokenizerFactory<CoreLabel> tokenizerFactory) {
+       
         Tokenizer<CoreLabel> tokenizer =
-                tokenizerFactory.getTokenizer(
-                        new StringReader(str));
+                tokenizerFactory.getTokenizer(new StringReader(str));
+        
         return tokenizer.tokenize();
     }
    
    public static List<String> getAllViolentVerbs(String text){
+       
         try {
-            if(violentWords == null)
+            if(violentWords == null){
                setViolentDictionary();
+            }
         } catch (Exception e) {}
         
         List<String> result = new ArrayList<String>();
