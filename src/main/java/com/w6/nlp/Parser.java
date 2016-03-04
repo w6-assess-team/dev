@@ -53,6 +53,8 @@ public class Parser {
         where = LocationParser.parseLocationFromString(input);
         
         when = DateTimeParser.parseDateAndTimeFromString(input);
+        
+        what = ViolentVerbsParser.getAllViolentVerbs(input);
 
         return new Response(text, new Table(who, weapon, what, whom, where, when));
     }
