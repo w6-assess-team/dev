@@ -31,6 +31,8 @@ public class ViolentVerbsParser {
             BufferedReader br = new BufferedReader(new FileReader(globalPpath));
             String str;
             while ((str = br.readLine()) != null) {
+                str = str.toLowerCase();
+                str.replaceAll("\\s+","");
                 violentWords.add(str);
             }
         } catch (IOException e){}
