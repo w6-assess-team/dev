@@ -21,22 +21,24 @@ public class ViolentVerbsParser {
     
    Set violentWords;
    String globalPpath = "./src/main/resources/violentVerbsDictionary.txt";
-   final String PCG_MODEL = "edu/stanford/nlp/models/lexparser/englishPCFG.ser.gz";
    TokenizerFactory<CoreLabel> tokenizerFactory;
    LexicalizedParser parser;
    
    
-   public ViolentVerbsParser(){
+   public ViolentVerbsParser(LexicalizedParser globalParser) throws IOException
+   {
        tokenizerFactory = PTBTokenizer.factory(new CoreLabelTokenFactory(),
                         "invertible=true");
-       parser = LexicalizedParser.loadModel(PCG_MODEL);
+       parser = globalParser;
        try {
            setViolentDictionary();
-       } catch (Exception e) {
+       } catch (IOException e) {
+           throw e;
        }
    }
    
-   private void setViolentDictionary() throws IOException{
+   private void setViolentDictionary() throws IOException
+   {
        
         violentWords = new HashSet<String>();
         
@@ -48,11 +50,14 @@ public class ViolentVerbsParser {
                 str.replaceAll("\\s+","");
                 violentWords.add(str);
             }
-        } catch (IOException e){}
+        } catch (IOException e){
+            throw e;
+        }
    }
    
-   private  static List<CoreLabel> tokenize(String str, 
-            TokenizerFactory<CoreLabel> tokenizerFactory) {
+   private List<CoreLabel> tokenize(String str, 
+            TokenizerFactory<CoreLabel> tokenizerFactory)
+    {
        
         Tokenizer<CoreLabel> tokenizer =
                 tokenizerFactory.getTokenizer(new StringReader(str));
@@ -60,12 +65,9 @@ public class ViolentVerbsParser {
         return tokenizer.tokenize();
     }
    
-   public List<String> getAllViolentVerbs(String text){
-       
-       
-        
+   public List<String> getAllViolentVerbs(String text)
+   {    
         List<String> result = new ArrayList<String>();
-
         
         List<CoreLabel> tokens = tokenize(text, tokenizerFactory);
         Tree tree = parser.apply(tokens);

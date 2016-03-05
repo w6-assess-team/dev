@@ -11,13 +11,21 @@ import edu.stanford.nlp.process.PTBTokenizer;
 import edu.stanford.nlp.process.Tokenizer;
 import edu.stanford.nlp.process.TokenizerFactory;
 import edu.stanford.nlp.trees.Tree;
+import java.io.IOException;
 
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Parser {
+    
     static LexicalizedParser lp = LexicalizedParser.loadModel("edu/stanford/nlp/models/lexparser/englishPCFG.ser.gz");
+    static ViolentVerbsParser violentVerbsParser;
+    
+    public Parser() throws IOException{
+        violentVerbsParser = new ViolentVerbsParser(lp);
+    }
+    
     public Response generateResponse(final String input) {
 
         List<String> who = new ArrayList<String>();
@@ -54,7 +62,6 @@ public class Parser {
         
         when = DateTimeParser.parseDateAndTimeFromString(input);
         
-        ViolentVerbsParser violentVerbsParser = new ViolentVerbsParser();
         what = violentVerbsParser.getAllViolentVerbs(input);
 
         return new Response(text, new Table(who, weapon, what, whom, where, when));
