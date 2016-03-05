@@ -54,7 +54,8 @@ public class Parser {
         
         when = DateTimeParser.parseDateAndTimeFromString(input);
         
-        what = ViolentVerbsParser.getAllViolentVerbs(input);
+        ViolentVerbsParser violentVerbsParser = new ViolentVerbsParser();
+        what = violentVerbsParser.getAllViolentVerbs(input);
 
         return new Response(text, new Table(who, weapon, what, whom, where, when));
     }

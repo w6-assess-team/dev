@@ -19,11 +19,24 @@ import java.util.*;
 
 public class ViolentVerbsParser {
     
-   static Set violentWords;
-   static String globalPpath = "./src/main/resources/violentVerbsDictionary.txt";
-   static final String PCG_MODEL = "edu/stanford/nlp/models/lexparser/englishPCFG.ser.gz";
+   Set violentWords;
+   String globalPpath = "./src/main/resources/violentVerbsDictionary.txt";
+   final String PCG_MODEL = "edu/stanford/nlp/models/lexparser/englishPCFG.ser.gz";
+   TokenizerFactory<CoreLabel> tokenizerFactory;
+   LexicalizedParser parser;
    
-   private static void setViolentDictionary() throws IOException{
+   
+   public ViolentVerbsParser(){
+       tokenizerFactory = PTBTokenizer.factory(new CoreLabelTokenFactory(),
+                        "invertible=true");
+       parser = LexicalizedParser.loadModel(PCG_MODEL);
+       try {
+           setViolentDictionary();
+       } catch (Exception e) {
+       }
+   }
+   
+   private void setViolentDictionary() throws IOException{
        
         violentWords = new HashSet<String>();
         
@@ -47,29 +60,22 @@ public class ViolentVerbsParser {
         return tokenizer.tokenize();
     }
    
-   public static List<String> getAllViolentVerbs(String text){
+   public List<String> getAllViolentVerbs(String text){
        
-        try {
-            if(violentWords == null){
-               setViolentDictionary();
-            }
-        } catch (Exception e) {}
+       
         
         List<String> result = new ArrayList<String>();
 
-        TokenizerFactory<CoreLabel> tokenizerFactory = 
-                PTBTokenizer.factory(new CoreLabelTokenFactory(),
-                        "invertible=true");
-        LexicalizedParser parser = LexicalizedParser.loadModel(PCG_MODEL);
+        
         List<CoreLabel> tokens = tokenize(text, tokenizerFactory);
         Tree tree = parser.apply(tokens);
         List<Tree> leaves = tree.getLeaves();
         
         for(Tree leave : leaves){
             Tree parent = leave.parent(tree);
-            WordTag tag = Morphology.stemStatic(leave.label().value()
-                    ,parent.label().value());
             if(parent.label().value().contains("VB")){
+                WordTag tag = Morphology.stemStatic(leave.label().value()
+                    ,parent.label().value());
                 if(violentWords.contains(tag.value())){
                     result.add(leave.label().value());
                 }
