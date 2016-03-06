@@ -56,6 +56,5 @@ public class ViolentVerbsTest extends TestCase {
     @Override
     protected void tearDown(){
         parser = null;
-        assertNull(parser);
     }
 }
