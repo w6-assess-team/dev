@@ -52,9 +52,4 @@ public class ViolentVerbsTest extends TestCase {
         correct.add("killed");
         assertTrue(res.equals(correct));
     }
-    
-    @Override
-    protected void tearDown(){
-        parser = null;
-    }
 }
