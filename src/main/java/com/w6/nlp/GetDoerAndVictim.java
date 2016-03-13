@@ -38,29 +38,31 @@ public class GetDoerAndVictim {
         return tokenizer.tokenize();
     }
 
-    private static void getActiveSubjectAndObjectOfViolence(ArrayList<TypedDependency> list, ObjectsAndSubjects result){
+    private static void getActiveSubjectAndObjectOfViolence(ArrayList<TypedDependency> list, 
+            ObjectsAndSubjects result, List<String> violentList){
         for(TypedDependency obj:list){
-            if(obj.reln().getShortName().equals("nsubj"))
+            if(obj.reln().getShortName().equals("nsubj") && violentList.contains(obj.gov().value()))
                 result.subjects.add(obj.dep().value().toLowerCase());
 
-            if(obj.reln().getShortName().equals("dobj"))
+            if(obj.reln().getShortName().equals("dobj") && violentList.contains(obj.gov().value()))
                 result.objects.add(obj.dep().value().toLowerCase());
         }
     }
 
-    private static void getPassiveSubjectAndObjectOfViolence(ArrayList<TypedDependency> list, ObjectsAndSubjects result){
+    private static void getPassiveSubjectAndObjectOfViolence(ArrayList<TypedDependency> list,
+            ObjectsAndSubjects result, List<String> violentList){
         for(TypedDependency obj:list){
-            if(obj.reln().getShortName().equals("nsubjpass"))
+            if(obj.reln().getShortName().equals("nsubjpass") && violentList.contains(obj.gov().value()))
                 result.objects.add(obj.dep().value().toLowerCase());
 
-            if(obj.reln().getShortName().equals("nmod"))
+            if(obj.reln().getShortName().equals("nmod") && violentList.contains(obj.gov().value()))
                 result.subjects.add(obj.dep().value().toLowerCase());
         }
     }
 
 
 
-    public static ObjectsAndSubjects getSubjectAndObjectOfViolence(String text) {
+    public static ObjectsAndSubjects getSubjectAndObjectOfViolence(String text, List<String> violentVerbs) {
 
 
         ObjectsAndSubjects result = new ObjectsAndSubjects();
@@ -94,10 +96,10 @@ public class GetDoerAndVictim {
             }
 
             if(listOfTags.contains("nsubj"))
-                getActiveSubjectAndObjectOfViolence(listOfTypedDependency,result);
+                getActiveSubjectAndObjectOfViolence(listOfTypedDependency,result, violentVerbs);
 
             if(listOfTags.contains("nsubjpass"))
-                getPassiveSubjectAndObjectOfViolence(listOfTypedDependency,result);
+                getPassiveSubjectAndObjectOfViolence(listOfTypedDependency,result,violentVerbs);
 
         }
 

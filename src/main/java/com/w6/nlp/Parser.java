@@ -71,7 +71,7 @@ public class Parser {
             text.add(new Word(str, "what"));
         }
         
-        GetDoerAndVictim.ObjectsAndSubjects objAndSubj = GetDoerAndVictim.getSubjectAndObjectOfViolence(input);
+        GetDoerAndVictim.ObjectsAndSubjects objAndSubj = GetDoerAndVictim.getSubjectAndObjectOfViolence(input,what);
         
         for(String str:objAndSubj.subjects){
             text.add(new Word(str, "who"));
