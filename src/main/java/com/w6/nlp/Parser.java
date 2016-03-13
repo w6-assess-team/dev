@@ -3,21 +3,29 @@ package com.w6.nlp;
 import com.w6.data.Table;
 import com.w6.data.Response;
 import com.w6.data.Word;
-import edu.stanford.nlp.ling.CoreLabel;
 
+import edu.stanford.nlp.ling.CoreLabel;
 import edu.stanford.nlp.parser.lexparser.LexicalizedParser;
 import edu.stanford.nlp.process.CoreLabelTokenFactory;
 import edu.stanford.nlp.process.PTBTokenizer;
 import edu.stanford.nlp.process.Tokenizer;
 import edu.stanford.nlp.process.TokenizerFactory;
 import edu.stanford.nlp.trees.Tree;
+import java.io.IOException;
 
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Parser {
+    
     static LexicalizedParser lp = LexicalizedParser.loadModel("edu/stanford/nlp/models/lexparser/englishPCFG.ser.gz");
+    static ViolentVerbsParser violentVerbsParser;
+    
+    public Parser() throws IOException{
+        violentVerbsParser = new ViolentVerbsParser(lp);
+    }
+    
     public Response generateResponse(final String input) {
 
         List<String> who = new ArrayList<String>();
@@ -53,6 +61,8 @@ public class Parser {
         where = LocationParser.parseLocationFromString(input);
         
         when = DateTimeParser.parseDateAndTimeFromString(input);
+        
+        what = violentVerbsParser.getAllViolentVerbs(input);
 
         return new Response(text, new Table(who, weapon, what, whom, where, when));
     }
