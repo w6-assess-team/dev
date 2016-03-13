@@ -17,6 +17,7 @@ import java.util.List;
 
 
 public class GetDoerAndVictim {
+    
     static class ObjectsAndSubjects{
         ArrayList<String> subjects;
         ArrayList<String> objects;
@@ -68,13 +69,13 @@ public class GetDoerAndVictim {
         TokenizerFactory<CoreLabel> tokenizerFactory =
                 PTBTokenizer.factory(new CoreLabelTokenFactory(),
                         "invertible=true");
+        
         LexicalizedParser parser = LexicalizedParser.loadModel(PCG_MODEL);
 
         for(Sentence sentence:document.sentences()) {
             List<CoreLabel> tokens = tokenize(sentence.text(), tokenizerFactory);
             Tree tree = parser.apply(tokens);
 
-            // Get dependency tree
             TreebankLanguagePack tlp = new PennTreebankLanguagePack();
             GrammaticalStructureFactory gsf = tlp.grammaticalStructureFactory();
             GrammaticalStructure gs = gsf.newGrammaticalStructure(tree);
@@ -87,7 +88,7 @@ public class GetDoerAndVictim {
             TypedDependency typedDependency;
             for (Object object : listObjects) {
                 typedDependency = (TypedDependency) object;
-                //System.out.println("Depdency Name" + typedDependency.dep().ner() + " :: " + "Node" + typedDependency.reln());
+                
                 listOfTags.add(typedDependency.reln().getShortName());
                 listOfTypedDependency.add(typedDependency);
             }
