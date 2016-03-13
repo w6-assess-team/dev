@@ -45,12 +45,7 @@ public class Parser {
         for (Tree leaf : parse.getLeaves()) {
             Tree parent = leaf.parent(parse);
             String label = "";
-            if (parent.label().value().startsWith("VB"))
-            {
-                what.add(leaf.label().value());
-                label = "what";
-            }
-            else if (parent.label().value().startsWith("N"))
+            if (parent.label().value().startsWith("N"))
             {
                 who.add(leaf.label().value());
                 label = "who";
@@ -60,9 +55,33 @@ public class Parser {
         
         where = LocationParser.parseLocationFromString(input);
         
+        for(String str:where){
+            text.add(new Word(str, "where"));
+        }
+        
         when = DateTimeParser.parseDateAndTimeFromString(input);
         
+        for(String str:when){
+            text.add(new Word(str, "when"));
+        }
+        
         what = violentVerbsParser.getAllViolentVerbs(input);
+        
+        for(String str:what){
+            text.add(new Word(str, "what"));
+        }
+        
+        GetDoerAndVictim.ObjectsAndSubjects objAndSubj = GetDoerAndVictim.getSubjectAndObjectOfViolence(input);
+        
+        for(String str:objAndSubj.subjects){
+            text.add(new Word(str, "who"));
+        }
+        
+        for(String str:objAndSubj.objects){
+            text.add(new Word(str, "whom"));
+        }
+        
+       
 
         return new Response(text, new Table(who, weapon, what, whom, where, when));
     }

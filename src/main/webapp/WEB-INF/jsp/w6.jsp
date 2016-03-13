@@ -57,8 +57,14 @@
                                                 {
                                                     output +=
                                                             "<span style='color:red'>" + json.text[i].content + "</span> ";
-                                                } else {
+                                                } else
+                                                if(json.text[i].tag == "where")
+                                                {
                                                     output += "<span style='color:black'>" + json.text[i].content + "</span> ";
+                                                } else 
+                                                if(json.text[i].tag == "when")
+                                                {
+                                                    output += "<span style='color:purple'>" + json.text[i].content + "</span> ";
                                                 }
                                             }
                                             document.getElementById("fake_textarea").innerHTML = output;
