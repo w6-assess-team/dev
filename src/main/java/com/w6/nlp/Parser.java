@@ -42,47 +42,51 @@ public class Parser {
                 tokenizerFactory.getTokenizer(new StringReader(input));
         List<CoreLabel> rawWords2 = tok.tokenize();
         Tree parse = lp.apply(rawWords2);
-        for (Tree leaf : parse.getLeaves()) {
-            Tree parent = leaf.parent(parse);
-            String label = "";
-            if (parent.label().value().startsWith("N"))
-            {
-                who.add(leaf.label().value());
-                label = "who";
-            }
-            text.add(new Word(leaf.label().value(), label));
-        }
         
         where = LocationParser.parseLocationFromString(input);
         
-        for(String str:where){
-            text.add(new Word(str, "where"));
-        }
-        
         when = DateTimeParser.parseDateAndTimeFromString(input);
-        
-        for(String str:when){
-            text.add(new Word(str, "when"));
-        }
         
         what = violentVerbsParser.getAllViolentVerbs(input);
         
-        for(String str:what){
-            text.add(new Word(str, "what"));
-        }
-        
         GetDoerAndVictim.ObjectsAndSubjects objAndSubj = GetDoerAndVictim.getSubjectAndObjectOfViolence(input,what);
         
-        for(String str:objAndSubj.subjects){
-            text.add(new Word(str, "who"));
+        who.addAll(objAndSubj.subjects);
+        whom.addAll(objAndSubj.objects);
+        
+        for (Tree leaf : parse.getLeaves()) {
+            Tree parent = leaf.parent(parse);
+            String label = "";
+            String word = leaf.label().value();
+            if (who.contains(word))
+            {
+                label = "who";
+            } else 
+            if (what.contains(word))
+            {
+                label = "what";
+            } else 
+            if (where.contains(word))
+            {
+                label = "where";
+            } else 
+            if (whom.contains(word))
+            {
+                label = "whom";
+            } else 
+            if (when.contains(word))
+            {
+                label = "when";
+            } else
+            if (weapon.contains(word))
+            {
+                label = "weapon";
+            }
+            text.add(new Word(word, label));
         }
         
-        for(String str:objAndSubj.objects){
-            text.add(new Word(str, "whom"));
-        }
         
-       
-
+        
         return new Response(text, new Table(who, weapon, what, whom, where, when));
     }
 }
