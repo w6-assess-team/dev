@@ -1,42 +1,90 @@
 package com.w6.nlp;
 
-import static edu.stanford.nlp.util.logging.RedwoodConfiguration.Handlers.file;
+import edu.stanford.nlp.ling.CoreLabel;
+import edu.stanford.nlp.ling.WordTag;
+import edu.stanford.nlp.parser.lexparser.LexicalizedParser;
+import edu.stanford.nlp.process.CoreLabelTokenFactory;
+import edu.stanford.nlp.process.Morphology;
+import edu.stanford.nlp.process.PTBTokenizer;
+import edu.stanford.nlp.process.Tokenizer;
+import edu.stanford.nlp.process.TokenizerFactory;
+import edu.stanford.nlp.trees.Tree;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.file.Files;
+import java.io.StringReader;
+
 import java.util.*;
 
 public class ViolentVerbsParser {
     
-   static Set violentWords = null;
-   static String globalPpath = "/src/resources/violentVerbsDictionary.txt";
+   Set violentWords;
+   String globalPpath = "./src/main/resources/violentVerbsDictionary.txt";
+   TokenizerFactory<CoreLabel> tokenizerFactory;
+   LexicalizedParser parser;
    
-   private static void setViolentDictionary() throws IOException{
-       if(violentWords == null){
-           violentWords = new HashSet<String>();
+   
+   public ViolentVerbsParser(LexicalizedParser globalParser) throws IOException
+   {
+       tokenizerFactory = PTBTokenizer.factory(new CoreLabelTokenFactory(),
+                        "invertible=true");
+       parser = globalParser;
+       try {
+           setViolentDictionary();
+       } catch (IOException e) {
+           throw e;
        }
+   }
+   
+   private void setViolentDictionary() throws IOException
+   {
+       
+        violentWords = new HashSet<String>();
+        
         try{
             BufferedReader br = new BufferedReader(new FileReader(globalPpath));
             String str;
             while ((str = br.readLine()) != null) {
+                str = str.toLowerCase();
+                str.replaceAll("\\s+","");
                 violentWords.add(str);
             }
         } catch (IOException e){
-            
+            throw e;
         }
    }
    
-   public static List<String> getAllViolentVerbs(String text){
-       try {
-          setViolentDictionary();
-       } catch (Exception e) {
-       }
-       List<String> result = new ArrayList<>();
+   private List<CoreLabel> tokenize(String str, 
+            TokenizerFactory<CoreLabel> tokenizerFactory)
+    {
        
-       return result;
+        Tokenizer<CoreLabel> tokenizer =
+                tokenizerFactory.getTokenizer(new StringReader(str));
+        
+        return tokenizer.tokenize();
+    }
+   
+   public List<String> getAllViolentVerbs(String text)
+   {    
+        List<String> result = new ArrayList<String>();
+        
+        List<CoreLabel> tokens = tokenize(text, tokenizerFactory);
+        Tree tree = parser.apply(tokens);
+        List<Tree> leaves = tree.getLeaves();
+        
+        for(Tree leave : leaves){
+            Tree parent = leave.parent(tree);
+            if(parent.label().value().contains("VB")){
+                WordTag tag = Morphology.stemStatic(leave.label().value()
+                    ,parent.label().value());
+                if(violentWords.contains(tag.value())){
+                    result.add(leave.label().value());
+                }
+            }
+        }
+    
+        return result;
        
    }
            
