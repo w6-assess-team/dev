@@ -1,5 +1,6 @@
 package com.w6.nlp;
 
+import com.w6.data.ObjectsAndSubjects;
 import com.w6.data.Table;
 import com.w6.data.Response;
 import com.w6.data.Word;
@@ -49,7 +50,7 @@ public class Parser {
         
         what = violentVerbsParser.getAllViolentVerbs(input);
         
-        GetDoerAndVictim.ObjectsAndSubjects objAndSubj = GetDoerAndVictim.getSubjectAndObjectOfViolence(input,what);
+        ObjectsAndSubjects objAndSubj = GetDoerAndVictim.getSubjectAndObjectOfViolence(input,what);
         
         who.addAll(objAndSubj.subjects);
         whom.addAll(objAndSubj.objects);

@@ -1,5 +1,6 @@
 package com.w6.nlp;
 
+import com.w6.data.ObjectsAndSubjects;
 import edu.stanford.nlp.ling.CoreLabel;
 import edu.stanford.nlp.parser.lexparser.LexicalizedParser;
 import edu.stanford.nlp.process.CoreLabelTokenFactory;
@@ -18,17 +19,6 @@ import java.util.List;
 
 public class GetDoerAndVictim 
 {    
-    static class ObjectsAndSubjects
-    {
-        ArrayList<String> subjects;
-        ArrayList<String> objects;
-
-        ObjectsAndSubjects()
-        {
-            subjects = new ArrayList<String>();
-            objects = new ArrayList<String>();
-        }
-    }
 
     static final String PCG_MODEL = "edu/stanford/nlp/models/lexparser/englishPCFG.ser.gz";
 
