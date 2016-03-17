@@ -74,6 +74,9 @@
                                                 {
                                                     output += 
                                                             "<span style='color:yellow'>" + word + "</span> ";
+                                                } else {
+                                                    output += 
+                                                            "<span style='color:black'>" + word + "</span> ";
                                                 }
                                             }
                                             document.getElementById("fake_textarea").innerHTML = output;
