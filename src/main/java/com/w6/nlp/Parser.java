@@ -37,24 +37,25 @@ public class Parser {
         List<String> what = new ArrayList<String>();
         List<Word> text = new ArrayList<Word>();
         
+       
         TokenizerFactory<CoreLabel> tokenizerFactory =
                 PTBTokenizer.factory(new CoreLabelTokenFactory(), "");
         Tokenizer<CoreLabel> tok =
                 tokenizerFactory.getTokenizer(new StringReader(input));
         List<CoreLabel> rawWords2 = tok.tokenize();
         Tree parse = lp.apply(rawWords2);
-        
+
         where = LocationParser.parseLocationFromString(input);
-        
+
         when = DateTimeParser.parseDateAndTimeFromString(input);
-        
+
         what = violentVerbsParser.getAllViolentVerbs(input);
-        
+
         ObjectsAndSubjects objAndSubj = GetDoerAndVictim.getSubjectAndObjectOfViolence(input,what);
-        
+
         who.addAll(objAndSubj.subjects);
         whom.addAll(objAndSubj.objects);
-        
+
         for (Tree leaf : parse.getLeaves()) {
             Tree parent = leaf.parent(parse);
             String label = "";
@@ -85,6 +86,7 @@ public class Parser {
             }
             text.add(new Word(word, label));
         }
+        
         
         
         

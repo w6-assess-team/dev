@@ -79,11 +79,13 @@ public class ViolentVerbsParser {
         
         for(Tree leave : leaves){
             Tree parent = leave.parent(tree);
-            if(parent.label().value().contains("VB")){
-                WordTag tag = Morphology.stemStatic(leave.label().value()
-                    ,parent.label().value());
-                if(violentWords.contains(tag.value())){
-                    result.add(leave.label().value());
+            if(parent != null){
+                if(parent.label().value().contains("VB")){
+                    WordTag tag = Morphology.stemStatic(leave.label().value()
+                        ,parent.label().value());
+                    if(violentWords.contains(tag.value())){
+                        result.add(leave.label().value());
+                    }
                 }
             }
         }

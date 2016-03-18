@@ -37,9 +37,9 @@ public class GetDoerAndVictim
         {
             if( violentList.contains(obj.gov().value()))
             {
-                String tag = obj.reln().getShortName();
+                String tag = obj.reln().toString();
                 
-                if(tag.equals("nsubj") || tag.equals("nmod"))
+                if(tag.equals("nsubj") || tag.equals("nmod:agent"))
                 {
                     result.subjects.add(obj.dep().value());
                 }
