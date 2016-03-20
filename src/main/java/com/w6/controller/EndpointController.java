@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-
+@Controller
 public class EndpointController {
     protected static final String INPUT_VIEW = "input";
     protected static final String W6_VIEW = "w6";

@@ -89,7 +89,7 @@ public class Parser {
             }
             text.add(new Word(word, label));
         }
-        when = DateTimeParser.parseDateAndDateFromString(input);
+        when = DateTimeParser.parseDateAndTimeFromString(input);
         where = LocationParser.parseLocationFromString(input);
         
         return new Response(text, new Table(who, weapon, what, whom, where, when));
