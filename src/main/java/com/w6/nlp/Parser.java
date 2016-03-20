@@ -22,9 +22,11 @@ public class Parser {
     
     static LexicalizedParser lp = LexicalizedParser.loadModel("edu/stanford/nlp/models/lexparser/englishPCFG.ser.gz");
     static ViolentVerbsParser violentVerbsParser;
+    static WeaponsParser weaponsParser;
     
     public Parser() throws IOException{
         violentVerbsParser = new ViolentVerbsParser(lp);
+        weaponsParser = new WeaponsParser(lp);
     }
     
     public Response generateResponse(final String input) {
@@ -50,6 +52,8 @@ public class Parser {
         when = DateTimeParser.parseDateAndTimeFromString(input);
 
         what = violentVerbsParser.getAllViolentVerbs(input);
+        
+        weapon = weaponsParser.getAllWeapons(input);
 
         ObjectsAndSubjects objAndSubj = GetDoerAndVictim.getSubjectAndObjectOfViolence(input,what);
 
