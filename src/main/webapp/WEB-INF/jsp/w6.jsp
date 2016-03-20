@@ -43,22 +43,40 @@
                                             var json = ${response};
                                             output = "";
                                             for (i = 0; i < json.text.length; i++) {
-                                                if (json.text[i].tag == "who")
+                                                var word = json.text[i].content;
+                                                var tag = json.text[i].tag;
+                                                if (tag == "weapon")
                                                 {
                                                     output +=
-                                                            "<span style='color:green'>" + json.text[i].content + "</span> ";
+                                                            "<span style='color:green'>" + word + "</span> ";
                                                 } else
-                                                if (json.text[i].tag == "what")
+                                                if (tag == "what")
                                                 {
                                                     output +=
-                                                            "<span style='color:blue'>" + json.text[i].content + "</span> ";
+                                                            "<span style='color:blue'>" + word + "</span> ";
                                                 } else
-                                                if (json.text[i].tag == "NN")
+                                                if(tag == "where")
                                                 {
-                                                    output +=
-                                                            "<span style='color:red'>" + json.text[i].content + "</span> ";
+                                                    output += 
+                                                            "<span style='color:black'>" + word + "</span> ";
+                                                } else 
+                                                if(tag == "where")
+                                                {
+                                                    output += 
+                                                            "<span style='color:purple'>" + word + "</span> ";
+                                                } else 
+                                                if(tag == "who")
+                                                {
+                                                    output += 
+                                                            "<span style='color:red'>" + word + "</span> ";
+                                                } else 
+                                                if(tag == "whom")
+                                                {
+                                                    output += 
+                                                            "<span style='color:yellow'>" + word + "</span> ";
                                                 } else {
-                                                    output += "<span style='color:black'>" + json.text[i].content + "</span> ";
+                                                    output += 
+                                                            "<span style='color:black'>" + word + "</span> ";
                                                 }
                                             }
                                             document.getElementById("fake_textarea").innerHTML = output;

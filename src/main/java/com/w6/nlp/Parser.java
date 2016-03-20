@@ -1,5 +1,6 @@
 package com.w6.nlp;
 
+import com.w6.data.ObjectsAndSubjects;
 import com.w6.data.Table;
 import com.w6.data.Response;
 import com.w6.data.Word;
@@ -21,9 +22,11 @@ public class Parser {
     
     static LexicalizedParser lp = LexicalizedParser.loadModel("edu/stanford/nlp/models/lexparser/englishPCFG.ser.gz");
     static ViolentVerbsParser violentVerbsParser;
+    static WeaponsParser weaponsParser;
     
     public Parser() throws IOException{
         violentVerbsParser = new ViolentVerbsParser(lp);
+        weaponsParser = new WeaponsParser(lp);
     }
     
     public Response generateResponse(final String input) {
@@ -36,34 +39,61 @@ public class Parser {
         List<String> what = new ArrayList<String>();
         List<Word> text = new ArrayList<Word>();
         
+       
         TokenizerFactory<CoreLabel> tokenizerFactory =
                 PTBTokenizer.factory(new CoreLabelTokenFactory(), "");
         Tokenizer<CoreLabel> tok =
                 tokenizerFactory.getTokenizer(new StringReader(input));
         List<CoreLabel> rawWords2 = tok.tokenize();
         Tree parse = lp.apply(rawWords2);
+
+        where = LocationParser.parseLocationFromString(input);
+
+        when = DateTimeParser.parseDateAndTimeFromString(input);
+
+        what = violentVerbsParser.getAllViolentVerbs(input);
+        
+        weapon = weaponsParser.getAllWeapons(input);
+
+        ObjectsAndSubjects objAndSubj = GetDoerAndVictim.getSubjectAndObjectOfViolence(input,what);
+
+        who.addAll(objAndSubj.subjects);
+        whom.addAll(objAndSubj.objects);
+
         for (Tree leaf : parse.getLeaves()) {
             Tree parent = leaf.parent(parse);
             String label = "";
-            if (parent.label().value().startsWith("VB"))
+            String word = leaf.label().value();
+            if (who.contains(word))
             {
-                what.add(leaf.label().value());
-                label = "what";
-            }
-            else if (parent.label().value().startsWith("N"))
-            {
-                who.add(leaf.label().value());
                 label = "who";
+            } else 
+            if (what.contains(word))
+            {
+                label = "what";
+            } else 
+            if (where.contains(word))
+            {
+                label = "where";
+            } else 
+            if (whom.contains(word))
+            {
+                label = "whom";
+            } else 
+            if (when.contains(word))
+            {
+                label = "when";
+            } else
+            if (weapon.contains(word))
+            {
+                label = "weapon";
             }
-            text.add(new Word(leaf.label().value(), label));
+            text.add(new Word(word, label));
         }
         
-        where = LocationParser.parseLocationFromString(input);
         
-        when = DateTimeParser.parseDateAndTimeFromString(input);
         
-        what = violentVerbsParser.getAllViolentVerbs(input);
-
+        
         return new Response(text, new Table(who, weapon, what, whom, where, when));
     }
 }

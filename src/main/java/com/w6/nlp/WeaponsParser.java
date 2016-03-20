@@ -11,48 +11,48 @@ import edu.stanford.nlp.process.TokenizerFactory;
 import edu.stanford.nlp.trees.Tree;
 
 import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
-public class ViolentVerbsParser {
-    
-   Set violentWords;
-   String globalPpath = "/violentVerbsDictionary.txt";
+public class WeaponsParser {
+   Set weapons;
+   String globalPath = "/weapons.txt";
    TokenizerFactory<CoreLabel> tokenizerFactory;
    LexicalizedParser parser;
    
-   
-   public ViolentVerbsParser(LexicalizedParser globalParser) throws IOException
+   public WeaponsParser(LexicalizedParser globalParser) throws IOException
    {
        tokenizerFactory = PTBTokenizer.factory(new CoreLabelTokenFactory(),
                         "invertible=true");
        parser = globalParser;
        try {
-           setViolentDictionary();
+           setWeaponsDictionary();
        } catch (IOException e) {
            throw e;
        }
    }
    
-   private void setViolentDictionary() throws IOException
+   private void setWeaponsDictionary() throws IOException
    {
        
-        violentWords = new HashSet<String>();
+        weapons = new HashSet<String>();
         
         try{
             InputStream in =
-                this.getClass().getResourceAsStream(globalPpath);
+                this.getClass().getResourceAsStream(globalPath);
             BufferedReader br = new BufferedReader(new InputStreamReader(in));
             String str;
             while ((str = br.readLine()) != null) {
                 str = str.toLowerCase();
                 str.replaceAll("\\s+","");
-                violentWords.add(str);
+                weapons.add(str);
             }
         } catch (IOException e){
             throw e;
@@ -69,7 +69,7 @@ public class ViolentVerbsParser {
         return tokenizer.tokenize();
     }
    
-   public List<String> getAllViolentVerbs(String text)
+   public List<String> getAllWeapons(String text)
    {    
         List<String> result = new ArrayList<String>();
         
@@ -80,17 +80,15 @@ public class ViolentVerbsParser {
         for(Tree leave : leaves){
             Tree parent = leave.parent(tree);
             if(parent != null){
-                if(parent.label().value().contains("VB")){
-                    WordTag tag = Morphology.stemStatic(leave.label().value()
-                        ,parent.label().value());
-                    if(violentWords.contains(tag.value())){
-                        result.add(leave.label().value());
-                    }
+                WordTag tag = Morphology.stemStatic(leave.label().value()
+                    ,parent.label().value());
+                if(weapons.contains(tag.value())){
+                    result.add(leave.label().value());
                 }
             }
         }
     
         return result;      
    }
-           
+    
 }
