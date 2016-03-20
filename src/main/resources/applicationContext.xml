@@ -19,8 +19,4 @@
         3.0 or higher.
     -->
     <mvc:default-servlet-handler/>
-    <bean name = "controller" class = "com.w6.controller.EndpointController"></bean>
-    <!--<bean name = "parser" class = "com.w6.nlp.Parser">
-        
-    </bean>-->
 </beans>
