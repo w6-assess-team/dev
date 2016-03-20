@@ -27,7 +27,7 @@ public class WeaponsParser {
    TokenizerFactory<CoreLabel> tokenizerFactory;
    LexicalizedParser parser;
    
-   public WeaponsParser(LexicalizedParser globalParser) throws IOException
+   public WeaponsParser(LexicalizedParser globalParser)
    {
        tokenizerFactory = PTBTokenizer.factory(new CoreLabelTokenFactory(),
                         "invertible=true");
@@ -35,7 +35,7 @@ public class WeaponsParser {
        try {
            setWeaponsDictionary();
        } catch (IOException e) {
-           throw e;
+           //Can't read file to load
        }
    }
    

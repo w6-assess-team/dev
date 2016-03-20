@@ -23,7 +23,8 @@ public class Parser {
     static ViolentVerbsParser violentVerbsParser;
     static WeaponsParser weaponsParser;
     
-    public Parser() throws IOException{
+    public Parser() 
+    {
         violentVerbsParser = new ViolentVerbsParser(lp);
         weaponsParser = new WeaponsParser(lp);
     }
@@ -58,6 +59,9 @@ public class Parser {
 
         who.addAll(objAndSubj.first);
         whom.addAll(objAndSubj.second);
+        
+        when = DateTimeParser.parseDateAndTimeFromString(input);
+        where = LocationParser.parseLocationFromString(input);
 
         for (Tree leaf : parse.getLeaves()) {
             Tree parent = leaf.parent(parse);
@@ -89,8 +93,7 @@ public class Parser {
             }
             text.add(new Word(word, label));
         }
-        when = DateTimeParser.parseDateAndTimeFromString(input);
-        where = LocationParser.parseLocationFromString(input);
+        
         
         return new Response(text, new Table(who, weapon, what, whom, where, when));
     }

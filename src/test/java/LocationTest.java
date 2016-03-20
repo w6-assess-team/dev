@@ -16,7 +16,7 @@ public class LocationTest {
         correct.add("Syria");
         correct.add("Munich");
         correct.add("Germany");
-        assertTrue(res.equals(correct));
+        assertEquals(res,correct);
     }
     
     @Test
@@ -24,7 +24,7 @@ public class LocationTest {
         List<String> res = LocationParser.parseLocationFromString("It was in Russia.");
         List<String> correct= new ArrayList<String>();
         correct.add("Russia");
-        assertTrue(res.equals(correct));
+        assertEquals(res,correct);
     }
     
     @Test
@@ -32,7 +32,7 @@ public class LocationTest {
         List<String> res = LocationParser.parseLocationFromString("Hellow to you from New York!");
         List<String> correct= new ArrayList<String>();
         correct.add("New"); correct.add("York");
-        assertTrue(res.equals(correct));
+        assertEquals(res,correct);
     }
 
 }

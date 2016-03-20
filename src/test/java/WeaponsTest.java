@@ -24,7 +24,7 @@ public class WeaponsTest extends TestCase{
         List<String> res = parser.getAllWeapons("Boy dropped his gun.");
         List<String> correct = new ArrayList<String>(); 
         correct.add("gun");
-        assertTrue(res.equals(correct));
+        assertEquals(res,correct);
     }
     
 }

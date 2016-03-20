@@ -12,7 +12,7 @@ public class DateTest {
         List<String> res = DateTimeParser.parseDateAndTimeFromString("I went to school yesterday.");
         List<String> howItShouldBe = new ArrayList<String>();
         howItShouldBe.add("yesterday");
-        assertTrue(res.equals(howItShouldBe));
+        assertEquals(res,howItShouldBe);
     }
     
     @Test
@@ -20,7 +20,7 @@ public class DateTest {
         List<String> res = DateTimeParser.parseDateAndTimeFromString("Who will meet you tomorrow?");
         List<String> howItShouldBe = new ArrayList<String>();
         howItShouldBe.add("tomorrow");
-        assertTrue(res.equals(howItShouldBe));
+        assertEquals(res,howItShouldBe);
     }
     
     @Test
@@ -32,6 +32,6 @@ public class DateTest {
         howItShouldBe.add("of");
         howItShouldBe.add("2016");
           
-        assertTrue(res.equals(howItShouldBe));
+        assertEquals(res,howItShouldBe);
     }
 }

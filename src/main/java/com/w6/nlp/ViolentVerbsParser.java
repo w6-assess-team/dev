@@ -27,7 +27,7 @@ public class ViolentVerbsParser {
    LexicalizedParser parser;
    
    
-   public ViolentVerbsParser(LexicalizedParser globalParser) throws IOException
+   public ViolentVerbsParser(LexicalizedParser globalParser)
    {
        tokenizerFactory = PTBTokenizer.factory(new CoreLabelTokenFactory(),
                         "invertible=true");
@@ -35,7 +35,7 @@ public class ViolentVerbsParser {
        try {
            setViolentDictionary();
        } catch (IOException e) {
-           throw e;
+           //Can't load file of dictionary
        }
    }
    

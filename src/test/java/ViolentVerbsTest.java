@@ -22,7 +22,7 @@ public class ViolentVerbsTest extends TestCase {
     public void testNoViolentVerbs() {
         List<String> res = parser.getAllViolentVerbs("I went to school.");
         List<String> correct = new ArrayList<String>();
-        assertTrue(res.equals(correct));
+        assertEquals(res,correct);
     }
 
     @Test
@@ -32,7 +32,7 @@ public class ViolentVerbsTest extends TestCase {
         List<String> correct = new ArrayList<String>();
         correct.add("burnt");
         correct.add("killed");
-        assertTrue(res.equals(correct));
+        assertEquals(res,correct);
     }
 
     @Test
@@ -41,7 +41,7 @@ public class ViolentVerbsTest extends TestCase {
                 .getAllViolentVerbs("The murder cut all his fingers.");
         List<String> correct = new ArrayList<String>();
         correct.add("cut");
-        assertTrue(res.equals(correct));
+        assertEquals(res,correct);
     }
     
     @Test
@@ -50,6 +50,6 @@ public class ViolentVerbsTest extends TestCase {
                 .getAllViolentVerbs("The dog was killed by murder.");
         List<String> correct = new ArrayList<String>();
         correct.add("killed");
-        assertTrue(res.equals(correct));
+        assertEquals(res,correct);
     }
 }
