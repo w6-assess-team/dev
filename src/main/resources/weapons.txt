@@ -31,6 +31,7 @@ bullwhip
 dagger
 dart
 epee
+gun
 explosives
 firearm
 flail
