@@ -1,6 +1,5 @@
 package com.w6.nlp;
 
-import com.w6.data.ObjectsAndSubjects;
 import com.w6.data.Table;
 import com.w6.data.Response;
 import com.w6.data.Word;
@@ -12,6 +11,7 @@ import edu.stanford.nlp.process.PTBTokenizer;
 import edu.stanford.nlp.process.Tokenizer;
 import edu.stanford.nlp.process.TokenizerFactory;
 import edu.stanford.nlp.trees.Tree;
+import edu.stanford.nlp.util.Pair;
 import java.io.IOException;
 
 import java.io.StringReader;
@@ -51,10 +51,10 @@ public class Parser {
 
         what = violentVerbsParser.getAllViolentVerbs(input);
 
-        ObjectsAndSubjects objAndSubj = GetDoerAndVictim.getSubjectAndObjectOfViolence(input,what);
+        Pair<ArrayList<String>, ArrayList<String>> objAndSubj = GetDoerAndVictim.getSubjectAndObjectOfViolence(input,what);
 
-        who.addAll(objAndSubj.subjects);
-        whom.addAll(objAndSubj.objects);
+        who.addAll(objAndSubj.first);
+        whom.addAll(objAndSubj.second);
 
         for (Tree leaf : parse.getLeaves()) {
             Tree parent = leaf.parent(parse);

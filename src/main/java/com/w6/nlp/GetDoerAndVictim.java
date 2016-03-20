@@ -1,6 +1,5 @@
 package com.w6.nlp;
 
-import com.w6.data.ObjectsAndSubjects;
 import edu.stanford.nlp.ling.CoreLabel;
 import edu.stanford.nlp.parser.lexparser.LexicalizedParser;
 import edu.stanford.nlp.process.CoreLabelTokenFactory;
@@ -9,6 +8,7 @@ import edu.stanford.nlp.process.Tokenizer;
 import edu.stanford.nlp.process.TokenizerFactory;
 import edu.stanford.nlp.trees.*;
 import edu.stanford.nlp.simple.*;
+import edu.stanford.nlp.util.Pair;
 
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -32,7 +32,7 @@ public class GetDoerAndVictim
     }
 
     private static void getResultWithViolentVerbs(Collection<TypedDependency> list, 
-            ObjectsAndSubjects result, List<String> violentList){
+            Pair<ArrayList<String>, ArrayList<String>> result, List<String> violentList){
         for(TypedDependency obj:list)
         {
             if( violentList.contains(obj.gov().value()))
@@ -41,12 +41,12 @@ public class GetDoerAndVictim
                 
                 if(tag.equals("nsubj") || tag.equals("nmod:agent"))
                 {
-                    result.subjects.add(obj.dep().value());
+                    result.first.add(obj.dep().value());
                 }
 
                 if(tag.equals("dobj") || tag.equals("nsubjpass"))
                 {
-                    result.objects.add(obj.dep().value());
+                    result.second.add(obj.dep().value());
                 }
             }
         }
@@ -54,10 +54,14 @@ public class GetDoerAndVictim
 
 
 
-    public static ObjectsAndSubjects getSubjectAndObjectOfViolence(String text, List<String> violentVerbs) {
+    public static Pair<ArrayList<String>, ArrayList<String>> getSubjectAndObjectOfViolence(String text, List<String> violentVerbs) {
 
 
-        ObjectsAndSubjects result = new ObjectsAndSubjects();
+        Pair<ArrayList<String>, ArrayList<String>> result = new Pair<>();
+        
+        result.first = new ArrayList<>();
+        result.second = new ArrayList<>();
+        
         Document document = new edu.stanford.nlp.simple.Document(text);
 
         TokenizerFactory<CoreLabel> tokenizerFactory =

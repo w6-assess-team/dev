@@ -1,8 +1,8 @@
-import com.w6.data.ObjectsAndSubjects;
 import com.w6.nlp.GetDoerAndVictim;
 import com.w6.nlp.LocationParser;
 import com.w6.nlp.ViolentVerbsParser;
 import edu.stanford.nlp.parser.lexparser.LexicalizedParser;
+import edu.stanford.nlp.util.Pair;
 import java.io.IOException;
 import org.junit.Test;
 
@@ -26,12 +26,12 @@ public class ObjectAndSubjectTest extends TestCase
     {
         String sentence = "One boy killed a girl.";
         List<String> violentVerbs = violentVerbsParser.getAllViolentVerbs(sentence);
-        ObjectsAndSubjects test = GetDoerAndVictim.getSubjectAndObjectOfViolence(sentence, violentVerbs);
+        Pair test = GetDoerAndVictim.getSubjectAndObjectOfViolence(sentence, violentVerbs);
         ArrayList<String> correctSubj = new ArrayList<>(); 
         correctSubj.add("boy");
         ArrayList<String> correctObj = new ArrayList<>();
         correctObj.add("girl");
-        assertTrue(correctSubj.equals(test.subjects) && correctObj.equals(test.objects));
+        assertTrue(correctSubj.equals(test.first) && correctObj.equals(test.second));
         
     }
     
@@ -40,7 +40,7 @@ public class ObjectAndSubjectTest extends TestCase
     {
         String sentences = "One boy killed a girl. The murder cut all his fingers. The dog was killed by murder.";
         List<String> violentVerbs = violentVerbsParser.getAllViolentVerbs(sentences);
-        ObjectsAndSubjects test = GetDoerAndVictim.getSubjectAndObjectOfViolence(sentences, violentVerbs);
+        Pair test = GetDoerAndVictim.getSubjectAndObjectOfViolence(sentences, violentVerbs);
         
         ArrayList<String> correctSubj = new ArrayList<>(); 
         correctSubj.add("boy"); 
@@ -52,7 +52,7 @@ public class ObjectAndSubjectTest extends TestCase
         correctObj.add("fingers");
         correctObj.add("dog");
         
-        assertTrue(correctSubj.equals(test.subjects) && correctObj.equals(test.objects));
+        assertTrue(correctSubj.equals(test.first) && correctObj.equals(test.second));
     }
     
     @Test
@@ -62,7 +62,7 @@ public class ObjectAndSubjectTest extends TestCase
                 + "and a Canadian - as relief work becomes increasingly dangerous in the war-torn region, officials said on Sunday. "
                 + "Two Sudanese staff of AMI were also kidnapped and later released, a local official said.";
         List<String> violentVerbs = violentVerbsParser.getAllViolentVerbs(article);
-        ObjectsAndSubjects test = GetDoerAndVictim.getSubjectAndObjectOfViolence(article, violentVerbs);
+        Pair test = GetDoerAndVictim.getSubjectAndObjectOfViolence(article, violentVerbs);
         
         ArrayList<String> correctSubj = new ArrayList<>(); 
         correctSubj.add("Gunmen");
@@ -71,7 +71,6 @@ public class ObjectAndSubjectTest extends TestCase
         correctObj.add("workers");
         correctObj.add("staff");
         
-        System.out.println(test.subjects.toString());
-        assertTrue(correctSubj.equals(test.subjects) && correctObj.equals(test.objects));
+        assertTrue(correctSubj.equals(test.first) && correctObj.equals(test.second));
     }
 }
