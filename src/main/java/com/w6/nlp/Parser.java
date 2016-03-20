@@ -18,13 +18,14 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Parser {
-    
+public class Parser {    
     static LexicalizedParser lp = LexicalizedParser.loadModel("edu/stanford/nlp/models/lexparser/englishPCFG.ser.gz");
     static ViolentVerbsParser violentVerbsParser;
+    static WeaponsParser weaponsParser;
     
     public Parser() throws IOException{
         violentVerbsParser = new ViolentVerbsParser(lp);
+        weaponsParser = new WeaponsParser(lp);
     }
     
     public Response generateResponse(final String input) {
@@ -50,6 +51,8 @@ public class Parser {
         when = DateTimeParser.parseDateAndTimeFromString(input);
 
         what = violentVerbsParser.getAllViolentVerbs(input);
+        
+        weapon = weaponsParser.getAllWeapons(input);
 
         Pair<ArrayList<String>, ArrayList<String>> objAndSubj = GetDoerAndVictim.getSubjectAndObjectOfViolence(input,what);
 
@@ -86,9 +89,8 @@ public class Parser {
             }
             text.add(new Word(word, label));
         }
-        
-        
-        
+        when = DateTimeParser.parseDateAndDateFromString(input);
+        where = LocationParser.parseLocationFromString(input);
         
         return new Response(text, new Table(who, weapon, what, whom, where, when));
     }
