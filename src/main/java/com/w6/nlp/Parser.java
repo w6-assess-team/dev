@@ -18,8 +18,7 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Parser {
-    
+public class Parser {    
     static LexicalizedParser lp = LexicalizedParser.loadModel("edu/stanford/nlp/models/lexparser/englishPCFG.ser.gz");
     static ViolentVerbsParser violentVerbsParser;
     static WeaponsParser weaponsParser;
@@ -90,9 +89,8 @@ public class Parser {
             }
             text.add(new Word(word, label));
         }
-        
-        
-        
+        when = DateTimeParser.parseDateAndDateFromString(input);
+        where = LocationParser.parseLocationFromString(input);
         
         return new Response(text, new Table(who, weapon, what, whom, where, when));
     }

@@ -26,7 +26,7 @@
       </div>
       <div>
         <form action="parse" method="POST">
-            <input id="text" name="text" style="height:450px" contenteditable/>
+            <textarea id = "text" name="text" cols="140" rows="25"></textarea>
             <input type="submit" value="Submit" />
         </form>
       </div>
