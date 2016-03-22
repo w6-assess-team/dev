@@ -23,20 +23,11 @@ public class ViolentVerbsParser {
     
    Set violentWords;
    String globalPpath = "/violentVerbsDictionary.txt";
-   TokenizerFactory<CoreLabel> tokenizerFactory;
-   LexicalizedParser parser;
    
    
    public ViolentVerbsParser(LexicalizedParser globalParser) throws IOException
    {
-       tokenizerFactory = PTBTokenizer.factory(new CoreLabelTokenFactory(),
-                        "invertible=true");
-       parser = globalParser;
-       try {
-           setViolentDictionary();
-       } catch (IOException e) {
-           throw e;
-       }
+        setViolentDictionary();
    }
    
    private void setViolentDictionary() throws IOException
@@ -44,46 +35,33 @@ public class ViolentVerbsParser {
        
         violentWords = new HashSet<String>();
         
-        try{
-            InputStream in =
-                this.getClass().getResourceAsStream(globalPpath);
-            BufferedReader br = new BufferedReader(new InputStreamReader(in));
-            String str;
-            while ((str = br.readLine()) != null) {
-                str = str.toLowerCase();
-                str.replaceAll("\\s+","");
-                violentWords.add(str);
-            }
-        } catch (IOException e){
-            throw e;
+        InputStream in = this.getClass().getResourceAsStream(globalPpath);
+        BufferedReader br = new BufferedReader(new InputStreamReader(in));
+        String str;
+        while ((str = br.readLine()) != null) 
+        {
+            str = str.toLowerCase();
+            str.replaceAll("\\s+","");
+            violentWords.add(str);
         }
    }
    
-   private List<CoreLabel> tokenize(String str, 
-            TokenizerFactory<CoreLabel> tokenizerFactory)
-    {
-       
-        Tokenizer<CoreLabel> tokenizer =
-                tokenizerFactory.getTokenizer(new StringReader(str));
-        
-        return tokenizer.tokenize();
-    }
-   
-   public List<String> getAllViolentVerbs(String text)
+   public List<String> getAllViolentVerbs(Tree tree)
    {    
-        List<String> result = new ArrayList<String>();
-        
-        List<CoreLabel> tokens = tokenize(text, tokenizerFactory);
-        Tree tree = parser.apply(tokens);
-        List<Tree> leaves = tree.getLeaves();
-        
-        for(Tree leave : leaves){
+        List<String> result = new ArrayList();
+        for(Tree leave : tree.getLeaves())
+        {
             Tree parent = leave.parent(tree);
-            if(parent != null){
-                if(parent.label().value().contains("VB")){
-                    WordTag tag = Morphology.stemStatic(leave.label().value()
-                        ,parent.label().value());
-                    if(violentWords.contains(tag.value())){
+            if(parent != null)
+            {
+                if(parent.label().value().contains("VB"))
+                {
+                    WordTag tag = Morphology.stemStatic(
+                            leave.label().value(),
+                            parent.label().value()
+                    );
+                    if(violentWords.contains(tag.value()))
+                    {
                         result.add(leave.label().value());
                     }
                 }

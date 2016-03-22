@@ -48,27 +48,32 @@
                                                 if (tag == "weapon")
                                                 {
                                                     output +=
-                                                            "<span style='color:blue'>" + word + "</span> ";
+                                                            "<span style='background:blue;color:white'>" + word + "</span> ";
                                                 } else
                                                 if (tag == "what")
                                                 {
                                                     output +=
-                                                            "<span style='color:purple'>" + word + "</span> ";
+                                                            "<span style='background:purple;color:white;font-size:14'>  " + "!" + word + "!"+ "</span> ";
                                                 } else
                                                 if(tag == "where")
                                                 {
                                                     output += 
-                                                            "<span style='color:orange'>" + word + "</span> ";
+                                                            "<span style='background:orange;color:white'>" + word + "</span> ";
                                                 } else 
                                                 if(tag == "who")
                                                 {
                                                     output += 
-                                                            "<span style='color:green'>" + word + "</span> ";
+                                                            "<span style='background:green;color:white'>" + word + "</span> ";
                                                 } else 
                                                 if(tag == "whom")
                                                 {
                                                     output += 
-                                                            "<span style='color:red'>" + word + "</span> ";
+                                                            "<span style='background:red;color:white'>" + word + "</span> ";
+                                                } else 
+                                                if(tag == "when")
+                                                {
+                                                    output += 
+                                                            "<span style='background:yellow;color:black'>" + word + "</span> ";
                                                 } else {
                                                     output += 
                                                             "<span style='color:black'>" + word + "</span> ";

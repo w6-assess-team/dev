@@ -19,20 +19,15 @@ import java.util.List;
 
 public class GetDoerAndVictim 
 {    
+    static final TreebankLanguagePack tlp = new PennTreebankLanguagePack();
+    static final GrammaticalStructureFactory gsf = tlp.grammaticalStructureFactory();
 
-    static final String PCG_MODEL = "edu/stanford/nlp/models/lexparser/englishPCFG.ser.gz";
 
-    private  static List<CoreLabel> tokenize(String str,
-                                             TokenizerFactory<CoreLabel> tokenizerFactory) 
-    {
-        Tokenizer<CoreLabel> tokenizer =
-                tokenizerFactory.getTokenizer(
-                        new StringReader(str));
-        return tokenizer.tokenize();
-    }
-
-    private static void getResultWithViolentVerbs(Collection<TypedDependency> list, 
-            ObjectsAndSubjects result, List<String> violentList){
+    private static void getResultWithViolentVerbs(
+            Collection<TypedDependency> list, 
+            ObjectsAndSubjects result, 
+            List<String> violentList
+    ){
         for(TypedDependency obj:list)
         {
             if( violentList.contains(obj.gov().value()))
@@ -54,33 +49,17 @@ public class GetDoerAndVictim
 
 
 
-    public static ObjectsAndSubjects getSubjectAndObjectOfViolence(String text, List<String> violentVerbs) {
+    public static ObjectsAndSubjects getSubjectAndObjectOfViolence(
+            Tree tree, 
+            List<String> violentVerbs
+    ) {
 
 
         ObjectsAndSubjects result = new ObjectsAndSubjects();
-        Document document = new edu.stanford.nlp.simple.Document(text);
-
-        TokenizerFactory<CoreLabel> tokenizerFactory =
-                PTBTokenizer.factory(new CoreLabelTokenFactory(),
-                        "invertible=true");
-        
-        LexicalizedParser parser = LexicalizedParser.loadModel(PCG_MODEL);
-
-        for(Sentence sentence:document.sentences()) 
-        {
-            List<CoreLabel> tokens = tokenize(sentence.text(), tokenizerFactory);
-            Tree tree = parser.apply(tokens);
-
-            TreebankLanguagePack tlp = new PennTreebankLanguagePack();
-            GrammaticalStructureFactory gsf = tlp.grammaticalStructureFactory();
-            GrammaticalStructure gs = gsf.newGrammaticalStructure(tree);
-            Collection<TypedDependency> td = gs.typedDependenciesCollapsed();
+        GrammaticalStructure gs = gsf.newGrammaticalStructure(tree);
+        Collection<TypedDependency> td = gs.typedDependenciesCollapsed();
             
-            getResultWithViolentVerbs(td,result,violentVerbs);
-
-        }
-
-
+        getResultWithViolentVerbs(td, result, violentVerbs);
         return result;
 
     }

@@ -24,65 +24,35 @@ import java.util.Set;
 public class WeaponsParser {
    Set weapons;
    String globalPath = "/weapons.txt";
-   TokenizerFactory<CoreLabel> tokenizerFactory;
-   LexicalizedParser parser;
-   
    public WeaponsParser(LexicalizedParser globalParser) throws IOException
    {
-       tokenizerFactory = PTBTokenizer.factory(new CoreLabelTokenFactory(),
-                        "invertible=true");
-       parser = globalParser;
-       try {
-           setWeaponsDictionary();
-       } catch (IOException e) {
-           throw e;
-       }
-   }
-   
-   private void setWeaponsDictionary() throws IOException
-   {
-       
         weapons = new HashSet<String>();
         
-        try{
-            InputStream in =
-                this.getClass().getResourceAsStream(globalPath);
-            BufferedReader br = new BufferedReader(new InputStreamReader(in));
-            String str;
-            while ((str = br.readLine()) != null) {
-                str = str.toLowerCase();
-                str.replaceAll("\\s+","");
-                weapons.add(str);
-            }
-        } catch (IOException e){
-            throw e;
+        InputStream in =
+            this.getClass().getResourceAsStream(globalPath);
+        BufferedReader br = new BufferedReader(new InputStreamReader(in));
+        String str;
+        while ((str = br.readLine()) != null) 
+        {
+            str = str.toLowerCase();
+            str.replaceAll("\\s+","");
+            weapons.add(str);
         }
    }
    
-   private List<CoreLabel> tokenize(String str, 
-            TokenizerFactory<CoreLabel> tokenizerFactory)
-    {
-       
-        Tokenizer<CoreLabel> tokenizer =
-                tokenizerFactory.getTokenizer(new StringReader(str));
-        
-        return tokenizer.tokenize();
-    }
-   
-   public List<String> getAllWeapons(String text)
+   public List<String> getAllWeapons(Tree tree)
    {    
         List<String> result = new ArrayList<String>();
-        
-        List<CoreLabel> tokens = tokenize(text, tokenizerFactory);
-        Tree tree = parser.apply(tokens);
-        List<Tree> leaves = tree.getLeaves();
-        
-        for(Tree leave : leaves){
+        for(Tree leave : tree.getLeaves()){
             Tree parent = leave.parent(tree);
-            if(parent != null){
-                WordTag tag = Morphology.stemStatic(leave.label().value()
-                    ,parent.label().value());
-                if(weapons.contains(tag.value())){
+            if(parent != null)
+            {
+                WordTag tag = Morphology.stemStatic(
+                    leave.label().value(),
+                    parent.label().value()
+                );
+                if(weapons.contains(tag.value()))
+                {
                     result.add(leave.label().value());
                 }
             }

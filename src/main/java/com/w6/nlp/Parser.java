@@ -11,6 +11,8 @@ import edu.stanford.nlp.process.CoreLabelTokenFactory;
 import edu.stanford.nlp.process.PTBTokenizer;
 import edu.stanford.nlp.process.Tokenizer;
 import edu.stanford.nlp.process.TokenizerFactory;
+import edu.stanford.nlp.simple.Document;
+import edu.stanford.nlp.simple.Sentence;
 import edu.stanford.nlp.trees.Tree;
 import java.io.IOException;
 
@@ -22,8 +24,11 @@ public class Parser {
     static LexicalizedParser lp = LexicalizedParser.loadModel("edu/stanford/nlp/models/lexparser/englishPCFG.ser.gz");
     static ViolentVerbsParser violentVerbsParser;
     static WeaponsParser weaponsParser;
+    private TokenizerFactory<CoreLabel> tokenizerFactory;
     
     public Parser() throws IOException{
+        tokenizerFactory =
+                PTBTokenizer.factory(new CoreLabelTokenFactory(), "");
         violentVerbsParser = new ViolentVerbsParser(lp);
         weaponsParser = new WeaponsParser(lp);
     }
@@ -38,59 +43,83 @@ public class Parser {
         List<String> what = new ArrayList<String>();
         List<Word> text = new ArrayList<Word>();
         
+        ArrayList<String> dateTimeTags = new ArrayList<>();
+        dateTimeTags.add("DATE");
+        dateTimeTags.add("TIME");
+        ArrayList<String> locationTags = new ArrayList<>();
+        locationTags.add("LOCATION");
        
-        TokenizerFactory<CoreLabel> tokenizerFactory =
-                PTBTokenizer.factory(new CoreLabelTokenFactory(), "");
-        Tokenizer<CoreLabel> tok =
-                tokenizerFactory.getTokenizer(new StringReader(input));
-        List<CoreLabel> rawWords2 = tok.tokenize();
-        Tree parse = lp.apply(rawWords2);
-
-        where = LocationParser.parseLocationFromString(input);
-
-        when = DateTimeParser.parseDateAndTimeFromString(input);
-
-        what = violentVerbsParser.getAllViolentVerbs(input);
         
-        weapon = weaponsParser.getAllWeapons(input);
+        Document document = new Document(input);
+        for (Sentence sentence : document.sentences())
+        {
+            List<String> sentenseWho = new ArrayList<String>();
+            List<String> sentenseWeapon = new ArrayList<String>();
+            List<String> sentenseWhom = new ArrayList<String>();
+            List<String> sentenseWhere = new ArrayList<String>();
+            List<String> sentenseWhen = new ArrayList<String>();
+            List<String> sentenseWhat = new ArrayList<String>();
+            Tree parse = lp.apply(
+                    tokenizerFactory.getTokenizer(new StringReader(sentence.text()))
+                        .tokenize()
+            );
+            sentenseWhen = DateTimeParser.parseDateAndTimeFromString(
+                sentence, 
+                dateTimeTags
+            );
+            sentenseWhere = DateTimeParser.parseDateAndTimeFromString(
+                sentence, 
+                locationTags
+            );
+            sentenseWhat = violentVerbsParser.getAllViolentVerbs(parse);
+        
+            sentenseWeapon = weaponsParser.getAllWeapons(parse);
+            ObjectsAndSubjects objAndSubj = GetDoerAndVictim.getSubjectAndObjectOfViolence(parse,sentenseWhat);
 
-        ObjectsAndSubjects objAndSubj = GetDoerAndVictim.getSubjectAndObjectOfViolence(input,what);
-
-        who.addAll(objAndSubj.subjects);
-        whom.addAll(objAndSubj.objects);
-
-        for (Tree leaf : parse.getLeaves()) {
-            Tree parent = leaf.parent(parse);
-            String label = "";
-            String word = leaf.label().value();
-            if (who.contains(word))
-            {
-                label = "who";
-            } else 
-            if (what.contains(word))
-            {
-                label = "what";
-            } else 
-            if (where.contains(word))
-            {
-                label = "where";
-            } else 
-            if (whom.contains(word))
-            {
-                label = "whom";
-            } else 
-            if (when.contains(word))
-            {
-                label = "when";
-            } else
-            if (weapon.contains(word))
-            {
-                label = "weapon";
+            sentenseWho.addAll(objAndSubj.subjects);
+            sentenseWhom.addAll(objAndSubj.objects);
+            
+            for (Tree leaf : parse.getLeaves()) {
+                Tree parent = leaf.parent(parse);
+                String label = "";
+                String word = leaf.label().value();
+                if (sentenseWho.contains(word))
+                {
+                    label = "who";
+                } else 
+                if (sentenseWhat.contains(word))
+                {
+                    label = "what";
+                } else 
+                if (sentenseWhere.contains(word))
+                {
+                    label = "where";
+                } else 
+                if (sentenseWhom.contains(word))
+                {
+                    label = "whom";
+                } else 
+                if (sentenseWhen.contains(word))
+                {
+                    label = "when";
+                } else
+                if (sentenseWeapon.contains(word))
+                {
+                    label = "weapon";
+                }
+                text.add(new Word(word, label));
             }
-            text.add(new Word(word, label));
+            
+            who.addAll(sentenseWho);
+            what.addAll(sentenseWhat);
+            where.addAll(sentenseWhere);
+            whom.addAll(sentenseWhom);
+            when.addAll(sentenseWhen);
+            weapon.addAll(sentenseWeapon);
         }
-        when = DateTimeParser.parseDateAndTimeFromString(input);
-        where = LocationParser.parseLocationFromString(input);
+
+
+
         
         return new Response(text, new Table(who, weapon, what, whom, where, when));
     }
