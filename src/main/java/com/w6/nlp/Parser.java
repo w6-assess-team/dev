@@ -1,5 +1,6 @@
 package com.w6.nlp;
 
+import com.sun.javafx.scene.control.skin.VirtualFlow;
 import com.w6.data.ObjectsAndSubjects;
 import com.w6.data.Table;
 import com.w6.data.Response;
@@ -14,6 +15,7 @@ import edu.stanford.nlp.process.TokenizerFactory;
 import edu.stanford.nlp.simple.Document;
 import edu.stanford.nlp.simple.Sentence;
 import edu.stanford.nlp.trees.Tree;
+import edu.stanford.nlp.util.Pair;
 import java.io.IOException;
 
 import java.io.StringReader;
@@ -44,6 +46,9 @@ public class Parser {
         List<String> what = new ArrayList<String>();
         List<Word> text = new ArrayList<Word>();
         
+        List<Pair<String,Integer>> ratedWhen = new ArrayList<>();
+        List<Pair<String,Integer>> ratedWhere = new ArrayList<>();
+        
         ArrayList<String> dateTimeTags = new ArrayList<>();
         dateTimeTags.add("DATE");
         dateTimeTags.add("TIME");
@@ -60,6 +65,9 @@ public class Parser {
             List<String> sentenseWhere = new ArrayList<String>();
             List<String> sentenseWhen = new ArrayList<String>();
             List<String> sentenseWhat = new ArrayList<String>();
+            
+            
+            
             
             Tree parse = lp.apply(
                     tokenizerFactory.getTokenizer(new StringReader(sentence.text()))
@@ -130,7 +138,14 @@ public class Parser {
         
         
 
-        removeEquals(who, weapon, what, whom, where, when);
+        removeEquals(who);
+        removeEquals(what);
+        removeEquals(whom);
+        removeEquals(weapon);
+        
+        
+        removeAndCountRatedEquals(ratedWhen);
+        removeAndCountRatedEquals(ratedWhere);
 
 
         
@@ -138,112 +153,36 @@ public class Parser {
     }
     
     private void removeEquals(
-            List<String> who,
-            List<String> weapon,
-            List<String> what,
-            List<String> whom,
-            List<String> where,
-            List<String> when
+            List<String> list
     ) {
         
-        ArrayList<String> tmpWho = new ArrayList<>(who);
-        ArrayList<String> tmpWhat = new ArrayList<>(what);
-        ArrayList<String> tmpWhere = new ArrayList<>(where);
-        ArrayList<String> tmpWhen = new ArrayList<>(when);
-        ArrayList<String> tmpWhom = new ArrayList<>(whom);
-        ArrayList<String> tmpWeapon = new ArrayList<>(weapon);
+        ArrayList<String> tmp = new ArrayList<>(list);
         
-        Arrays.sort(tmpWho.toArray());
-        Arrays.sort(tmpWhat.toArray());
-        Arrays.sort(tmpWhere.toArray());
-        Arrays.sort(tmpWhen.toArray());
-        Arrays.sort(tmpWhom.toArray());
-        Arrays.sort(tmpWeapon.toArray());
+        Arrays.sort(tmp.toArray());
         
-        who = new ArrayList<>();
-        what = new ArrayList<>();
-        where = new ArrayList<>();
-        when = new ArrayList<>();
-        whom = new ArrayList<>();
-        weapon = new ArrayList<>();
+        list = new ArrayList<>();
         
-        for( int i = 0; i<tmpWho.size() ;i++){
+        
+        for( int i = 0; i<tmp.size() ;i++){
+            String nowString = tmp.get(i);
+            
             if(i > 0)
             {
-                if(!tmpWho.get(i).equals(tmpWho.get(i-1)))
+                String prevString = tmp.get(i-1);
+                if(!nowString.equals(prevString))
                 {
-                    who.add(tmpWho.get(i));
+                    list.add(nowString);
                 }
             } else 
             {
-                who.add(tmpWho.get(i));
+                list.add(nowString);
             }
         }
         
-        for( int i = 0; i<tmpWhat.size() ;i++){
-            if(i > 0)
-            {
-                if(!tmpWhat.get(i).equals(tmpWhat.get(i-1)))
-                {
-                    what.add(tmpWhat.get(i));
-                }
-            } else 
-            {
-                what.add(tmpWhat.get(i));
-            }
-        }
-        
-        for( int i = 0; i<tmpWhere.size() ;i++){
-            if(i > 0)
-            {
-                if(!tmpWhere.get(i).equals(tmpWhere.get(i-1)))
-                {
-                    where.add(tmpWhere.get(i));
-                }
-            } else 
-            {
-                where.add(tmpWhere.get(i));
-            }
-        }
-        
-        for( int i = 0; i<tmpWhen.size() ;i++){
-            if(i > 0)
-            {
-                if(!tmpWhen.get(i).equals(tmpWhen.get(i-1)))
-                {
-                    when.add(tmpWhen.get(i));
-                }
-            } else 
-            {
-                when.add(tmpWhen.get(i));
-            }
-        }
-        
-        for( int i = 0; i<tmpWhom.size() ;i++){
-            if(i > 0)
-            {
-                if(!tmpWhom.get(i).equals(tmpWhom.get(i-1)))
-                {
-                    whom.add(tmpWhom.get(i));
-                }
-            } else 
-            {
-                whom.add(tmpWhom.get(i));
-            }
-        }
-        
-        for( int i = 0; i<tmpWeapon.size() ;i++){
-            if(i > 0)
-            {
-                if(!tmpWeapon.get(i).equals(tmpWeapon.get(i-1)))
-                {
-                    weapon.add(tmpWeapon.get(i));
-                }
-            } else 
-            {
-                weapon.add(tmpWeapon.get(i));
-            }
-        }
+    }
+    
+    private void removeAndCountRatedEquals(List<Pair<String,Integer>> list)
+    {
         
     }
 }
