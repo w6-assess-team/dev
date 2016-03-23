@@ -18,6 +18,7 @@ import java.io.IOException;
 
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Parser {    
@@ -59,25 +60,32 @@ public class Parser {
             List<String> sentenseWhere = new ArrayList<String>();
             List<String> sentenseWhen = new ArrayList<String>();
             List<String> sentenseWhat = new ArrayList<String>();
+            
             Tree parse = lp.apply(
                     tokenizerFactory.getTokenizer(new StringReader(sentence.text()))
                         .tokenize()
             );
+            
+            sentenseWhat = violentVerbsParser.getAllViolentVerbs(parse);
+            
             sentenseWhen = DateTimeParser.parseDateAndTimeFromString(
                 sentence, 
                 dateTimeTags
             );
+            
             sentenseWhere = DateTimeParser.parseDateAndTimeFromString(
                 sentence, 
                 locationTags
             );
-            sentenseWhat = violentVerbsParser.getAllViolentVerbs(parse);
-        
+            
             sentenseWeapon = weaponsParser.getAllWeapons(parse);
-            ObjectsAndSubjects objAndSubj = GetDoerAndVictim.getSubjectAndObjectOfViolence(parse,sentenseWhat);
-
-            sentenseWho.addAll(objAndSubj.subjects);
-            sentenseWhom.addAll(objAndSubj.objects);
+            
+            if (!sentenseWhat.isEmpty())
+            {
+                ObjectsAndSubjects objAndSubj = GetDoerAndVictim.getSubjectAndObjectOfViolence(parse,sentenseWhat);
+                sentenseWho.addAll(objAndSubj.subjects);
+                sentenseWhom.addAll(objAndSubj.objects);
+            }
             
             for (Tree leaf : parse.getLeaves()) {
                 Tree parent = leaf.parent(parse);
@@ -110,6 +118,8 @@ public class Parser {
                 text.add(new Word(word, label));
             }
             
+            
+            
             who.addAll(sentenseWho);
             what.addAll(sentenseWhat);
             where.addAll(sentenseWhere);
@@ -117,6 +127,106 @@ public class Parser {
             when.addAll(sentenseWhen);
             weapon.addAll(sentenseWeapon);
         }
+        
+        ArrayList<String> tmpWho = new ArrayList<>(who);
+        ArrayList<String> tmpWhat = new ArrayList<>(what);
+        ArrayList<String> tmpWhere = new ArrayList<>(where);
+        ArrayList<String> tmpWhen = new ArrayList<>(when);
+        ArrayList<String> tmpWhom = new ArrayList<>(whom);
+        ArrayList<String> tmpWeapon = new ArrayList<>(weapon);
+        
+        Arrays.sort(tmpWho.toArray());
+        Arrays.sort(tmpWhat.toArray());
+        Arrays.sort(tmpWhere.toArray());
+        Arrays.sort(tmpWhen.toArray());
+        Arrays.sort(tmpWhom.toArray());
+        Arrays.sort(tmpWeapon.toArray());
+        
+        who = new ArrayList<>();
+        what = new ArrayList<>();
+        where = new ArrayList<>();
+        when = new ArrayList<>();
+        whom = new ArrayList<>();
+        weapon = new ArrayList<>();
+        
+        for( int i = 0; i<tmpWho.size() ;i++){
+            if(i > 0)
+            {
+                if(!tmpWho.get(i).equals(tmpWho.get(i-1)))
+                {
+                    who.add(tmpWho.get(i));
+                }
+            } else 
+            {
+                who.add(tmpWho.get(i));
+            }
+        }
+        
+        for( int i = 0; i<tmpWhat.size() ;i++){
+            if(i > 0)
+            {
+                if(!tmpWhat.get(i).equals(tmpWhat.get(i-1)))
+                {
+                    what.add(tmpWhat.get(i));
+                }
+            } else 
+            {
+                what.add(tmpWhat.get(i));
+            }
+        }
+        
+        for( int i = 0; i<tmpWhere.size() ;i++){
+            if(i > 0)
+            {
+                if(!tmpWhere.get(i).equals(tmpWhere.get(i-1)))
+                {
+                    where.add(tmpWhere.get(i));
+                }
+            } else 
+            {
+                where.add(tmpWhere.get(i));
+            }
+        }
+        
+        for( int i = 0; i<tmpWhen.size() ;i++){
+            if(i > 0)
+            {
+                if(!tmpWhen.get(i).equals(tmpWhen.get(i-1)))
+                {
+                    when.add(tmpWhen.get(i));
+                }
+            } else 
+            {
+                when.add(tmpWhen.get(i));
+            }
+        }
+        
+        for( int i = 0; i<tmpWhom.size() ;i++){
+            if(i > 0)
+            {
+                if(!tmpWhom.get(i).equals(tmpWhom.get(i-1)))
+                {
+                    whom.add(tmpWhom.get(i));
+                }
+            } else 
+            {
+                whom.add(tmpWhom.get(i));
+            }
+        }
+        
+        for( int i = 0; i<tmpWeapon.size() ;i++){
+            if(i > 0)
+            {
+                if(!tmpWeapon.get(i).equals(tmpWeapon.get(i-1)))
+                {
+                    weapon.add(tmpWeapon.get(i));
+                }
+            } else 
+            {
+                weapon.add(tmpWeapon.get(i));
+            }
+        }
+        
 
 
 
