@@ -128,6 +128,24 @@ public class Parser {
             weapon.addAll(sentenseWeapon);
         }
         
+        
+
+        removeEquals(who, weapon, what, whom, where, when);
+
+
+        
+        return new Response(text, new Table(who, weapon, what, whom, where, when));
+    }
+    
+    private void removeEquals(
+            List<String> who,
+            List<String> weapon,
+            List<String> what,
+            List<String> whom,
+            List<String> where,
+            List<String> when
+    ) {
+        
         ArrayList<String> tmpWho = new ArrayList<>(who);
         ArrayList<String> tmpWhat = new ArrayList<>(what);
         ArrayList<String> tmpWhere = new ArrayList<>(where);
@@ -227,10 +245,5 @@ public class Parser {
             }
         }
         
-
-
-
-        
-        return new Response(text, new Table(who, weapon, what, whom, where, when));
     }
 }
