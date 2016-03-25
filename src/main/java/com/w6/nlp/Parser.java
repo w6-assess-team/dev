@@ -21,7 +21,14 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class Parser {    
     static LexicalizedParser lp = LexicalizedParser.loadModel("edu/stanford/nlp/models/lexparser/englishPCFG.ser.gz");
@@ -86,6 +93,7 @@ public class Parser {
                 locationTags
             );
             
+            int typeOfSentence = 1;
             sentenseWeapon = weaponsParser.getAllWeapons(parse);
             
             if (!sentenseWhat.isEmpty())
@@ -93,7 +101,12 @@ public class Parser {
                 ObjectsAndSubjects objAndSubj = GetDoerAndVictim.getSubjectAndObjectOfViolence(parse,sentenseWhat);
                 sentenseWho.addAll(objAndSubj.subjects);
                 sentenseWhom.addAll(objAndSubj.objects);
-            }
+                typeOfSentence = 2;
+            }  
+            
+            addValueToRatedArray(typeOfSentence, ratedWhere, where);
+            addValueToRatedArray(typeOfSentence, ratedWhen, when);
+            
             
             for (Tree leaf : parse.getLeaves()) {
                 Tree parent = leaf.parent(parse);
@@ -144,8 +157,8 @@ public class Parser {
         removeEquals(weapon);
         
         
-        removeAndCountRatedEquals(ratedWhen);
-        removeAndCountRatedEquals(ratedWhere);
+        removeAndCountRatedEquals(ratedWhen,when);
+        removeAndCountRatedEquals(ratedWhere,where);
 
 
         
@@ -156,33 +169,63 @@ public class Parser {
             List<String> list
     ) {
         
-        ArrayList<String> tmp = new ArrayList<>(list);
+       Set<String> all = new HashSet<String>(list);
+       list.clear();
+       list.addAll(all);
         
-        Arrays.sort(tmp.toArray());
-        
-        list = new ArrayList<>();
-        
-        
-        for( int i = 0; i<tmp.size() ;i++){
-            String nowString = tmp.get(i);
-            
-            if(i > 0)
-            {
-                String prevString = tmp.get(i-1);
-                if(!nowString.equals(prevString))
-                {
-                    list.add(nowString);
-                }
-            } else 
-            {
-                list.add(nowString);
+    }
+    
+    private void removeAndCountRatedEquals(List<Pair<String,Integer>> ratedList, List<String> list)
+    {
+        Map<String, Pair<Integer,Integer>> statMap = new HashMap<>();
+        for(Pair<String,Integer> pair : ratedList)
+        {
+            String word = pair.first;
+            Integer value = pair.second;
+
+            if(statMap.containsKey(word)){
+                statMap.replace(word,
+                        new Pair<>(
+                                statMap.get(word).first+1,
+                                statMap.get(word).second + value
+                        )
+                );
+            } else {
+                statMap.put(
+                        word,
+                        new Pair<>(1, value)
+                );
             }
+        }
+        ratedList.clear();
+
+        ArrayList<Pair<String, Double>> values = new ArrayList<>();
+
+        for(String string : statMap.keySet()){
+            Pair<Integer, Integer> val = statMap.get(string);
+            values.add(new Pair<>(string, (1.0 *val.second)/val.first));
+        }
+
+        Collections.sort(values, new WordComparator());
+
+        list.clear();
+
+        for(Pair<String, Double> p : values){
+            list.add(p.first);
         }
         
     }
     
-    private void removeAndCountRatedEquals(List<Pair<String,Integer>> list)
-    {
-        
+    private void addValueToRatedArray(int value, List<Pair<String,Integer>> where, List<String> what){
+        for(String string : what){
+            where.add(new Pair<>(string, value));
+        }
+    }
+    
+    class WordComparator implements Comparator<Pair<String, Double>>{
+        @Override
+        public int compare(Pair<String, Double> a, Pair<String, Double> b) {
+            return a.second < b.second ? 1 : a.second == b.second ? 0 : -1;
+        }
     }
 }
