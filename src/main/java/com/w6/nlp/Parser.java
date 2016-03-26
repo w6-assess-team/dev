@@ -1,6 +1,5 @@
 package com.w6.nlp;
 
-import com.sun.javafx.scene.control.skin.VirtualFlow;
 import com.w6.data.ObjectsAndSubjects;
 import com.w6.data.Table;
 import com.w6.data.Response;
@@ -10,7 +9,6 @@ import edu.stanford.nlp.ling.CoreLabel;
 import edu.stanford.nlp.parser.lexparser.LexicalizedParser;
 import edu.stanford.nlp.process.CoreLabelTokenFactory;
 import edu.stanford.nlp.process.PTBTokenizer;
-import edu.stanford.nlp.process.Tokenizer;
 import edu.stanford.nlp.process.TokenizerFactory;
 import edu.stanford.nlp.simple.Document;
 import edu.stanford.nlp.simple.Sentence;
@@ -19,9 +17,8 @@ import edu.stanford.nlp.util.Pair;
 import java.io.IOException;
 
 import java.io.StringReader;
+
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -104,8 +101,8 @@ public class Parser {
                 typeOfSentence = 2;
             }  
             
-            addValueToRatedArray(typeOfSentence, ratedWhere, where);
-            addValueToRatedArray(typeOfSentence, ratedWhen, when);
+            addValueToRatedArray(typeOfSentence, ratedWhere, sentenseWhere);
+            addValueToRatedArray(typeOfSentence, ratedWhen, sentenseWhen);
             
             
             for (Tree leaf : parse.getLeaves()) {
@@ -169,7 +166,7 @@ public class Parser {
             List<String> list
     ) {
         
-       Set<String> all = new HashSet<String>(list);
+       Set<String> all = new HashSet<>(list);
        list.clear();
        list.addAll(all);
         
