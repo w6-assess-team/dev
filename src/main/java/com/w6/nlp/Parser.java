@@ -90,7 +90,7 @@ public class Parser {
                 locationTags
             );
             
-            int typeOfSentence = 1;
+            int weightOfSentance = 1;
             sentenseWeapon = weaponsParser.getAllWeapons(parse);
             
             if (!sentenseWhat.isEmpty())
@@ -98,11 +98,11 @@ public class Parser {
                 ObjectsAndSubjects objAndSubj = GetDoerAndVictim.getSubjectAndObjectOfViolence(parse,sentenseWhat);
                 sentenseWho.addAll(objAndSubj.subjects);
                 sentenseWhom.addAll(objAndSubj.objects);
-                typeOfSentence = 2;
+                weightOfSentance = 2;
             }  
             
-            addValueToRatedArray(typeOfSentence, ratedWhere, sentenseWhere);
-            addValueToRatedArray(typeOfSentence, ratedWhen, sentenseWhen);
+            addValueToRatedArray(weightOfSentance, ratedWhere, sentenseWhere);
+            addValueToRatedArray(weightOfSentance, ratedWhen, sentenseWhen);
             
             
             for (Tree leaf : parse.getLeaves()) {
