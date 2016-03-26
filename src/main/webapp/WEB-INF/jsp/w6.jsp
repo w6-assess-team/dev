@@ -2,16 +2,20 @@
 
 <html lang="en">
     <head>
-        <title>Bootstrap Example</title>
+        <title>W6 analysis</title>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
         <link rel="stylesheet" type="text/css" href="css/style.css">
-            <script src="dist/js/bootstrap-switch.js"></script>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
         <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+        <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+        <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+        <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+
     </head>
+
     <body >
             <div class="container-fluid">
                 <div class="row">
@@ -28,15 +32,15 @@
                                 <div class="form-group">
 
 
-                                    <form id="fake_textarea" class="form-control" style="height:450px">
+                                    <form id="fake_textarea" class="form-control" style="height:500px;font-size: 16px;overflow:scroll">
                                         <input type='hidden' id='fake_textarea_content' name='foobar' /></form>
 
                                     <script>
                                         function addCell(cell, text) {
                                             if (text != null)
                                                 cell.innerHTML =  
-                                                    text +
-                                                    "<input id=\"switch-state\" type=\"checkbox\">"
+                                                    "<label style = \"font-weight: normal;\"><input type=\"checkbox\" name=\"checkbox\" value=\"value\";>" + text + "</label>"
+                                                    ;
                                         }
                                         window.onload = function () {
                                             var i, output;
@@ -53,7 +57,7 @@
                                                 if (tag == "what")
                                                 {
                                                     output +=
-                                                            "<span style='background:purple;color:white;font-size:14'>  " + "!" + word + "!"+ "</span> ";
+                                                            "<span style='background:purple;color:white'>" + word + "</span>  ";
                                                 } else
                                                 if(tag == "where")
                                                 {
@@ -100,13 +104,15 @@
                                                 addCell(row.insertCell(4), where[i]);
                                                 addCell(row.insertCell(5), when[i]);
                                             }
+                                            $("#selectable").selectable();
+
                                         }
                                     </script>
 
                                 </div>
                             </div>
-                            <div class="col-sm-6" >
-                                <table id="myTable" class="table" onload=myFunction()>
+                            <div class="col-sm-6" style="background:lightgray" >
+                                <table id="myTable" class="table" style = "overflow:scroll">
                                     <thead>
                                         <tr>
                                             <th ><span class="fa fa-circle who headertable" aria-hidden="true"></span> Who</th>
@@ -125,7 +131,5 @@
                     </div>
                 </div>
             </div>
-        </div>
-
     </body>
 </html>
