@@ -13,7 +13,9 @@ import edu.stanford.nlp.simple.*;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 
 
@@ -36,12 +38,12 @@ public class GetDoerAndVictim
                 
                 if(tag.equals("nsubj") || tag.equals("nmod:agent"))
                 {
-                    result.subjects.add(obj.dep().value());
+                    result.subjects.add(obj.dep().value() + obj.dep().index());
                 }
 
                 if(tag.equals("dobj") || tag.equals("nsubjpass"))
                 {
-                    result.objects.add(obj.dep().value());
+                    result.objects.add(obj.dep().value() + obj.dep().index());
                 }
             }
         }
