@@ -28,82 +28,65 @@ public class GetDoerAndVictim
         List<Pair<String, Integer>> listOfSubjects = new ArrayList<>();
         List<Pair<String, Integer>> listOfObjects = new ArrayList<>();
         
-        for (TypedDependency obj:list)
+        HashMap<Pair<String, Integer>, Node> mapOfNodes = new HashMap<>();
+        
+        for (TypedDependency dependency:list)
         {
-            if( violentList.contains(obj.gov().value()))
-            {
-                String tag = obj.reln().toString();
-                
+            String tag = dependency.reln().toString();
+            
+            Pair<String, Integer> govStruct = new Pair(dependency.gov().value(), dependency.gov().index());
+            Pair<String, Integer> depStruct = new Pair(dependency.dep().value(), dependency.dep().index());
+            
+            
+            addWordToMap(govStruct, mapOfNodes);
+            addWordToMap(depStruct, mapOfNodes);
+            
+            Node firstWord = mapOfNodes.get(govStruct);
+            firstWord.addEdge(tag, mapOfNodes.get(depStruct));
+            
+            if( violentList.contains(govStruct.first))
+            {   
                 if(tag.equals("nsubj") || tag.equals("nmod:agent"))
                 {
-                    listOfSubjects.add(new Pair<>(obj.dep().value(),obj.dep().index()));
+                    listOfSubjects.add(depStruct);
                 }
 
                 if(tag.equals("dobj") || tag.equals("nsubjpass"))
                 {
-                    listOfObjects.add(new Pair<>(obj.dep().value(),obj.dep().index()));
+                    listOfObjects.add(depStruct);
                 }
             }
         }
         
-        HashMap<Pair<String, Integer>, Node> mapOfNodes = new HashMap<>();
+        result.objects = getComplexEntity(listOfObjects, mapOfNodes);
+        result.subjects = getComplexEntity(listOfSubjects, mapOfNodes);
         
-        for (TypedDependency obj:list)
+    }
+    
+    private static void addWordToMap(Pair<String, Integer> word, HashMap<Pair<String, Integer>, Node> mapOfNodes)
+    {
+        if(!mapOfNodes.containsKey(word))
         {
-            String wordGov, wordDep, tag;
-            Integer posGov, posDep;
-            
-            wordGov = obj.gov().value();
-            posGov = obj.gov().index();
-            
-            wordDep = obj.dep().value();
-            posDep = obj.dep().index();
-            
-            Pair<String, Integer> govStruct = new Pair(wordGov,posGov);
-            Pair<String, Integer> depStruct = new Pair(wordDep,posDep);
-            
-            tag = obj.reln().toString();
-            
-            
-            if(!mapOfNodes.containsKey(govStruct))
-            {
-                mapOfNodes.put(govStruct, new Node(govStruct, new ArrayList<>()));
-            }
-            
-            if(!mapOfNodes.containsKey(depStruct))
-            {
-                mapOfNodes.put(depStruct, new Node(depStruct, new ArrayList<>()));
-            }
-            
-            Node firstWord = mapOfNodes.get(govStruct);
-            firstWord.addEdge(tag, mapOfNodes.get(depStruct));
+            mapOfNodes.put(word, new Node(word, new ArrayList<>()));
         }
-        
-        ArrayList<String> newObjectList = new ArrayList<>();
-        ArrayList<String> newSubjectList = new ArrayList<>();
-        
-        for (Pair<String, Integer> word : listOfSubjects)
-        {
-            List<Pair<String, Integer>> childs = getAllChilds(word,mapOfNodes);
-            Collections.sort(childs, new ComparatorOfWords());
-            String newSubject = getNewWord(childs);
-            newSubjectList.add(newSubject);
-        }
-        
+    }
+    
+    private static ArrayList<String> getComplexEntity(List<Pair<String, Integer>> listOfObjects, HashMap<Pair<String, Integer>, Node> mapOfNodes)
+    {
+        ArrayList<String> result = new ArrayList();
+         
         for (Pair<String, Integer> word : listOfObjects)
         {
             List<Pair<String, Integer>> childs = getAllChilds(word,mapOfNodes);
             Collections.sort(childs, new ComparatorOfWords());
-            String newObject = getNewWord(childs);
-            newObjectList.add(newObject);
+            String newObject = fromListToOneWord(childs);
+            result.add(newObject);
         }
         
-        result.objects = newObjectList;
-        result.subjects = newSubjectList;
-        
+        return result;
     }
     
-    private static String getNewWord(List<Pair<String, Integer>> words)
+    private static String fromListToOneWord(List<Pair<String, Integer>> words)
     {
         StringBuilder result = new StringBuilder();
         
@@ -135,25 +118,18 @@ public class GetDoerAndVictim
         @Override
         public int compare(Pair<String, Integer> o1, Pair<String, Integer> o2) {
             return o1.second.compareTo(o2.second);
-        }
-        
-        
+        }    
     }
-
-
 
     public static ObjectsAndSubjects getSubjectAndObjectOfViolence(
             Tree tree, 
             List<String> violentVerbs
     ) {
-
-
         ObjectsAndSubjects result = new ObjectsAndSubjects();
         GrammaticalStructure gs = gsf.newGrammaticalStructure(tree);
         Collection<TypedDependency> td = gs.typedDependenciesCollapsed();
             
         getResultWithViolentVerbs(td, result, violentVerbs);
         return result;
-
     }
 }
