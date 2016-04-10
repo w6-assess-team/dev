@@ -25,6 +25,8 @@ public class GetDoerAndVictim
             ObjectsAndSubjects result, 
             List<String> violentList
     ){
+        List<Pair<String, Integer>> listOfSubjects = new ArrayList<>();
+        List<Pair<String, Integer>> listOfObjects = new ArrayList<>();
         
         for (TypedDependency obj:list)
         {
@@ -34,63 +36,64 @@ public class GetDoerAndVictim
                 
                 if(tag.equals("nsubj") || tag.equals("nmod:agent"))
                 {
-                    result.subjects.add(obj.dep().value() + '\t'+ obj.dep().index());
+                    listOfSubjects.add(new Pair<>(obj.dep().value(),obj.dep().index()));
                 }
 
                 if(tag.equals("dobj") || tag.equals("nsubjpass"))
                 {
-                    result.objects.add(obj.dep().value() + '\t'+ obj.dep().index());
+                    listOfObjects.add(new Pair<>(obj.dep().value(),obj.dep().index()));
                 }
             }
         }
         
-        HashMap<String,Node> mapOfNodes = new HashMap<>();
+        HashMap<Pair<String, Integer>, Node> mapOfNodes = new HashMap<>();
         
         for (TypedDependency obj:list)
         {
-            String word1, word2, tag, wordAndPos1,wordAndPos2;
-            Integer pos1,pos2;
+            String wordGov, wordDep, tag;
+            Integer posGov, posDep;
             
-            word1 = obj.gov().value();
-            pos1 = obj.gov().index();
-            wordAndPos1 = word1+'\t' + pos1;
+            wordGov = obj.gov().value();
+            posGov = obj.gov().index();
             
-            word2 = obj.dep().value();
-            pos2 = obj.dep().index();
-            wordAndPos2 = word2+'\t' + pos2;
+            wordDep = obj.dep().value();
+            posDep = obj.dep().index();
+            
+            Pair<String, Integer> govStruct = new Pair(wordGov,posGov);
+            Pair<String, Integer> depStruct = new Pair(wordDep,posDep);
             
             tag = obj.reln().toString();
             
             
-            if(!mapOfNodes.containsKey(wordAndPos1))
+            if(!mapOfNodes.containsKey(govStruct))
             {
-                mapOfNodes.put(wordAndPos1, new Node(wordAndPos1, new ArrayList<>()));
+                mapOfNodes.put(govStruct, new Node(govStruct, new ArrayList<>()));
             }
             
-            if(!mapOfNodes.containsKey(wordAndPos2))
+            if(!mapOfNodes.containsKey(depStruct))
             {
-                mapOfNodes.put(wordAndPos2, new Node(wordAndPos2, new ArrayList<>()));
+                mapOfNodes.put(depStruct, new Node(depStruct, new ArrayList<>()));
             }
             
-            Node firstWord = mapOfNodes.get(wordAndPos1);
-            firstWord.addEdge(tag, wordAndPos2);
+            Node firstWord = mapOfNodes.get(govStruct);
+            firstWord.addEdge(tag, mapOfNodes.get(depStruct));
         }
         
         ArrayList<String> newObjectList = new ArrayList<>();
         ArrayList<String> newSubjectList = new ArrayList<>();
         
-        for (String string : result.subjects)
+        for (Pair<String, Integer> word : listOfSubjects)
         {
-            List<String> childs = getAllChilds(string,mapOfNodes);
-            Collections.sort(childs, new MyStringComparator());
+            List<Pair<String, Integer>> childs = getAllChilds(word,mapOfNodes);
+            Collections.sort(childs, new ComparatorOfWords());
             String newSubject = getNewWord(childs);
             newSubjectList.add(newSubject);
         }
         
-        for (String string : result.objects)
+        for (Pair<String, Integer> word : listOfObjects)
         {
-            List<String> childs = getAllChilds(string,mapOfNodes);
-            Collections.sort(childs, new MyStringComparator());
+            List<Pair<String, Integer>> childs = getAllChilds(word,mapOfNodes);
+            Collections.sort(childs, new ComparatorOfWords());
             String newObject = getNewWord(childs);
             newObjectList.add(newObject);
         }
@@ -100,42 +103,40 @@ public class GetDoerAndVictim
         
     }
     
-    private static String getNewWord(List<String> words)
+    private static String getNewWord(List<Pair<String, Integer>> words)
     {
         StringBuilder result = new StringBuilder();
         
-        for (String word : words)
+        for (Pair<String, Integer> word : words)
         {
-            String[] partOfword =  word.split("\t");
-            result.append(partOfword[0] + " ");
+            result.append(word.first + " ");
         }
         
         return result.toString();
     }
     
-    private static List<String> getAllChilds(String word, HashMap<String,Node> mapOfNodes)
+    private static List<Pair<String, Integer>> getAllChilds(Pair<String, Integer> word, HashMap<Pair<String, Integer>,Node> mapOfNodes)
     {
-        ArrayList<String> result = new ArrayList<>();
+        ArrayList<Pair<String, Integer>> result = new ArrayList<>();
         Node nodeOfWord = mapOfNodes.get(word);
         result.add(word);
         
-        for(Pair<String,String> node : nodeOfWord.getAllEdges())
+        for(Pair<String, Node> node : nodeOfWord.getAllEdges())
         {
-            List<String> tmp = getAllChilds(node.second, mapOfNodes);
-            result.addAll(tmp);
+            List<Pair<String, Integer>> listOfChilds = getAllChilds(node.second.getWord(), mapOfNodes);
+            result.addAll(listOfChilds);
         }
         
         return result;
     }
     
-    static class MyStringComparator implements Comparator<String>{
-
+    private static class ComparatorOfWords implements Comparator<Pair<String, Integer>>
+    {
         @Override
-        public int compare(String o1, String o2) {
-            Integer pos1 = Integer.parseInt(o1.split("\t")[1]);
-            Integer pos2 = Integer.parseInt(o2.split("\t")[1]);
-            return pos1.compareTo(pos2);
+        public int compare(Pair<String, Integer> o1, Pair<String, Integer> o2) {
+            return o1.second.compareTo(o2.second);
         }
+        
         
     }
 

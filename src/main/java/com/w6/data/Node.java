@@ -4,21 +4,26 @@ import edu.stanford.nlp.util.Pair;
 import java.util.List;
 
 public class Node {
-    String name;
-    List<Pair<String,String>> edges;
+    Pair<String,Integer> word;
+    List<Pair<String,Node>> edges;
     
-    public Node(String nameString, List<Pair<String,String>> ed)
+    public Node(Pair<String,Integer> w, List<Pair<String,Node>> ed)
     {
         this.edges = ed;
-        this.name = nameString;
+        this.word = w;
     }
     
-    public void addEdge( String tag, String toWhatWord)
+    public void addEdge( String tag, Node toWhatWord)
     {
         edges.add(new Pair<>(tag, toWhatWord));
     }
     
-    public List<Pair<String,String>> getAllEdges()
+    public Pair<String,Integer> getWord()
+    {
+        return word;
+    }
+    
+    public List<Pair<String, Node>> getAllEdges()
     {
         return edges;
     }
