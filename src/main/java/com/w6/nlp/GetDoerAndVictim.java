@@ -34,17 +34,17 @@ public class GetDoerAndVictim
         {
             String tag = dependency.reln().toString();
             
-            Pair<String, Integer> govStruct = new Pair(dependency.gov().value(), dependency.gov().index());
+            Pair<String, Integer> mainStruct = new Pair(dependency.gov().value(), dependency.gov().index());
             Pair<String, Integer> depStruct = new Pair(dependency.dep().value(), dependency.dep().index());
             
             
-            addWordToMap(govStruct, mapOfNodes);
+            addWordToMap(mainStruct, mapOfNodes);
             addWordToMap(depStruct, mapOfNodes);
             
-            Node firstWord = mapOfNodes.get(govStruct);
+            Node firstWord = mapOfNodes.get(mainStruct);
             firstWord.addEdge(tag, mapOfNodes.get(depStruct));
             
-            if( violentList.contains(govStruct.first))
+            if( violentList.contains(mainStruct.first))
             {   
                 if(tag.equals("nsubj") || tag.equals("nmod:agent"))
                 {
