@@ -9,16 +9,23 @@ import edu.stanford.nlp.ling.CoreLabel;
 import edu.stanford.nlp.parser.lexparser.LexicalizedParser;
 import edu.stanford.nlp.process.CoreLabelTokenFactory;
 import edu.stanford.nlp.process.PTBTokenizer;
-import edu.stanford.nlp.process.Tokenizer;
 import edu.stanford.nlp.process.TokenizerFactory;
 import edu.stanford.nlp.simple.Document;
 import edu.stanford.nlp.simple.Sentence;
 import edu.stanford.nlp.trees.Tree;
+import edu.stanford.nlp.util.Pair;
 import java.io.IOException;
 
 import java.io.StringReader;
+
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class Parser {    
     static LexicalizedParser lp = LexicalizedParser.loadModel("edu/stanford/nlp/models/lexparser/englishPCFG.ser.gz");
@@ -43,6 +50,9 @@ public class Parser {
         List<String> what = new ArrayList<String>();
         List<Word> text = new ArrayList<Word>();
         
+        List<Pair<String,Integer>> ratedWhen = new ArrayList<>();
+        List<Pair<String,Integer>> ratedWhere = new ArrayList<>();
+        
         ArrayList<String> dateTimeTags = new ArrayList<>();
         dateTimeTags.add("DATE");
         dateTimeTags.add("TIME");
@@ -59,25 +69,41 @@ public class Parser {
             List<String> sentenseWhere = new ArrayList<String>();
             List<String> sentenseWhen = new ArrayList<String>();
             List<String> sentenseWhat = new ArrayList<String>();
+            
+            
+            
+            
             Tree parse = lp.apply(
                     tokenizerFactory.getTokenizer(new StringReader(sentence.text()))
                         .tokenize()
             );
+            
+            sentenseWhat = violentVerbsParser.getAllViolentVerbs(parse);
+            
             sentenseWhen = DateTimeParser.parseDateAndTimeFromString(
                 sentence, 
                 dateTimeTags
             );
+            
             sentenseWhere = DateTimeParser.parseDateAndTimeFromString(
                 sentence, 
                 locationTags
             );
-            sentenseWhat = violentVerbsParser.getAllViolentVerbs(parse);
-        
+            
+            int weightOfSentance = 1;
             sentenseWeapon = weaponsParser.getAllWeapons(parse);
-            ObjectsAndSubjects objAndSubj = GetDoerAndVictim.getSubjectAndObjectOfViolence(parse,sentenseWhat);
-
-            sentenseWho.addAll(objAndSubj.subjects);
-            sentenseWhom.addAll(objAndSubj.objects);
+            
+            if (!sentenseWhat.isEmpty())
+            {
+                ObjectsAndSubjects objAndSubj = GetDoerAndVictim.getSubjectAndObjectOfViolence(parse,sentenseWhat);
+                sentenseWho.addAll(objAndSubj.subjects);
+                sentenseWhom.addAll(objAndSubj.objects);
+                weightOfSentance = 2;
+            }  
+            
+            addValueToRatedArray(weightOfSentance, ratedWhere, sentenseWhere);
+            addValueToRatedArray(weightOfSentance, ratedWhen, sentenseWhen);
+            
             
             for (Tree leaf : parse.getLeaves()) {
                 Tree parent = leaf.parent(parse);
@@ -110,6 +136,8 @@ public class Parser {
                 text.add(new Word(word, label));
             }
             
+            
+            
             who.addAll(sentenseWho);
             what.addAll(sentenseWhat);
             where.addAll(sentenseWhere);
@@ -117,10 +145,84 @@ public class Parser {
             when.addAll(sentenseWhen);
             weapon.addAll(sentenseWeapon);
         }
+        
+        
 
+        removeEquals(who);
+        removeEquals(what);
+        removeEquals(whom);
+        removeEquals(weapon);
+        
+        
+        removeAndCountRatedEquals(ratedWhen,when);
+        removeAndCountRatedEquals(ratedWhere,where);
 
 
         
         return new Response(text, new Table(who, weapon, what, whom, where, when));
+    }
+    
+    private void removeEquals(
+            List<String> list
+    ) {
+        
+       Set<String> all = new HashSet<>(list);
+       list.clear();
+       list.addAll(all);
+        
+    }
+    
+    private void removeAndCountRatedEquals(List<Pair<String,Integer>> ratedList, List<String> list)
+    {
+        Map<String, Pair<Integer,Integer>> statMap = new HashMap<>();
+        for(Pair<String,Integer> pair : ratedList)
+        {
+            String word = pair.first;
+            Integer value = pair.second;
+
+            if(statMap.containsKey(word)){
+                statMap.replace(word,
+                        new Pair<>(
+                                statMap.get(word).first+1,
+                                statMap.get(word).second + value
+                        )
+                );
+            } else {
+                statMap.put(
+                        word,
+                        new Pair<>(1, value)
+                );
+            }
+        }
+        ratedList.clear();
+
+        ArrayList<Pair<String, Double>> values = new ArrayList<>();
+
+        for(String string : statMap.keySet()){
+            Pair<Integer, Integer> val = statMap.get(string);
+            values.add(new Pair<>(string, (1.0 *val.second)/val.first));
+        }
+
+        Collections.sort(values, new WordComparator());
+
+        list.clear();
+
+        for(Pair<String, Double> p : values){
+            list.add(p.first);
+        }
+        
+    }
+    
+    private void addValueToRatedArray(int value, List<Pair<String,Integer>> where, List<String> what){
+        for(String string : what){
+            where.add(new Pair<>(string, value));
+        }
+    }
+    
+    class WordComparator implements Comparator<Pair<String, Double>>{
+        @Override
+        public int compare(Pair<String, Double> a, Pair<String, Double> b) {
+            return a.second < b.second ? 1 : a.second == b.second ? 0 : -1;
+        }
     }
 }

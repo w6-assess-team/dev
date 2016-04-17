@@ -1,4 +1,7 @@
 punish
+arrest
+injure
+kidnap
 suck
 kick
 slap
@@ -45,6 +48,7 @@ strike
 crunch
 snap
 cut
+rob
 tickle
 kidnap
 shoot
