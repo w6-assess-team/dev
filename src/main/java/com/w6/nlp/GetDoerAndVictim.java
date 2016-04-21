@@ -16,17 +16,20 @@ import java.util.List;
 
 public class GetDoerAndVictim 
 {    
-    static final TreebankLanguagePack tlp = new PennTreebankLanguagePack();
-    static final GrammaticalStructureFactory gsf = tlp.grammaticalStructureFactory();
+    //tlp - не понятно, gsf - не понятно
+    static final TreebankLanguagePack treeLanguagePack = new PennTreebankLanguagePack();
+    static final GrammaticalStructureFactory factoryForGramaticalStructure = treeLanguagePack.grammaticalStructureFactory();
 
 
-    private static void getResultWithViolentVerbs(
+    //void - тоже не понятно, result тоже не понятно, list, violentList, getResult
+    
+    private static ObjectsAndSubjects getResultWithViolentVerbs(
             Collection<TypedDependency> list, 
-            ObjectsAndSubjects result, 
             List<String> violentList
     ){
-        List<Pair<String, Integer>> listOfSubjects = new ArrayList<>();
-        List<Pair<String, Integer>> listOfObjects = new ArrayList<>();
+        ObjectsAndSubjects objectsAndSubjects = new ObjectsAndSubjects();
+        List<Pair<String, Integer>> listOfDoers = new ArrayList<>();
+        List<Pair<String, Integer>> listOfVictims = new ArrayList<>();
         
         HashMap<Pair<String, Integer>, Node> mapOfNodes = new HashMap<>();
         
@@ -34,6 +37,7 @@ public class GetDoerAndVictim
         {
             String tag = dependency.reln().toString();
             
+            //main, dep Struct - не понятно, как связано с dep
             Pair<String, Integer> mainStruct = new Pair(dependency.gov().value(), dependency.gov().index());
             Pair<String, Integer> depStruct = new Pair(dependency.dep().value(), dependency.dep().index());
             
@@ -48,18 +52,21 @@ public class GetDoerAndVictim
             {   
                 if(tag.equals("nsubj") || tag.equals("nmod:agent"))
                 {
-                    listOfSubjects.add(depStruct);
+                    listOfDoers.add(depStruct);
                 }
 
                 if(tag.equals("dobj") || tag.equals("nsubjpass"))
                 {
-                    listOfObjects.add(depStruct);
+                    listOfVictims.add(depStruct);
                 }
             }
         }
         
-        result.objects = getComplexEntity(listOfObjects, mapOfNodes);
-        result.subjects = getComplexEntity(listOfSubjects, mapOfNodes);
+        //listOfObjects, Objects, функция для одного объекта
+        objectsAndSubjects.objects = getComplexEntity(listOfDoers, mapOfNodes);
+        objectsAndSubjects.subjects = getComplexEntity(listOfVictims, mapOfNodes);
+        
+        return objectsAndSubjects;
         
     }
     
@@ -86,6 +93,7 @@ public class GetDoerAndVictim
         return result;
     }
     
+    //serialise
     private static String fromListToOneWord(List<Pair<String, Integer>> words)
     {
         StringBuilder result = new StringBuilder();
@@ -113,6 +121,8 @@ public class GetDoerAndVictim
         return result;
     }
     
+    
+    //lhs,rhs
     private static class ComparatorOfWords implements Comparator<Pair<String, Integer>>
     {
         @Override
@@ -121,15 +131,16 @@ public class GetDoerAndVictim
         }    
     }
 
+    //gs, td
     public static ObjectsAndSubjects getSubjectAndObjectOfViolence(
             Tree tree, 
             List<String> violentVerbs
     ) {
-        ObjectsAndSubjects result = new ObjectsAndSubjects();
-        GrammaticalStructure gs = gsf.newGrammaticalStructure(tree);
-        Collection<TypedDependency> td = gs.typedDependenciesCollapsed();
+        //mock gramatical structure, передавать in constructor
+        GrammaticalStructure sentence = factoryForGramaticalStructure.newGrammaticalStructure(tree);
+        Collection<TypedDependency> listOfDependencies = sentence.typedDependenciesCollapsed();
             
-        getResultWithViolentVerbs(td, result, violentVerbs);
-        return result;
+        
+        return getResultWithViolentVerbs(listOfDependencies, violentVerbs);
     }
 }

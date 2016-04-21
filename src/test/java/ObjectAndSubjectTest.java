@@ -1,6 +1,5 @@
 import com.w6.data.ObjectsAndSubjects;
 import com.w6.nlp.GetDoerAndVictim;
-import com.w6.nlp.LocationParser;
 import com.w6.nlp.ViolentVerbsParser;
 import edu.stanford.nlp.ling.CoreLabel;
 import edu.stanford.nlp.simple.Document;
@@ -19,8 +18,9 @@ import java.util.List;
 import junit.framework.TestCase;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
     
-/*
+
 public class ObjectAndSubjectTest extends TestCase
 {
     private ViolentVerbsParser violentVerbsParser;
@@ -35,6 +35,7 @@ public class ObjectAndSubjectTest extends TestCase
         violentVerbsParser = new ViolentVerbsParser(lp);
         
     }
+    
     @Test
     public void testSimpleSentence()
     {
@@ -43,20 +44,20 @@ public class ObjectAndSubjectTest extends TestCase
                     tokenizerFactory.getTokenizer(new StringReader(sentence))
                         .tokenize()
         );
+        
         List<String> violentVerbs = violentVerbsParser.getAllViolentVerbs(parse);
         ObjectsAndSubjects test = GetDoerAndVictim.getSubjectAndObjectOfViolence(parse, violentVerbs);
-        
        
-        
-        ArrayList<String> correctSubj = new ArrayList<>(); 
+               
+        ArrayList<String> correctSubj = new ArrayList<>();
         correctSubj.add("One boy ");
+        
         ArrayList<String> correctObj = new ArrayList<>();
         correctObj.add("a girl ");
         
        
         assertEquals(correctSubj, test.subjects);
-        assertEquals(correctObj, test.objects);
-        
+        assertEquals(correctObj, test.objects);      
     }
     
     @Test
@@ -121,5 +122,5 @@ public class ObjectAndSubjectTest extends TestCase
     }
 
 }
-*/
+
 

@@ -4,8 +4,8 @@ import edu.stanford.nlp.util.Pair;
 import java.util.List;
 
 public class Node {
-    Pair<String,Integer> word;
-    List<Pair<String,Node>> edges;
+    private Pair<String,Integer> word;
+    private List<Pair<String,Node>> edges;
     
     public Node(Pair<String,Integer> w, List<Pair<String,Node>> ed)
     {
