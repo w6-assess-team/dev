@@ -1,4 +1,4 @@
-import com.w6.data.ObjectsAndSubjects;
+
 import com.w6.nlp.GetDoerAndVictim;
 import com.w6.nlp.ViolentVerbsParser;
 import edu.stanford.nlp.ling.CoreLabel;
@@ -20,6 +20,7 @@ import junit.framework.TestCase;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
     
+/*
 
 public class ObjectAndSubjectTest extends TestCase
 {
@@ -124,3 +125,4 @@ public class ObjectAndSubjectTest extends TestCase
 }
 
 
+*/
