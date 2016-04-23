@@ -96,23 +96,21 @@ public class Parser {
                 dateTimeTags
             );
             
-            sentenseWhere = DateTimeParser.parseDateAndTimeFromString(
-                sentence, 
-                locationTags
-            );
-            
             int weightOfSentence = 1;
             sentenseWeapon = weaponsParser.getAllWeapons(parse);
             
             if (!sentenseWhat.isEmpty())
             {
                 GetDoerAndVictim doerAndVictimParser = new GetDoerAndVictim(listOfDependencies,dependencyTree);
+                LocationParser locationParser = new LocationParser(listOfDependencies, dependencyTree);
+                sentenseWhere.addAll(locationParser.getLoationOfViolence(sentenseWhat));
+                
                 sentenseWho.addAll(doerAndVictimParser.getObjectsOfViolence(sentenseWhat));
                 sentenseWhom.addAll(doerAndVictimParser.getSubjectsOfViolence(sentenseWhat));
                 weightOfSentence = 2;
             }  
             
-            addValueToRatedArray(weightOfSentence, ratedWhere, sentenseWhere);
+            //addValueToRatedArray(weightOfSentence, ratedWhere, sentenseWhere);
             addValueToRatedArray(weightOfSentence, ratedWhen, sentenseWhen);
             
             
@@ -166,7 +164,7 @@ public class Parser {
         
         
         removeAndCountRatedEquals(ratedWhen,when);
-        removeAndCountRatedEquals(ratedWhere,where);
+        //removeAndCountRatedEquals(ratedWhere,where);
 
 
         

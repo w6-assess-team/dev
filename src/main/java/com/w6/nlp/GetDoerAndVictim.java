@@ -10,7 +10,6 @@ import java.util.List;
 
 public class GetDoerAndVictim 
 {    
-    //tlp - не понятно, gsf - не понятно
     private Collection<TypedDependency> listOfDependencies;
     private DependencyTree dependencyTree;
     
