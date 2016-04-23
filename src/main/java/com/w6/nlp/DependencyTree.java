@@ -24,14 +24,14 @@ public class DependencyTree {
         for (TypedDependency dependency:dependencies)
         {
             String tag = dependency.reln().toString();
-            Pair<String, Integer> mainStruct = new Pair(dependency.gov().value(), dependency.gov().index());
-            Pair<String, Integer> depStruct = new Pair(dependency.dep().value(), dependency.dep().index());
+            Pair<String, Integer> mainWord = new Pair(dependency.gov().value(), dependency.gov().index());
+            Pair<String, Integer> depWord = new Pair(dependency.dep().value(), dependency.dep().index());
             
-            addWordToMap(mainStruct, mapOfNodes);
-            addWordToMap(depStruct, mapOfNodes);
+            addWordToMap(mainWord, mapOfNodes);
+            addWordToMap(depWord, mapOfNodes);
             
-            Node firstWord = mapOfNodes.get(mainStruct);
-            firstWord.addEdge(tag, mapOfNodes.get(depStruct));
+            Node firstWord = mapOfNodes.get(mainWord);
+            firstWord.addEdge(tag, mapOfNodes.get(depWord));
         }  
         
     }
@@ -42,14 +42,14 @@ public class DependencyTree {
         for(TypedDependency dependency : dependencies)
         {
             String localTag = dependency.reln().toString();
-            Pair<String, Integer> mainStruct = new Pair(dependency.gov().value(), dependency.gov().index());
-            Pair<String, Integer> depStruct = new Pair(dependency.dep().value(), dependency.dep().index());
+            Pair<String, Integer> mainWord = new Pair(dependency.gov().value(), dependency.gov().index());
+            Pair<String, Integer> depWord = new Pair(dependency.dep().value(), dependency.dep().index());
             
-            if(keyWords.contains(mainStruct.first))
+            if(keyWords.contains(mainWord.first))
             {
                 if(localTag.equals(tag))
                 {
-                    dependentWordList.add(depStruct);
+                    dependentWordList.add(depWord);
                 }
             }
         }
@@ -57,32 +57,32 @@ public class DependencyTree {
         return getComplexEntity(dependentWordList);
     }
     
-    private  ArrayList<String> getComplexEntity(List<Pair<String, Integer>> listOfObjects)
+    private  ArrayList<String> getComplexEntity(List<Pair<String, Integer>> listOfWords)
     {
         ArrayList<String> result = new ArrayList();
          
-        for (Pair<String, Integer> word : listOfObjects)
+        for (Pair<String, Integer> word : listOfWords)
         {
             List<Pair<String, Integer>> childs = getAllChilds(word,mapOfNodes);
             Collections.sort(childs, new ComparatorOfWords());
-            String newObject = fromListToOneWord(childs);
-            result.add(newObject);
+            String collocation = serialiseListOfWords(childs);
+            result.add(collocation);
         }
         
         return result;
     }
     
-    //serialise
-    private  String fromListToOneWord(List<Pair<String, Integer>> words)
+   
+    private  String serialiseListOfWords(List<Pair<String, Integer>> words)
     {
-        StringBuilder result = new StringBuilder();
+        StringBuilder collocation = new StringBuilder();
         
         for (Pair<String, Integer> word : words)
         {
-            result.append(word.first + " ");
+            collocation.append(word.first + " ");
         }
         
-        return result.toString();
+        return collocation.toString();
     }
     
     private  List<Pair<String, Integer>> getAllChilds(Pair<String, Integer> word, HashMap<Pair<String, Integer>,Node> mapOfNodes)
@@ -101,12 +101,12 @@ public class DependencyTree {
     }
     
     
-    //lhs,rhs
+   
     private  class ComparatorOfWords implements Comparator<Pair<String, Integer>>
     {
         @Override
-        public int compare(Pair<String, Integer> o1, Pair<String, Integer> o2) {
-            return o1.second.compareTo(o2.second);
+        public int compare(Pair<String, Integer> lhs, Pair<String, Integer> rhs) {
+            return lhs.second.compareTo(rhs.second);
         }    
     }
     
