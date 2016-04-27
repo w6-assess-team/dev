@@ -21,7 +21,7 @@ public class DependencyTree {
         this.dependencies = dependencies;
         this.mapOfNodes = new HashMap<>();
         
-        for (TypedDependency dependency:dependencies)
+        for (TypedDependency dependency : dependencies)
         {
             String tag = dependency.reln().toString();
             Pair<String, Integer> mainWord = new Pair(dependency.gov().value(), dependency.gov().index());
@@ -43,13 +43,13 @@ public class DependencyTree {
         {
             String localTag = dependency.reln().toString();
             Pair<String, Integer> mainWord = new Pair(dependency.gov().value(), dependency.gov().index());
-            Pair<String, Integer> depWord = new Pair(dependency.dep().value(), dependency.dep().index());
+            Pair<String, Integer> dependentWord = new Pair(dependency.dep().value(), dependency.dep().index());
             
             if(keyWords.contains(mainWord.first))
             {
                 if(localTag.equals(tag))
                 {
-                    dependentWordList.add(depWord);
+                    dependentWordList.add(dependentWord);
                 }
             }
         }
