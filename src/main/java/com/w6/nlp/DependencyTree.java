@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 
 public class DependencyTree {
+    
     private HashMap<Pair<String, Integer>, Node> mapOfNodes;
     private Collection<TypedDependency> dependencies;
     
