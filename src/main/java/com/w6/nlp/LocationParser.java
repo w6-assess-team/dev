@@ -17,9 +17,13 @@ public class LocationParser {
         this.listOfDependencies = listOfDependencies;
         this.dependencyTree = dependencyTree;
     }
+    
     public  List<String> getLoationOfViolence(List<String> violenceVerbs) {
         List<String> listOfLocations = new ArrayList<>();
+        
         listOfLocations.addAll(dependencyTree.getSubTreeFromWordsByTag(violenceVerbs, "nmod:in"));
+        
+        
         return listOfLocations;
     }
 }

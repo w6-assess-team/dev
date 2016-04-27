@@ -75,21 +75,22 @@ public class Parser {
             List<String> sentenseWhen = new ArrayList<String>();
             List<String> sentenseWhat = new ArrayList<String>();
             
-            Tree parse = lp.apply(
+            Tree tree = lp.apply(
                     tokenizerFactory.getTokenizer(new StringReader(sentence.text()))
                         .tokenize()
             );
             
             TreebankLanguagePack treeLanguagePack = new PennTreebankLanguagePack();
             GrammaticalStructureFactory factoryForGramaticalStructure = treeLanguagePack.grammaticalStructureFactory();
-            GrammaticalStructure sent = factoryForGramaticalStructure.newGrammaticalStructure(parse);
-            Collection<TypedDependency> listOfDependencies = sent.typedDependenciesCollapsed();
+            GrammaticalStructure grammaticalStructureOfSentance = factoryForGramaticalStructure.newGrammaticalStructure(tree);
+            Collection<TypedDependency> listOfDependencies = grammaticalStructureOfSentance.typedDependenciesCollapsed();
+            
             DependencyTree dependencyTree = new DependencyTree(listOfDependencies);
             
             
             
             
-            sentenseWhat = violentVerbsParser.getAllViolentVerbs(parse);
+            sentenseWhat = violentVerbsParser.getAllViolentVerbs(tree);
             
             sentenseWhen = DateTimeParser.parseDateAndTimeFromString(
                 sentence, 
@@ -97,7 +98,7 @@ public class Parser {
             );
             
             int weightOfSentence = 1;
-            sentenseWeapon = weaponsParser.getAllWeapons(parse);
+            sentenseWeapon = weaponsParser.getAllWeapons(tree);
             
             if (!sentenseWhat.isEmpty())
             {
@@ -114,8 +115,8 @@ public class Parser {
             addValueToRatedArray(weightOfSentence, ratedWhen, sentenseWhen);
             
             
-            for (Tree leaf : parse.getLeaves()) {
-                Tree parent = leaf.parent(parse);
+            for (Tree leaf : tree.getLeaves()) {
+                Tree parent = leaf.parent(tree);
                 String label = "";
                 String word = leaf.label().value();
                 if (sentenseWho.contains(word))

@@ -23,16 +23,20 @@ public class GetDoerAndVictim
     public List<String> getSubjectsOfViolence(List<String> violenceVerbs)
     {
         List<String> subjectsOfViolence = new ArrayList<>();
+        
         subjectsOfViolence.addAll(dependencyTree.getSubTreeFromWordsByTag(violenceVerbs, "dobj"));
         subjectsOfViolence.addAll(dependencyTree.getSubTreeFromWordsByTag(violenceVerbs, "nsubjpass"));
+        
         return subjectsOfViolence;
     }
     
     public List<String> getObjectsOfViolence(List<String> violenceVerbs)
     {
         List<String> subjectsOfViolence = new ArrayList<>();
+        
         subjectsOfViolence.addAll(dependencyTree.getSubTreeFromWordsByTag(violenceVerbs, "nsubj"));
         subjectsOfViolence.addAll(dependencyTree.getSubTreeFromWordsByTag(violenceVerbs, "nmod:agent"));
+        
         return subjectsOfViolence;
     }
    
