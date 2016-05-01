@@ -1,6 +1,5 @@
 package com.w6.nlp;
 
-import com.w6.data.ObjectsAndSubjects;
 import com.w6.data.Table;
 import com.w6.data.Response;
 import com.w6.data.Word;
@@ -12,13 +11,19 @@ import edu.stanford.nlp.process.PTBTokenizer;
 import edu.stanford.nlp.process.TokenizerFactory;
 import edu.stanford.nlp.simple.Document;
 import edu.stanford.nlp.simple.Sentence;
+import edu.stanford.nlp.trees.GrammaticalStructure;
+import edu.stanford.nlp.trees.GrammaticalStructureFactory;
+import edu.stanford.nlp.trees.PennTreebankLanguagePack;
 import edu.stanford.nlp.trees.Tree;
+import edu.stanford.nlp.trees.TreebankLanguagePack;
+import edu.stanford.nlp.trees.TypedDependency;
 import edu.stanford.nlp.util.Pair;
 import java.io.IOException;
 
 import java.io.StringReader;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -70,43 +75,48 @@ public class Parser {
             List<String> sentenseWhen = new ArrayList<String>();
             List<String> sentenseWhat = new ArrayList<String>();
             
-            
-            
-            
-            Tree parse = lp.apply(
+            Tree tree = lp.apply(
                     tokenizerFactory.getTokenizer(new StringReader(sentence.text()))
                         .tokenize()
             );
             
-            sentenseWhat = violentVerbsParser.getAllViolentVerbs(parse);
+            TreebankLanguagePack treeLanguagePack = new PennTreebankLanguagePack();
+            GrammaticalStructureFactory factoryForGramaticalStructure = treeLanguagePack.grammaticalStructureFactory();
+            GrammaticalStructure grammaticalStructureOfSentance = factoryForGramaticalStructure.newGrammaticalStructure(tree);
+            Collection<TypedDependency> listOfDependencies = grammaticalStructureOfSentance.typedDependenciesCollapsed();
+            
+            DependencyTree dependencyTree = new DependencyTree(listOfDependencies);
+            
+            
+            
+            
+            sentenseWhat = violentVerbsParser.getAllViolentVerbs(tree);
             
             sentenseWhen = DateTimeParser.parseDateAndTimeFromString(
                 sentence, 
                 dateTimeTags
             );
             
-            sentenseWhere = DateTimeParser.parseDateAndTimeFromString(
-                sentence, 
-                locationTags
-            );
-            
-            int weightOfSentance = 1;
-            sentenseWeapon = weaponsParser.getAllWeapons(parse);
+            int weightOfSentence = 1;
+            sentenseWeapon = weaponsParser.getAllWeapons(tree);
             
             if (!sentenseWhat.isEmpty())
             {
-                ObjectsAndSubjects objAndSubj = GetDoerAndVictim.getSubjectAndObjectOfViolence(parse,sentenseWhat);
-                sentenseWho.addAll(objAndSubj.subjects);
-                sentenseWhom.addAll(objAndSubj.objects);
-                weightOfSentance = 2;
+                GetDoerAndVictim doerAndVictimParser = new GetDoerAndVictim(listOfDependencies,dependencyTree);
+                LocationParser locationParser = new LocationParser(listOfDependencies, dependencyTree);
+                sentenseWhere.addAll(locationParser.getLocation());
+                
+                sentenseWho.addAll(doerAndVictimParser.getObjectsOfViolence(sentenseWhat));
+                sentenseWhom.addAll(doerAndVictimParser.getSubjectsOfViolence(sentenseWhat));
+                weightOfSentence = 2;
             }  
             
-            addValueToRatedArray(weightOfSentance, ratedWhere, sentenseWhere);
-            addValueToRatedArray(weightOfSentance, ratedWhen, sentenseWhen);
+            //addValueToRatedArray(weightOfSentence, ratedWhere, sentenseWhere);
+            addValueToRatedArray(weightOfSentence, ratedWhen, sentenseWhen);
             
             
-            for (Tree leaf : parse.getLeaves()) {
-                Tree parent = leaf.parent(parse);
+            for (Tree leaf : tree.getLeaves()) {
+                Tree parent = leaf.parent(tree);
                 String label = "";
                 String word = leaf.label().value();
                 if (sentenseWho.contains(word))
@@ -155,7 +165,7 @@ public class Parser {
         
         
         removeAndCountRatedEquals(ratedWhen,when);
-        removeAndCountRatedEquals(ratedWhere,where);
+        //removeAndCountRatedEquals(ratedWhere,where);
 
 
         
