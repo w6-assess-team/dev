@@ -21,9 +21,24 @@ public class LocationParser {
     public  List<String> getLoationOfViolence(List<String> violenceVerbs) {
         List<String> listOfLocations = new ArrayList<>();
         
-        listOfLocations.addAll(dependencyTree.getSubTreeFromWordsByTag(violenceVerbs, "nmod:in"));
+        dependencyTree.getCollectionsFromWordsByTag(violenceVerbs, "nmod:in").forEach((collection) -> {
+                                        listOfLocations.add(collection.getCollectionAsString());
+                                    });
         
         
         return listOfLocations;
     }
+    
+    public  List<String> getLocation() {
+        List<String> listOfLocations = new ArrayList<>();
+        
+        dependencyTree.getCollectionsByTag("nmod:in").forEach((collection) -> {
+                                        listOfLocations.add(collection.getCollectionAsString());
+                                    });
+        
+        
+        return listOfLocations;
+    }
+    
+    
 }

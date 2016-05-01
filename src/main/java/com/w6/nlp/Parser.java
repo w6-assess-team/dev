@@ -104,7 +104,7 @@ public class Parser {
             {
                 GetDoerAndVictim doerAndVictimParser = new GetDoerAndVictim(listOfDependencies,dependencyTree);
                 LocationParser locationParser = new LocationParser(listOfDependencies, dependencyTree);
-                sentenseWhere.addAll(locationParser.getLoationOfViolence(sentenseWhat));
+                sentenseWhere.addAll(locationParser.getLocation());
                 
                 sentenseWho.addAll(doerAndVictimParser.getObjectsOfViolence(sentenseWhat));
                 sentenseWhom.addAll(doerAndVictimParser.getSubjectsOfViolence(sentenseWhat));

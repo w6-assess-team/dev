@@ -1,21 +1,19 @@
 package com.w6.nlp;
 
-import com.w6.data.Node;
+import com.w6.data.*;
 
 import edu.stanford.nlp.trees.TypedDependency;
 import edu.stanford.nlp.util.Pair;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
 public class DependencyTree {
     
-    private HashMap<Pair<String, Integer>, Node> mapOfNodes;
-    private Collection<TypedDependency> dependencies;
+    private final HashMap<Pair<String, Integer>, Node> mapOfNodes;
+    private final Collection<TypedDependency> dependencies;
     
     public DependencyTree(Collection<TypedDependency> dependencies)
     {
@@ -37,7 +35,7 @@ public class DependencyTree {
         
     }
     
-    public List<String> getSubTreeFromWordsByTag(List<String> keyWords, String tag)
+    public List<CollectionOfWords> getCollectionsFromWordsByTag(List<String> keyWords, String tag)
     {
         List<Pair<String, Integer>> dependentWordList = new ArrayList<>();
         for(TypedDependency dependency : dependencies)
@@ -58,34 +56,55 @@ public class DependencyTree {
         return getComplexEntity(dependentWordList);
     }
     
-    private  ArrayList<String> getComplexEntity(List<Pair<String, Integer>> listOfWords)
+     public List<CollectionOfWords> getCollectionsByTag(String tag)
     {
-        ArrayList<String> result = new ArrayList();
+        List<Pair<String, Integer>> dependentWordList = new ArrayList<>();
+        for(TypedDependency dependency : dependencies)
+        {
+            String localTag = dependency.reln().toString();
+            
+            Pair<String, Integer> dependentWord = new Pair(dependency.dep().value(), dependency.dep().index());
+            
+            if(localTag.equals(tag))
+            {
+                dependentWordList.add(dependentWord);
+            }
+        }
+        
+        return getComplexEntity(dependentWordList);
+    }
+    
+    
+    
+    
+    private  List<CollectionOfWords> getComplexEntity(List<Pair<String, Integer>> listOfWords)
+    {
+        List<CollectionOfWords> arrayOfCollections = new ArrayList();
          
         for (Pair<String, Integer> word : listOfWords)
         {
             List<Pair<String, Integer>> childs = getAllChilds(word,mapOfNodes);
-            Collections.sort(childs, new ComparatorOfWords());
-            String collocation = serialiseListOfWords(childs);
-            result.add(collocation);
+            CollectionOfWords collection = getCollectionFromWords(childs);
+            arrayOfCollections.add(collection);
         }
         
-        return result;
+        return arrayOfCollections;
     }
     
-   
-    private  String serialiseListOfWords(List<Pair<String, Integer>> words)
+    private CollectionOfWords getCollectionFromWords(List<Pair<String, Integer>> words)
     {
-        StringBuilder collocation = new StringBuilder();
+        CollectionOfWords collection = new CollectionOfWords();
         
-        for (Pair<String, Integer> word : words)
+        for(Pair<String, Integer> word : words)
         {
-            collocation.append(word.first + " ");
+            Word newWord = new Word(word.first,word.second,collection);
+            collection.addNewWord(newWord);
         }
         
-        return collocation.toString();
+        return collection;
     }
     
+
     private  List<Pair<String, Integer>> getAllChilds(Pair<String, Integer> word, HashMap<Pair<String, Integer>,Node> mapOfNodes)
     {
         ArrayList<Pair<String, Integer>> result = new ArrayList<>();
@@ -101,15 +120,6 @@ public class DependencyTree {
         return result;
     }
     
-    
-   
-    private  class ComparatorOfWords implements Comparator<Pair<String, Integer>>
-    {
-        @Override
-        public int compare(Pair<String, Integer> lhs, Pair<String, Integer> rhs) {
-            return lhs.second.compareTo(rhs.second);
-        }    
-    }
     
     private void addWordToMap(Pair<String, Integer> word, HashMap<Pair<String, Integer>, Node> mapOfNodes)
     {

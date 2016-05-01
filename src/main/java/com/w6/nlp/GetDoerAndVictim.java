@@ -2,6 +2,7 @@ package com.w6.nlp;
 
 import edu.stanford.nlp.trees.*;
 
+import com.w6.data.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -10,8 +11,8 @@ import java.util.List;
 
 public class GetDoerAndVictim 
 {    
-    private Collection<TypedDependency> listOfDependencies;
-    private DependencyTree dependencyTree;
+    private final Collection<TypedDependency> listOfDependencies;
+    private final DependencyTree dependencyTree;
     
 
     public GetDoerAndVictim(Collection<TypedDependency> listOfDependencies, DependencyTree dependencyTree)
@@ -23,9 +24,14 @@ public class GetDoerAndVictim
     public List<String> getSubjectsOfViolence(List<String> violenceVerbs)
     {
         List<String> subjectsOfViolence = new ArrayList<>();
+       
+        dependencyTree.getCollectionsFromWordsByTag(violenceVerbs, "dobj").forEach((collection) -> {
+                                        subjectsOfViolence.add(collection.getCollectionAsString());
+                                    });
         
-        subjectsOfViolence.addAll(dependencyTree.getSubTreeFromWordsByTag(violenceVerbs, "dobj"));
-        subjectsOfViolence.addAll(dependencyTree.getSubTreeFromWordsByTag(violenceVerbs, "nsubjpass"));
+        dependencyTree.getCollectionsFromWordsByTag(violenceVerbs, "nsubjpass").forEach((collection) -> {
+                                        subjectsOfViolence.add(collection.getCollectionAsString());
+                                    });
         
         return subjectsOfViolence;
     }
@@ -34,8 +40,13 @@ public class GetDoerAndVictim
     {
         List<String> subjectsOfViolence = new ArrayList<>();
         
-        subjectsOfViolence.addAll(dependencyTree.getSubTreeFromWordsByTag(violenceVerbs, "nsubj"));
-        subjectsOfViolence.addAll(dependencyTree.getSubTreeFromWordsByTag(violenceVerbs, "nmod:agent"));
+        dependencyTree.getCollectionsFromWordsByTag(violenceVerbs, "nsubj").forEach((collection) -> {
+                                        subjectsOfViolence.add(collection.getCollectionAsString());
+                                    });
+        
+        dependencyTree.getCollectionsFromWordsByTag(violenceVerbs, "nmod:agent").forEach((collection) -> {
+                                        subjectsOfViolence.add(collection.getCollectionAsString());
+                                    });
         
         return subjectsOfViolence;
     }
