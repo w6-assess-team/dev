@@ -56,6 +56,28 @@ public class DependencyTree {
         return getComplexEntity(dependentWordList);
     }
     
+    public List<CollectionOfWords> getCollectionsFromWords(List<String> keyWords)
+    {
+        List<Pair<String, Integer>> dependentWordList = new ArrayList<>();
+        for(TypedDependency dependency : dependencies)
+        {
+            Pair<String, Integer> mainWord = new Pair(dependency.gov().value(), dependency.gov().index());
+            Pair<String, Integer> dependentWord = new Pair(dependency.dep().value(), dependency.dep().index());
+            
+            if(keyWords.contains(mainWord.first))
+            {
+                dependentWordList.add(mainWord);
+            } else {
+                if(keyWords.contains(dependentWord.first))
+                {
+                     dependentWordList.add(dependentWord);
+                }
+            }
+        }
+        
+        return getComplexEntity(dependentWordList);
+    }
+    
      public List<CollectionOfWords> getCollectionsByTag(String tag)
     {
         List<Pair<String, Integer>> dependentWordList = new ArrayList<>();
