@@ -11,8 +11,11 @@ import java.util.List;
 import java.util.Set;
 
 import com.w6.data.CollectionOfWords;
+import edu.stanford.nlp.ling.WordTag;
 
 import edu.stanford.nlp.parser.lexparser.LexicalizedParser;
+import edu.stanford.nlp.process.Morphology;
+import edu.stanford.nlp.trees.Tree;
 
 public class WeaponsParser {
    private Set weapons;
@@ -35,11 +38,30 @@ public class WeaponsParser {
         }
    }
    
-   public List<String> getAllWeapons(DependencyTree dependencyTree)
+   public List<String> getAllWeapons(DependencyTree dependencyTree, Tree tree)
    {
+       List<String> fromWhat = new ArrayList();
+       
+        tree.getLeaves().forEach((leave) -> {
+            Tree parent = leave.parent(tree);
+            if(parent != null)
+            {
+                
+                WordTag tag = Morphology.stemStatic(
+                        leave.label().value(),
+                        parent.label().value()
+                );
+                
+                if(weapons.contains(tag.value()))
+                {
+                    fromWhat.add(leave.label().value());
+                }
+            }
+        });
+       
        List<String> listOfWeapons = new ArrayList<>();
        
-       List<CollectionOfWords> collections = dependencyTree.getCollectionsFromWords(new ArrayList(weapons));
+       List<CollectionOfWords> collections = dependencyTree.getCollectionsFromWords(fromWhat);
        
        collections.forEach((collection) -> {
            listOfWeapons.add(collection.getCollectionAsString());

@@ -98,7 +98,7 @@ public class Parser {
             );
             
             int weightOfSentence = 1;
-            sentenseWeapon = weaponsParser.getAllWeapons(dependencyTree);
+            sentenseWeapon = weaponsParser.getAllWeapons(dependencyTree, tree);
             
             if (!sentenseWhat.isEmpty())
             {

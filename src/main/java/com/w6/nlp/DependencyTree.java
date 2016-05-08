@@ -63,11 +63,12 @@ public class DependencyTree {
         {
             Pair<String, Integer> mainWord = new Pair(dependency.gov().value(), dependency.gov().index());
             Pair<String, Integer> dependentWord = new Pair(dependency.dep().value(), dependency.dep().index());
-            
+           
             if(keyWords.contains(mainWord.first))
             {
                 dependentWordList.add(mainWord);
-            } else {
+            } else 
+            {
                 if(keyWords.contains(dependentWord.first))
                 {
                      dependentWordList.add(dependentWord);
