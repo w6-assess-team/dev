@@ -97,7 +97,7 @@ public class DependencyTree {
         
         for(Pair<String, Integer> word : words)
         {
-            Word newWord = new Word(word.first,word.second,collection);
+            WordOfCollections newWord = new WordOfCollections(word.first,word.second,collection);
             collection.addNewWord(newWord);
         }
         
