@@ -56,7 +56,7 @@ public class DependencyTree {
         return getComplexEntity(dependentWordList);
     }
     
-     public List<CollectionOfWords> getCollectionsByTag(String tag)
+    public List<CollectionOfWords> getCollectionsByTag(String tag)
     {
         List<Pair<String, Integer>> dependentWordList = new ArrayList<>();
         for(TypedDependency dependency : dependencies)
@@ -77,7 +77,7 @@ public class DependencyTree {
     
     
     
-    private  List<CollectionOfWords> getComplexEntity(List<Pair<String, Integer>> listOfWords)
+    public  List<CollectionOfWords> getComplexEntity(List<Pair<String, Integer>> listOfWords)
     {
         List<CollectionOfWords> arrayOfCollections = new ArrayList();
          
