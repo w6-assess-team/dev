@@ -30,7 +30,22 @@
             <version>4.12</version>
         </dependency>
         
-        
+        <!-- Solr -->
+        <dependency>
+               <artifactId>solr-solrj</artifactId>
+               <groupId>org.apache.solr</groupId>
+               <version>1.4.0</version>
+               <type>jar</type>
+               <scope>compile</scope>
+        </dependency>       
+        <dependency>
+               <artifactId>solr-core</artifactId>
+               <groupId>org.apache.solr</groupId>
+               <version>1.4.0</version>
+               <type>jar</type>
+               <scope>compile</scope>
+        </dependency>
+
         <!-- Stanford NLP -->
         <dependency>
             <groupId>edu.stanford.nlp</groupId>

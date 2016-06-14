@@ -26,6 +26,7 @@ public class EndpointController {
         
         return modelAndView;
     }
+    
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public String displayInput() 
     {
