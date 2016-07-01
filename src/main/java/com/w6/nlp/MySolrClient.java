@@ -31,6 +31,12 @@ public class MySolrClient
         clientSolr.commit();
     }
     
+    public String getDocumentById(int id) throws SolrServerException, IOException
+    {
+        SolrDocument document = clientSolr.getById(Integer.toString(id));
+        return document.getFieldValue("text").toString();
+    }
+    
     private long getNumberOfDocuments() throws SolrServerException, IOException
     {
         SolrQuery query = new SolrQuery();

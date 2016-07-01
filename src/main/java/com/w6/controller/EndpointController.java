@@ -19,6 +19,7 @@ public class EndpointController {
     protected static final String INPUT_VIEW = "input";
     protected static final String W6_VIEW = "w6";
     protected static final String UPLOAD_VIEW = "upload";
+    protected MySolrClient solrClient = new MySolrClient();
     
     
     private static final Gson gson = new GsonBuilder().create();
@@ -26,7 +27,6 @@ public class EndpointController {
     @RequestMapping(value = "post", method = RequestMethod.POST)
     public ModelAndView post(@RequestParam("text") String text) throws IOException
     {
-        MySolrClient solrClient = new MySolrClient();
         try {
             solrClient.uploadDataToSolr(text);
         } catch (SolrServerException ex) {
@@ -35,9 +35,16 @@ public class EndpointController {
         return new ModelAndView(UPLOAD_VIEW);
     }
 
-    @RequestMapping(value = "parse", method = RequestMethod.POST)
-    public ModelAndView parse(@RequestParam("text") String text) throws IOException
+    @RequestMapping(value = "parse", method = RequestMethod.GET)
+    public ModelAndView parse(@RequestParam("id") int docId) throws IOException
     {
+        String text = "";
+        try { 
+            text = solrClient.getDocumentById(docId);
+        } catch (SolrServerException ex) {
+            Logger.getLogger(EndpointController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
         ModelAndView modelAndView = new ModelAndView(W6_VIEW);
         modelAndView.addObject("response", gson.toJson(new Parser().generateResponse(text)));
         
