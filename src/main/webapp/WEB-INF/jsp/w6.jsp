@@ -44,7 +44,7 @@
                                         }
                                         window.onload = function () {
                                             var i, output;
-                                            var json = ${response};
+                                            var json = ${response}; 
                                             output = "";
                                             for (i = 0; i < json.text.length; i++) {
                                                 var word = json.text[i].content;
