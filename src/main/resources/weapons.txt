@@ -4,14 +4,11 @@ armaments
 arms
 arrow
 rifle
-atom bomb
-atomic bomb
 autocannon
 axe
 ballista
 bat
 baton
-battle axe
 bayonet
 bazooka
 billy club

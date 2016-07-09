@@ -1,27 +1,44 @@
 package com.w6.nlp;
 
-import edu.stanford.nlp.simple.*;
+import edu.stanford.nlp.trees.TypedDependency;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
-import javax.validation.constraints.NotNull;
 
 public class LocationParser {
     
-    @NotNull
-    public static List<String> parseLocationFromString(String text) {
-        List<String> locations = new ArrayList<String>();
-        Document doc = new Document(text);
-        for (Sentence sent : doc.sentences()) {
-            List<String> words = sent.lemmas();
-            List<String> tags = sent.nerTags();
-            for (int i = 0; i < tags.size(); ++i) {
-                if (tags.get(i).equals("LOCATION")) {
-                    locations.add(words.get(i));
-                }
-            }
-        }
-        return locations;
+    private Collection<TypedDependency> listOfDependencies;
+    private DependencyTree dependencyTree;
+    
+    public LocationParser(Collection<TypedDependency> listOfDependencies, DependencyTree dependencyTree)
+    {
+        this.listOfDependencies = listOfDependencies;
+        this.dependencyTree = dependencyTree;
     }
+    
+    public  List<String> getLoationOfViolence(List<String> violenceVerbs) {
+        List<String> listOfLocations = new ArrayList<>();
+        
+        dependencyTree.getCollectionsFromWordsByTag(violenceVerbs, "nmod:in").forEach((collection) -> {
+                                        listOfLocations.add(collection.getCollectionAsString());
+                                    });
+        
+        
+        return listOfLocations;
+    }
+    
+    public  List<String> getLocation() {
+        List<String> listOfLocations = new ArrayList<>();
+        
+        dependencyTree.getCollectionsByTag("nmod:in").forEach((collection) -> {
+                                        listOfLocations.add(collection.getCollectionAsString());
+                                    });
+        
+        
+        return listOfLocations;
+    }
+    
+    
 }
