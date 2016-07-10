@@ -3,17 +3,20 @@ package com.w6.nlp;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.w6.data.Article;
+import com.w6.data.Event;
 import com.w6.data.Response;
 import java.io.IOException;
 import java.util.ArrayList;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.solr.client.solrj.SolrRequest;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrInputDocument;
+import org.apache.solr.common.util.NamedList;
 
 public class MySolrClient 
 {
@@ -21,6 +24,7 @@ public class MySolrClient
     final private String client = "user";
     final private String password = "220895";
     final private String url = "http://" + client + ":" + password + "@" +"localhost:8983/solr/core/";   
+    final private String urlEvents = "http://" + client + ":" + password + "@" +"localhost:8983/solr/events/";   
     final private SolrClient clientSolr;
     private static final Gson gson = new GsonBuilder().create();
 
@@ -87,5 +91,40 @@ public class MySolrClient
         newDocument.addField("response", article.response);
         
         return newDocument;
+    }
+
+    private long getNumberOfEvents() throws SolrServerException, IOException
+    {
+        SolrQuery query = new SolrQuery();
+        query.setQuery( "*" );
+        HttpSolrClient clientSolrEvent = new HttpSolrClient(urlEvents);
+   
+        QueryResponse response = clientSolrEvent.query(query);
+        
+        SolrDocumentList listOfDocuments = response.getResults();
+        return listOfDocuments.getNumFound();
+    }
+
+    public Event getEventById(long id) throws SolrServerException, IOException
+    {
+        HttpSolrClient clientSolrEvent = new HttpSolrClient(urlEvents);
+        SolrDocument document = clientSolrEvent.getById(Long.toString(id));
+        return new Event(
+                id,                
+                document.getFieldValue("description").toString(),
+                document.getFieldValue("title").toString(),
+                document.getFieldValue("date").toString()
+        );
+    }
+    public ArrayList<Event> getEvents() throws SolrServerException, IOException 
+    {
+        ArrayList<Event> events = new ArrayList<>();
+        long numberOfEvents = getNumberOfEvents();
+                
+        for (long documentId = 1; documentId <= numberOfEvents; ++documentId)
+        {
+            events.add(getEventById(documentId));
+        }
+        return events;
     }
 }

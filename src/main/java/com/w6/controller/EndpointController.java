@@ -50,11 +50,37 @@ public class EndpointController {
             text = solrClient.getDocumentById(docId);
             ModelAndView modelAndView = new ModelAndView(W6_VIEW);
             modelAndView.addObject("response", gson.toJson(new Parser().generateResponse(text)));
+            modelAndView.addObject("events", gson.toJson(solrClient.getEvents()));
+            modelAndView.addObject("id", docId);
+            
             return modelAndView;
         } catch (SolrServerException ex) {
             Logger.getLogger(EndpointController.class.getName()).log(Level.SEVERE, null, ex);
             return new ModelAndView(W6_VIEW);
         }
+        
+    }
+    @RequestMapping(value = "parse", method = RequestMethod.POST)
+    public ModelAndView update(
+            @RequestParam("id") int docId,            
+            @RequestParam("title") String title,
+            @RequestParam("date") String date
+    ) throws IOException
+    {
+        /*Article text;
+        try { 
+            text = solrClient.getDocumentById(docId);
+            ModelAndView modelAndView = new ModelAndView(W6_VIEW);
+            modelAndView.addObject("response", gson.toJson(new Parser().generateResponse(text)));
+            modelAndView.addObject("events", gson.toJson(solrClient.getEvents()));
+            return modelAndView;
+        } catch (SolrServerException ex) {
+            Logger.getLogger(EndpointController.class.getName()).log(Level.SEVERE, null, ex);
+        }*/
+        System.err.println(docId);
+        System.err.println(title);
+        System.err.println(date);
+        return new ModelAndView(W6_VIEW);
         
     }
     

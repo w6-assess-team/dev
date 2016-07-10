@@ -44,7 +44,8 @@
                                         }
                                         window.onload = function () {
                                             var i, output;
-                                            var json = ${response}; 
+                                            var json = ${response};
+                                            var events = ${events};
                                             output = "";
                                             for (i = 0; i < json.text.length; i++) {
                                                 var word = json.text[i].content;
@@ -104,27 +105,45 @@
                                                 addCell(row.insertCell(4), where[i]);
                                                 addCell(row.insertCell(5), when[i]);
                                             }
-                                            $("#selectable").selectable();
-
+                                            for (i = 0; i < events.length; ++i)
+                                            {
+                                                $('#event_select')
+                                                    .append($("<option></option>")
+                                                    .attr("value", events[i].id)
+                                                    .text(event[i].title)); 
+                                            }
+                                            $("#selectable").selectable();      
+                                            $("#id").attr("value",${id});
                                         }
                                     </script>
 
                                 </div>
                             </div>
                             <div class="col-sm-6" style="background:lightgray" >
-                                <table id="myTable" class="table" style = "overflow:scroll">
-                                    <thead>
-                                        <tr>
-                                            <th ><span class="fa fa-circle who headertable" aria-hidden="true"></span> Who</th>
-                                            <th ><span class="fa fa-circle weapon headertable" aria-hidden="true"></span> Weapon</th>
-                                            <th ><span class="fa fa-circle what headertable" aria-hidden="true"></span> What</th>
-                                            <th ><span class="fa fa-circle whom headertable" aria-hidden="true"></span> Whom</th>
-                                            <th ><span class="fa fa-circle where headertable" aria-hidden="true"></span> Where</th>
-                                            <th ><span class="fa fa-circle when headertable" aria-hidden="true"></span> When</th>
-                                        </tr>
-                                    </thead>
-                                </table>
+                                <form action="parse" method="POST">
 
+                                    <table id="myTable" class="table" style = "overflow:scroll">
+                                        <thead>
+                                            <tr>
+                                                <th ><span class="fa fa-circle who headertable" aria-hidden="true"></span> Who</th>
+                                                <th ><span class="fa fa-circle weapon headertable" aria-hidden="true"></span> Weapon</th>
+                                                <th ><span class="fa fa-circle what headertable" aria-hidden="true"></span> What</th>
+                                                <th ><span class="fa fa-circle whom headertable" aria-hidden="true"></span> Whom</th>
+                                                <th ><span class="fa fa-circle where headertable" aria-hidden="true"></span> Where</th>
+                                                <th ><span class="fa fa-circle when headertable" aria-hidden="true"></span> When</th>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                    <input name="id" id="id" hidden="hidden">
+                                    <select id = "event_select">
+                                        <option value="-1"> Create new event<option/>
+                                    </select>
+                                    <textarea id = "title" name="title" cols="140" rows="1"></textarea>
+                                    Date:
+                                    <input type="date" name="date">
+                                    <input type="submit" value="Upload document" />
+
+                                </form>
 
                             </div>
                         </div>

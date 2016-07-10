@@ -97,7 +97,7 @@
 
                                 </div>
                             </div>
-                            <div class="col-sm-12" style="background:lightgray" >
+                            <div class="col-sm-12 " style="background:lightgray" >
                                 <table id="myTable" class="table" style = "overflow:scroll">
                                     <thead>
                                         <tr>
