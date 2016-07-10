@@ -92,10 +92,9 @@ public class Parser {
             
             sentenseWhat = violentVerbsParser.getAllViolentVerbs(tree);
             
-            sentenseWhen = DateTimeParser.parseDateAndTimeFromString(
-                sentence, 
-                dateTimeTags
-            );
+            DateTimeParser dateTimeParser = new DateTimeParser(listOfDependencies, dependencyTree, dateTimeTags, sentence);
+            
+            sentenseWhen = dateTimeParser.parseDateAndTime();
             
             int weightOfSentence = 1;
             sentenseWeapon = weaponsParser.getAllWeapons(dependencyTree, tree);

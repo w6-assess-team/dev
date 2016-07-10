@@ -1,15 +1,11 @@
 <html lang="en">
 <head>
-  <title>Input</title>
+  <title>Upload</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
   <link rel="stylesheet" type="text/css" href="css/style.css">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
-  <script type="text/javascript" src="../ls/table.js"></script>
-  <script type="text/javascript" src="../ls/readTextFile.js"></script>
 </head>
 <body >
 
@@ -25,9 +21,8 @@
         <h4 id="site-slogan">news based security profiling</h4>
       </div>
       <div>
-        <form action="post" method="POST">
-            <textarea id = "text" name="text" cols="140" rows="25"></textarea>
-            <input type="submit" value="Upload document" />
+        <form action="." method="GET">
+            <input type="submit" value="To main page" />
         </form>
       </div>
     </div>
