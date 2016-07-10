@@ -1,5 +1,6 @@
 package com.w6.nlp;
 
+import com.w6.data.Article;
 import com.w6.data.Table;
 import com.w6.data.Response;
 import com.w6.data.Word;
@@ -45,8 +46,9 @@ public class Parser {
         weaponsParser = new WeaponsParser(lp);
     }
     
-    public Response generateResponse(final String input) {
+    public Response generateResponse(final Article article) {
 
+        final String input = article.text;
         List<String> who = new ArrayList<String>();
         List<String> weapon = new ArrayList<String>();
         List<String> whom = new ArrayList<String>();

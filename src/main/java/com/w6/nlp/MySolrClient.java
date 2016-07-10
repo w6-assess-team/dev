@@ -1,6 +1,9 @@
 package com.w6.nlp;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.w6.data.Article;
+import com.w6.data.Response;
 import java.io.IOException;
 import java.util.ArrayList;
 import org.apache.solr.client.solrj.SolrClient;
@@ -19,6 +22,8 @@ public class MySolrClient
     final private String password = "220895";
     final private String url = "http://" + client + ":" + password + "@" +"localhost:8983/solr/core/";   
     final private SolrClient clientSolr;
+    private static final Gson gson = new GsonBuilder().create();
+
     
     public MySolrClient()
     {
@@ -37,12 +42,12 @@ public class MySolrClient
     public Article getDocumentById(long id) throws SolrServerException, IOException
     {
         SolrDocument document = clientSolr.getById(Long.toString(id));
-        System.out.println(document);
         return new Article(
                 id,
-                document.getFieldValue("sourse") == null ? "sourse" : document.getFieldValue("sourse").toString(),
+                document.getFieldValue("sourse").toString(),
                 document.getFieldValue("text").toString(),
-                document.getFieldValue("title") == null ? "title" : document.getFieldValue("title").toString()
+                document.getFieldValue("title").toString(),
+                document.getFieldValue("response").toString()
         );
     }
     
@@ -70,14 +75,16 @@ public class MySolrClient
         
     private SolrInputDocument createDocument(
             Article article
-    )
+    ) throws IOException
     {
         SolrInputDocument newDocument = new SolrInputDocument();
         
+        article.response = gson.toJson(new Parser().generateResponse(article));
         newDocument.addField("id", article.id);
         newDocument.addField("title", article.title);
         newDocument.addField("sourse", article.sourse);
         newDocument.addField("text", article.text);
+        newDocument.addField("response", article.response);
         
         return newDocument;
     }

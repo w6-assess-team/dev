@@ -45,17 +45,17 @@ public class EndpointController {
     @RequestMapping(value = "parse", method = RequestMethod.GET)
     public ModelAndView parse(@RequestParam("id") int docId) throws IOException
     {
-        String text = "";
+        Article text;
         try { 
-            text = solrClient.getDocumentById(docId).text;
+            text = solrClient.getDocumentById(docId);
+            ModelAndView modelAndView = new ModelAndView(W6_VIEW);
+            modelAndView.addObject("response", gson.toJson(new Parser().generateResponse(text)));
+            return modelAndView;
         } catch (SolrServerException ex) {
             Logger.getLogger(EndpointController.class.getName()).log(Level.SEVERE, null, ex);
+            return new ModelAndView(W6_VIEW);
         }
         
-        ModelAndView modelAndView = new ModelAndView(W6_VIEW);
-        modelAndView.addObject("response", gson.toJson(new Parser().generateResponse(text)));
-        
-        return modelAndView;
     }
     
     @RequestMapping(value = "/", method = RequestMethod.GET)

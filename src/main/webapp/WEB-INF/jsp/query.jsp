@@ -40,17 +40,39 @@
                                         }
                                         window.onload = function () {
                                             var i, output;
+                                            var tableElement = document.getElementById("myTable");
                                             var json = ${response}; 
-                                            console.log(json);
                                             for (i = 0; i < json.length; i++)
                                             {
-                                                console.log(json[i]);                                            
-                                                var table = document.getElementById("myTable");
-                                                var x = document.getElementById("myTable").rows.length;
-                                                var row = table.insertRow(x);
-                                                var cell = row.insertCell(0);
-                                                cell.innerHTML =  "<a href=\"parse?id=" + json[i].id +"\">" + json[i].title + "</a>";
-                                                addCell(row.insertCell(1), json[i].sourse);
+                                                var table = JSON.parse(json[i]["response"])[0].table;
+                                                console.log(table);
+
+                                                var who = table.who;
+                                                var what = table.what;
+                                                var weapon = table.weapon;
+                                                var whom = table.whom;
+                                                var when = table.when;
+                                                var where = table.where;
+                                                console.log(who);
+                                                var tableLength = Math.max(who.length, what.length, weapon.length, whom.length, when.length, where.length, 1);
+                                                for (j = 0; j < tableLength; ++j)
+                                                {
+                                                    var x = document.getElementById("myTable").rows.length;
+                                                    var row = tableElement.insertRow(x);
+                                                    var info = row.insertCell(0);
+                                                    var title = row.insertCell(1);
+                                                    if (j == 0)
+                                                    {
+                                                        info.innerHTML =  "<a href=\"parse?id=" + json[i].id +"\">" + json[i].title + "</a>";
+                                                        addCell(title, json[i].sourse);
+                                                    }
+                                                    addCell(row.insertCell(2), who[j]);
+                                                    addCell(row.insertCell(3), weapon[j]);
+                                                    addCell(row.insertCell(4), what[j]);
+                                                    addCell(row.insertCell(5), whom[j]);
+                                                    addCell(row.insertCell(6), where[j]);
+                                                    addCell(row.insertCell(7), when[j]);                                                        
+                                                }
                                             }
                                             /*
                                             var i;
@@ -75,12 +97,19 @@
 
                                 </div>
                             </div>
-                            <div class="col-sm-6" style="background:lightgray" >
+                            <div class="col-sm-12" style="background:lightgray" >
                                 <table id="myTable" class="table" style = "overflow:scroll">
                                     <thead>
                                         <tr>
                                             <th ><span class="fa fa-circle who headertable" aria-hidden="true"></span>Title</th>
                                             <th ><span class="fa fa-circle who headertable" aria-hidden="true"></span>Source</th>
+                                            <th ><span class="fa fa-circle who headertable" aria-hidden="true"></span> Who</th>
+                                            <th ><span class="fa fa-circle weapon headertable" aria-hidden="true"></span> Weapon</th>
+                                            <th ><span class="fa fa-circle what headertable" aria-hidden="true"></span> What</th>
+                                            <th ><span class="fa fa-circle whom headertable" aria-hidden="true"></span> Whom</th>
+                                            <th ><span class="fa fa-circle where headertable" aria-hidden="true"></span> Where</th>
+                                            <th ><span class="fa fa-circle when headertable" aria-hidden="true"></span> When</th>
+
                                         </tr>
                                     </thead>
                                 </table>
