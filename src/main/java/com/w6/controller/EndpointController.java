@@ -2,9 +2,11 @@ package com.w6.controller;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.w6.data.Article;
 import com.w6.nlp.Parser;
 import com.w6.nlp.MySolrClient;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -19,16 +21,21 @@ public class EndpointController {
     protected static final String INPUT_VIEW = "input";
     protected static final String W6_VIEW = "w6";
     protected static final String UPLOAD_VIEW = "upload";
+    protected static final String QUERY_VIEW = "query";
     protected MySolrClient solrClient = new MySolrClient();
     
     
     private static final Gson gson = new GsonBuilder().create();
     
     @RequestMapping(value = "post", method = RequestMethod.POST)
-    public ModelAndView post(@RequestParam("text") String text) throws IOException
+    public ModelAndView post(
+            @RequestParam("sourse") String sourse,
+            @RequestParam("title") String title,           
+            @RequestParam("text") String text
+            ) throws IOException
     {
         try {
-            solrClient.uploadDataToSolr(text);
+            solrClient.uploadDataToSolr(new Article(sourse, text, title));
         } catch (SolrServerException ex) {
             Logger.getLogger(EndpointController.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -40,7 +47,7 @@ public class EndpointController {
     {
         String text = "";
         try { 
-            text = solrClient.getDocumentById(docId);
+            text = solrClient.getDocumentById(docId).text;
         } catch (SolrServerException ex) {
             Logger.getLogger(EndpointController.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -56,4 +63,20 @@ public class EndpointController {
     {
         return INPUT_VIEW;
     }
+    
+    @RequestMapping(value = "view", method = RequestMethod.GET)
+    public ModelAndView parse() throws IOException
+    {
+        ArrayList<Article> text;
+        try { 
+            text = solrClient.getDocuments();
+            ModelAndView modelAndView = new ModelAndView(QUERY_VIEW);
+            modelAndView.addObject("response", gson.toJson(text));
+            return modelAndView;
+        } catch (SolrServerException ex) {
+            Logger.getLogger(EndpointController.class.getName()).log(Level.SEVERE, null, ex);
+            return new ModelAndView(W6_VIEW);
+        }
+    }
+    
 }

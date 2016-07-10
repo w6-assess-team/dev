@@ -26,7 +26,9 @@
       </div>
       <div>
         <form action="post" method="POST">
-            <textarea id = "text" name="text" cols="140" rows="25"></textarea>
+            <textarea id = "sourse" name="sourse" cols="140" rows="1"></textarea>
+            <textarea id = "title" name="title" cols="140" rows="1"></textarea>
+            <textarea id = "text" name="text" cols="140" rows="22"></textarea>
             <input type="submit" value="Upload document" />
         </form>
       </div>
