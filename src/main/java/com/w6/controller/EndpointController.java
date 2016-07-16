@@ -3,6 +3,7 @@ package com.w6.controller;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.w6.data.Article;
+import com.w6.data.Event;
 import com.w6.nlp.Parser;
 import com.w6.nlp.MySolrClient;
 import java.io.IOException;
@@ -35,7 +36,12 @@ public class EndpointController {
             ) throws IOException
     {
         try {
-            solrClient.uploadDataToSolr(new Article(sourse, text, title));
+            Article article = new Article(new Long(-1), sourse, text, title, 
+                    "",
+                    -1
+            );
+            article.response = gson.toJson(new Parser().generateResponse(article));
+            solrClient.uploadDataToSolr(article);
         } catch (SolrServerException ex) {
             Logger.getLogger(EndpointController.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -62,10 +68,11 @@ public class EndpointController {
     }
     @RequestMapping(value = "parse", method = RequestMethod.POST)
     public ModelAndView update(
-            @RequestParam("id") int docId,            
+            @RequestParam("id") long docId,    
+            @RequestParam("event_select") long eventId,                
             @RequestParam("title") String title,
             @RequestParam("date") String date
-    ) throws IOException
+    ) throws IOException, SolrServerException
     {
         /*Article text;
         try { 
@@ -77,9 +84,21 @@ public class EndpointController {
         } catch (SolrServerException ex) {
             Logger.getLogger(EndpointController.class.getName()).log(Level.SEVERE, null, ex);
         }*/
-        System.err.println(docId);
-        System.err.println(title);
-        System.err.println(date);
+        
+        if (eventId == -1)
+        {
+            Event event = new Event(
+                    -1,
+                    date,
+                    title,
+                    "Something happened"
+            );
+            eventId = solrClient.uploadEventToSolr(event);
+        }
+        
+        Article document = solrClient.getDocumentById(docId);
+        document.eventId = eventId;
+        solrClient.uploadDataToSolr(document);
         return new ModelAndView(W6_VIEW);
         
     }

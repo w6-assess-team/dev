@@ -110,7 +110,7 @@
                                                 $('#event_select')
                                                     .append($("<option></option>")
                                                     .attr("value", events[i].id)
-                                                    .text(event[i].title)); 
+                                                    .text(events[i].title)); 
                                             }
                                             $("#selectable").selectable();      
                                             $("#id").attr("value",${id});
@@ -135,7 +135,7 @@
                                         </thead>
                                     </table>
                                     <input name="id" id="id" hidden="hidden">
-                                    <select id = "event_select">
+                                    <select id = "event_select" name="event_select">
                                         <option value="-1"> Create new event<option/>
                                     </select>
                                     <textarea id = "title" name="title" cols="140" rows="1"></textarea>

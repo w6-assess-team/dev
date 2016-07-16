@@ -26,32 +26,51 @@ public class MySolrClient
     final private String url = "http://" + client + ":" + password + "@" +"localhost:8983/solr/core/";   
     final private String urlEvents = "http://" + client + ":" + password + "@" +"localhost:8983/solr/events/";   
     final private SolrClient clientSolr;
+    final private SolrClient clientEventSolr;
     private static final Gson gson = new GsonBuilder().create();
 
     
     public MySolrClient()
     {
         clientSolr = new HttpSolrClient(url);
+        clientEventSolr = new HttpSolrClient(urlEvents);
     }
     
     public void uploadDataToSolr(
             Article article)
         throws IOException, SolrServerException
     {
-        article.id = getNumberOfDocuments() + 1;
+        if (article.id == -1)
+        {
+            article.id = getNumberOfDocuments() + 1;
+        }
         clientSolr.add(createDocument(article));
         clientSolr.commit();
+    }
+
+    public long uploadEventToSolr(
+            Event event)
+        throws IOException, SolrServerException
+    {
+        event.id = getNumberOfEvents()+ 1;
+        clientEventSolr.add(createEvent(event));
+        clientEventSolr.commit();
+        return event.id;
     }
     
     public Article getDocumentById(long id) throws SolrServerException, IOException
     {
         SolrDocument document = clientSolr.getById(Long.toString(id));
+        String eventId = document.getFieldValue("eventId").toString();
+        eventId = eventId.substring(1, eventId.length() - 1);
+        
         return new Article(
                 id,
                 document.getFieldValue("sourse").toString(),
                 document.getFieldValue("text").toString(),
                 document.getFieldValue("title").toString(),
-                document.getFieldValue("response").toString()
+                document.getFieldValue("response").toString(),
+                Integer.parseInt(eventId)
         );
     }
     
@@ -76,19 +95,33 @@ public class MySolrClient
         }
         return listOfDocuments;
     }
-        
     private SolrInputDocument createDocument(
             Article article
     ) throws IOException
     {
         SolrInputDocument newDocument = new SolrInputDocument();
         
-        article.response = gson.toJson(new Parser().generateResponse(article));
         newDocument.addField("id", article.id);
         newDocument.addField("title", article.title);
         newDocument.addField("sourse", article.sourse);
         newDocument.addField("text", article.text);
         newDocument.addField("response", article.response);
+        newDocument.addField("eventId", article.eventId);        
+        
+        return newDocument;
+    }
+
+        
+    private SolrInputDocument createEvent(
+            Event article 
+    ) throws IOException
+    {
+        SolrInputDocument newDocument = new SolrInputDocument();
+        
+        newDocument.addField("id", article.id);
+        newDocument.addField("title", article.title);
+        newDocument.addField("Date", article.date);
+        newDocument.addField("description", article.description);
         
         return newDocument;
     }
@@ -97,9 +130,8 @@ public class MySolrClient
     {
         SolrQuery query = new SolrQuery();
         query.setQuery( "*" );
-        HttpSolrClient clientSolrEvent = new HttpSolrClient(urlEvents);
    
-        QueryResponse response = clientSolrEvent.query(query);
+        QueryResponse response = clientEventSolr.query(query);
         
         SolrDocumentList listOfDocuments = response.getResults();
         return listOfDocuments.getNumFound();
@@ -107,13 +139,12 @@ public class MySolrClient
 
     public Event getEventById(long id) throws SolrServerException, IOException
     {
-        HttpSolrClient clientSolrEvent = new HttpSolrClient(urlEvents);
-        SolrDocument document = clientSolrEvent.getById(Long.toString(id));
+        SolrDocument document = clientEventSolr.getById(Long.toString(id));
         return new Event(
                 id,                
                 document.getFieldValue("description").toString(),
                 document.getFieldValue("title").toString(),
-                document.getFieldValue("date").toString()
+                document.getFieldValue("Date").toString()
         );
     }
     public ArrayList<Event> getEvents() throws SolrServerException, IOException 
