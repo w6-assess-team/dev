@@ -7,6 +7,7 @@ public class Article
     public String title;
     public Long id;
     public String response;
+    public Long eventId;
 
     public Article(Long id, String sourse, String text, String title, String response) {
         this.id = id;
@@ -21,6 +22,8 @@ public class Article
         this.text = text;
         this.title = title;
     }
-
     
+    public void setEventId(Long eventId) {
+        this.eventId = eventId;
+    }
 }

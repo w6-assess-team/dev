@@ -55,6 +55,21 @@ public class MySolrClient
         );
     }
     
+    public void setEventIdToArticle(long documentId, long eventId) 
+            throws SolrServerException, IOException
+    {
+        Article article = getDocumentById(documentId);
+        article.setEventId(eventId);
+        
+    }
+    
+    public void updateDocument(Article article) 
+            throws IOException, SolrServerException
+    {
+        clientSolr.add(createDocument(article));
+        clientSolr.commit();
+    }
+    
     private long getNumberOfDocuments() throws SolrServerException, IOException
     {
         SolrQuery query = new SolrQuery();
@@ -89,6 +104,10 @@ public class MySolrClient
         newDocument.addField("sourse", article.sourse);
         newDocument.addField("text", article.text);
         newDocument.addField("response", article.response);
+        if (article.eventId != null)
+        {
+            newDocument.addField("eventId", article.eventId);
+        }
         
         return newDocument;
     }
