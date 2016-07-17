@@ -22,6 +22,7 @@ public class EndpointController {
     protected static final String W6_VIEW = "w6";
     protected static final String UPLOAD_VIEW = "upload";
     protected static final String QUERY_VIEW = "query";
+    protected static final String DOCUMENTS_BY_EVENT_VIEW = "events";
     protected MySolrClient solrClient = new MySolrClient();
     
     
@@ -88,6 +89,13 @@ public class EndpointController {
     public String displayInput() 
     {
         return INPUT_VIEW;
+    }
+    
+    @RequestMapping(value = "/events/view", method = RequestMethod.POST)
+    public String displayDocumentsByEvent(@RequestParam("id") int docId) 
+    {
+        
+        return DOCUMENTS_BY_EVENT_VIEW;
     }
     
     @RequestMapping(value = "view", method = RequestMethod.GET)
