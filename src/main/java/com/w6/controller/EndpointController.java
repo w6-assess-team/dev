@@ -22,7 +22,7 @@ public class EndpointController {
     protected static final String W6_VIEW = "w6";
     protected static final String UPLOAD_VIEW = "upload";
     protected static final String QUERY_VIEW = "query";
-    protected static final String DOCUMENTS_BY_EVENT_VIEW = "events";
+    protected static final String DOCUMENTS_BY_EVENT_VIEW = "articlesOfEvent";
     protected MySolrClient solrClient = new MySolrClient();
     
     
@@ -92,10 +92,18 @@ public class EndpointController {
     }
     
     @RequestMapping(value = "/events/view", method = RequestMethod.POST)
-    public String displayDocumentsByEvent(@RequestParam("id") int docId) 
+    public ModelAndView displayDocumentsByEvent(@RequestParam("id") int docId) 
+            throws IOException
     {
+        ModelAndView modelAndView = new ModelAndView(DOCUMENTS_BY_EVENT_VIEW);
+        try {
+           modelAndView.addObject("event",gson.toJson(solrClient.getEventById(docId))); 
+           modelAndView.addObject("docList",gson.toJson(solrClient.getArticlesByEventId(docId)));
+        } catch (SolrServerException e) {
+             Logger.getLogger(EndpointController.class.getName()).log(Level.SEVERE, null, e);
+        }
         
-        return DOCUMENTS_BY_EVENT_VIEW;
+        return modelAndView;
     }
     
     @RequestMapping(value = "view", method = RequestMethod.GET)
