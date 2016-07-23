@@ -5,8 +5,14 @@ import com.google.gson.GsonBuilder;
 import com.w6.data.Article;
 import com.w6.data.Event;
 import com.w6.data.Response;
+import edu.stanford.nlp.ling.tokensregex.types.ValueFunctions;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrRequest;
@@ -57,21 +63,12 @@ public class MySolrClient
         clientEventSolr.commit();
         return event.id;
     }
-    
+        
     public Article getDocumentById(long id) throws SolrServerException, IOException
     {
         SolrDocument document = clientSolr.getById(Long.toString(id));
-        String eventId = document.getFieldValue("eventId").toString();
-        eventId = eventId.substring(1, eventId.length() - 1);
         
-        return new Article(
-                id,
-                document.getFieldValue("sourse").toString(),
-                document.getFieldValue("text").toString(),
-                document.getFieldValue("title").toString(),
-                document.getFieldValue("response").toString(),
-                Integer.parseInt(eventId)
-        );
+        return parseArticle(document);
     }
     
     private long getNumberOfDocuments() throws SolrServerException, IOException
@@ -100,7 +97,6 @@ public class MySolrClient
     ) throws IOException
     {
         SolrInputDocument newDocument = new SolrInputDocument();
-        
         newDocument.addField("id", article.id);
         newDocument.addField("title", article.title);
         newDocument.addField("sourse", article.sourse);
@@ -137,16 +133,40 @@ public class MySolrClient
         return listOfDocuments.getNumFound();
     }
 
+    private Article parseArticle(final SolrDocument document)
+    {
+        return new Article(
+                Long.parseLong(document.getFirstValue("id").toString()),
+                document.getFirstValue("sourse").toString(),
+                document.getFirstValue("text").toString(),
+                document.getFirstValue("title").toString(),
+                document.getFirstValue("response").toString(), 
+                (long) document.getFirstValue("eventId")
+        );
+    }
+    
     public Event getEventById(long id) throws SolrServerException, IOException
     {
         SolrDocument document = clientEventSolr.getById(Long.toString(id));
         return new Event(
                 id,                
-                document.getFieldValue("description").toString(),
-                document.getFieldValue("title").toString(),
-                document.getFieldValue("Date").toString()
+                document.getFirstValue("description").toString(),
+                document.getFirstValue("title").toString(),
+                document.getFirstValue("Date").toString()
         );
     }
+    
+     public List<Article> getArticlesByEventId(long eventId)
+            throws SolrServerException, IOException
+    {        
+        SolrQuery query = new SolrQuery();
+        query.setQuery( "eventId = " + eventId );
+        QueryResponse response = clientSolr.query(query);
+        
+        SolrDocumentList listOfDocuments = response.getResults();
+        return listOfDocuments.stream().map(document -> parseArticle(document)).collect(Collectors.toList());
+    }
+    
     public ArrayList<Event> getEvents() throws SolrServerException, IOException 
     {
         ArrayList<Event> events = new ArrayList<>();
@@ -157,5 +177,27 @@ public class MySolrClient
             events.add(getEventById(documentId));
         }
         return events;
+    }
+    
+    public ArrayList<Event> getEventsInRange(String startDate, String endDate) throws SolrServerException, IOException
+    {
+        ArrayList<Event> events = new ArrayList<>();
+        long numberOfEvents = getNumberOfEvents();
+                
+        for (long documentId = 1; documentId <= numberOfEvents; ++documentId)
+        {
+            Event event = getEventById(documentId);
+            if (event.date.compareTo(startDate) >= 0 && event.date.compareTo(endDate) <= 0)
+            {
+                events.add(event);            
+            }
+        }
+        events.sort(new Comparator<Event>() {
+            @Override
+            public int compare(Event a, Event b) {
+                return a.date.compareTo(b.date);
+            }
+        });
+        return events;        
     }
 }

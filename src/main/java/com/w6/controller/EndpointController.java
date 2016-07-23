@@ -23,6 +23,7 @@ public class EndpointController {
     protected static final String W6_VIEW = "w6";
     protected static final String UPLOAD_VIEW = "upload";
     protected static final String QUERY_VIEW = "query";
+    protected static final String REPORT_VIEW = "report";
     protected MySolrClient solrClient = new MySolrClient();
     
     
@@ -74,17 +75,6 @@ public class EndpointController {
             @RequestParam("date") String date
     ) throws IOException, SolrServerException
     {
-        /*Article text;
-        try { 
-            text = solrClient.getDocumentById(docId);
-            ModelAndView modelAndView = new ModelAndView(W6_VIEW);
-            modelAndView.addObject("response", gson.toJson(new Parser().generateResponse(text)));
-            modelAndView.addObject("events", gson.toJson(solrClient.getEvents()));
-            return modelAndView;
-        } catch (SolrServerException ex) {
-            Logger.getLogger(EndpointController.class.getName()).log(Level.SEVERE, null, ex);
-        }*/
-        
         if (eventId == -1)
         {
             Event event = new Event(
@@ -123,5 +113,14 @@ public class EndpointController {
             return new ModelAndView(W6_VIEW);
         }
     }
+    
+    @RequestMapping(value = "report", method = RequestMethod.GET)
+    public ModelAndView report(@RequestParam("month") String month) throws IOException, SolrServerException
+    {
+        ModelAndView modelAndView = new ModelAndView(REPORT_VIEW);
+        ArrayList<Event> eventsInRange = solrClient.getEventsInRange(month.concat("-01"), month.concat("-31"));
+        modelAndView.addObject("events", eventsInRange);
+        return modelAndView;
+    }  
     
 }

@@ -44,7 +44,7 @@
                                             var json = ${response}; 
                                             for (i = 0; i < json.length; i++)
                                             {
-                                                var table = JSON.parse(json[i]["response"])[0].table;
+                                                var table = JSON.parse(json[i]["response"]).table;
                                                 console.log(table);
 
                                                 var who = table.who;
@@ -74,24 +74,6 @@
                                                     addCell(row.insertCell(7), when[j]);                                                        
                                                 }
                                             }
-                                            /*
-                                            var i;
-                                            var table = json.table;
-                                            var who = table.who;
-                                            var what = table.what;
-                                            var weapon = table.weapon;
-                                            var whom = table.whom;
-                                            var when = table.when;
-                                            var where = table.where;
-                                            var tableLength = Math.max(who.length, what.length, weapon.length, whom.length, when.length, where.length);
-                                            for (i = 0; i < tableLength; i++) {
-                                                addCell(row.insertCell(0), who[i]);
-                                                addCell(row.insertCell(1), weapon[i]);
-                                                addCell(row.insertCell(2), what[i]);
-                                                addCell(row.insertCell(3), whom[i]);
-                                                addCell(row.insertCell(4), where[i]);
-                                                addCell(row.insertCell(5), when[i]);
-                                            }*/
                                         }
                                     </script>
 
@@ -101,8 +83,8 @@
                                 <table id="myTable" class="table" style = "overflow:scroll">
                                     <thead>
                                         <tr>
-                                            <th ><span class="fa fa-circle who headertable" aria-hidden="true"></span>Title</th>
-                                            <th ><span class="fa fa-circle who headertable" aria-hidden="true"></span>Source</th>
+                                            <th >Title</th>
+                                            <th >Source</th>
                                             <th ><span class="fa fa-circle who headertable" aria-hidden="true"></span> Who</th>
                                             <th ><span class="fa fa-circle weapon headertable" aria-hidden="true"></span> Weapon</th>
                                             <th ><span class="fa fa-circle what headertable" aria-hidden="true"></span> What</th>
