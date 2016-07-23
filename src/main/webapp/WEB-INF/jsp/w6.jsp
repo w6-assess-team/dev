@@ -114,6 +114,7 @@
                                             }
                                             $("#selectable").selectable();      
                                             $("#id").attr("value",${id});
+                                            $( "#date" ).datepicker({ dateFormat: 'yy-mm-dd' });
                                         }
                                     </script>
 
@@ -138,9 +139,8 @@
                                     <select id = "event_select" name="event_select">
                                         <option value="-1"> Create new event<option/>
                                     </select>
-                                    <textarea id = "title" name="title" cols="140" rows="1"></textarea>
-                                    Date:
-                                    <input type="date" name="date">
+                                    <p>Title: <textarea id = "title" name="title" cols="140" rows="1"></textarea> </p>
+                                    <p>Date: <input type="text" id="date" name = "date"></p>                                            
                                     <input type="submit" value="Upload document" />
 
                                 </form>
