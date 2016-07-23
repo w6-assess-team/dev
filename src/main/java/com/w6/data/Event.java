@@ -8,14 +8,15 @@ package com.w6.data;
 import java.util.Date;
 
 public class Event {
-    public Long id;
+    public long id;
     //todo: make it date
     public String date;
     public String title; 
     public String description; 
 
-    public Event(Long id, String date, String title, String description) {
+    public Event(long id, String date, String title, String description) {
         this.id = id;
+        this.title = title;
         this.date = date;
         this.description = description;
     }

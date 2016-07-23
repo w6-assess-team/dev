@@ -5,16 +5,17 @@ public class Article
     public String sourse;
     public String text;
     public String title;
-    public Long id;
+    public long id;
     public String response;
-    public Long eventId;
+    public long eventId;
 
-    public Article(Long id, String sourse, String text, String title, String response) {
+    public Article(long id, String sourse, String text, String title, String response, long eventId) {
         this.id = id;
         this.sourse = sourse;
         this.text = text;
         this.title = title;
         this.response = response;
+        this.eventId = eventId;
     }
 
     public Article(String sourse, String text, String title) {
