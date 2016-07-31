@@ -18,6 +18,7 @@ import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrInputDocument;
 
+
 public class MySolrClient 
 {
     
@@ -126,10 +127,20 @@ public class MySolrClient
         
         newDocument.addField("id", article.id);
         newDocument.addField("title", article.title);
-        newDocument.addField("Date", article.date);
+        newDocument.addField("date", article.date);
         newDocument.addField("description", article.description);
+        newDocument.addField("country", article.country);
+        newDocument.addField("region", article.region);
         
         return newDocument;
+    }
+    
+    public void updateEventInSolr(
+            Event event, long id
+    ) throws SolrServerException, IOException 
+    {
+        clientSolrEvent.add(createEvent(event));
+        clientSolrEvent.commit();
     }
 
     private long getNumberOfEvents() throws SolrServerException, IOException
@@ -164,7 +175,10 @@ public class MySolrClient
                 id,                
                 document.getFirstValue("description").toString(),
                 document.getFirstValue("title").toString(),
-                document.getFirstValue("Date").toString()
+                document.getFirstValue("Date").toString(),
+                document.getFieldValue("region").toString(),
+                document.getFieldValue("country").toString()
+                    
         );
     }
     
@@ -178,7 +192,9 @@ public class MySolrClient
                     Long.parseLong(document.getFieldValue("id").toString()),                
                     document.getFieldValue("description").toString(),
                     document.getFieldValue("title").toString(),
-                    document.getFieldValue("date").toString()
+                    document.getFieldValue("date").toString(),
+                    document.getFieldValue("region").toString(),
+                    document.getFieldValue("country").toString()
                     )
             );
         });

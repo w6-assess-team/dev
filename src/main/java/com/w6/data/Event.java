@@ -13,11 +13,15 @@ public class Event {
     public String date;
     public String title; 
     public String description; 
+    public String region;
+    public String country;
 
-    public Event(long id, String date, String title, String description) {
+    public Event(long id, String date, String title, String description, String region, String country) {
         this.id = id;
         this.title = title;
         this.date = date;
         this.description = description;
+        this.region = region;
+        this.country = country;
     }
 }

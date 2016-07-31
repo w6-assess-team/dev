@@ -69,6 +69,25 @@ public class EndpointController {
         }
         
     }
+    
+    @RequestMapping(value = "/update/event", method = RequestMethod.POST)
+    public void updateEvent(
+            @RequestParam("eventId") long id,    
+            @RequestParam("eventTitle") String title ,                
+            @RequestParam("eventDate") String date,
+            @RequestParam("eventDesc") String description,
+            @RequestParam("eventReg") String region,
+            @RequestParam("eventCountry") String country
+    ) throws IOException
+    {
+        Event event = new Event(id, date, title, description, region, country);
+        try {
+            solrClient.uploadEventToSolr(event);
+        } catch (SolrServerException ex) {
+            Logger.getLogger(EndpointController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
     @RequestMapping(value = "parse", method = RequestMethod.POST)
     public ModelAndView update(
             @RequestParam("id") long docId,    
@@ -83,7 +102,9 @@ public class EndpointController {
                     -1,
                     date,
                     title,
-                    "Something happened"
+                    "Something happened",
+                    "",
+                    ""
             );
             eventId = solrClient.uploadEventToSolr(event);
         }
@@ -107,8 +128,8 @@ public class EndpointController {
     {
         ModelAndView modelAndView = new ModelAndView(DOCUMENTS_BY_EVENT_VIEW);
         try {
-           modelAndView.addObject("event",gson.toJson(solrClient.getEventById(docId))); 
-           modelAndView.addObject("docList",gson.toJson(solrClient.getArticlesByEventId(docId)));
+           modelAndView.addObject("event", gson.toJson(solrClient.getEventById(docId))); 
+           modelAndView.addObject("docList", gson.toJson(solrClient.getArticlesByEventId(docId)));
         } catch (SolrServerException e) {
              Logger.getLogger(EndpointController.class.getName()).log(Level.SEVERE, null, e);
         }

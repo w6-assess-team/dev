@@ -24,28 +24,78 @@
                         <h2 id="site-name">W6 assess</h2>
                         <h4 id="site-slogan">news based security profiling</h4>
                     </div>
-                    <div>
+                         <div>
                         <div class="row">
                             <div class="col-sm-6">
                                 <div class="form-group">
-
-
-                                    <form id="fake_textarea" class="form-control" style="height:500px;font-size: 16px;overflow:scroll">
-                                        <input type='hidden' id='fake_textarea_content' name='foobar' /></form>
-
+									
+                                    <form id="event_form" action="/update/event" method="POST">
+                                        <br>Event title:<br>
+                                        <input type="text" id="eventId" readonly>
+                                        <br>Event title:<br>
+                                        <input type="text" id="eventTitle">
+                                        <br>Date:<br>
+                                        <input type="date" id="eventDate">
+                                        <br>Description:<br>
+                                        <input type="text" id="eventDesc">
+                                        <br>Region:<br>
+                                        <input type="text" id="eventReg">
+                                        <br>Country:<br>
+                                        <input type="text" id="eventCountry">
+                                        <input type="submit" value="Update event" />
+                                    </form>
+            
                                     <script>
+                                        function addCell(cell, text) {
+                                            if (text != null)
+                                                cell.innerHTML =  
+                                                    "<label style = \"font-weight: normal;\"><input name=\"checkbox\" value=\"value\";>" + text + "</label>"
+                                                    ;
+                                        }
                                         window.onload = function () {
-                                            var i, output;
                                             var myEvent = ${event};
                                             var articlesArray = ${docList};
+							
+                                                $("#eventId").value = myEvent.id;
+                                                $("#eventTitle").value = myEvent.title;
+                                                $("#eventDate").value = myEvent.date;
+                                                $("#eventDesc").value = myEvent.description;
+                                                $("#eventReg").value = myEvent.region;
+                                                $("#eventCountry").value = myEvent.country;
+
+                                                var i;
+                                                for (i = 0; i < articlesArray.length; i++) {
+                                                    var table = document.getElementById("articleTable");
+                                                    var x = table.rows.length;
+                                                    var row = table.insertRow(x);
+                                                    addCell(row.insertCell(0), articlesArray[i].id);
+                                                    addCell(row.insertCell(1), articlesArray[i].source);
+                                                    addCell(row.insertCell(2), articlesArray[i].title);
+                                                    addCell(row.insertCell(3), articlesArray[i].text);
+                                                }
+											
                                         }
                                     </script>
+									
+                                    <div class="col-sm-6">
+                                        <table id="articleTable" class="table" style = "overflow:scroll">
+                                                <thead>
+                                                        <tr>
+                                                                <th ><span class="fa fa-circle id headertable" aria-hidden="true"></span> Id</th>
+                                                                <th ><span class="fa fa-circle source headertable" aria-hidden="true"></span> Source</th>
+                                                                <th ><span class="fa fa-circle title headertable" aria-hidden="true"></span> Title</th>
+                                                                <th ><span class="fa fa-circle text headertable" aria-hidden="true"></span> Text</th>
 
+                                                        </tr>
+                                                </thead>
+                                        </table>
+                                    </div>
                                 </div>
+            
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
+        </div>
     </body>
 </html>
