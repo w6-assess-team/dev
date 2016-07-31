@@ -99,7 +99,7 @@ public class Parser {
             sentenseWhen = dateTimeParser.parseDateAndTime();
             
             int weightOfSentence = 1;
-            sentenseWeapon = weaponsParser.getAllWeapons(tree);
+            sentenseWeapon = weaponsParser.getAllWeapons(dependencyTree, tree);
             
             if (!sentenseWhat.isEmpty())
             {
