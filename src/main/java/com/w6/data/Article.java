@@ -2,7 +2,7 @@ package com.w6.data;
 
 public class Article 
 {
-    public String sourse;
+    public String source;
     public String text;
     public String title;
     public long id;
@@ -11,7 +11,7 @@ public class Article
 
     public Article(long id, String sourse, String text, String title, String response, long eventId) {
         this.id = id;
-        this.sourse = sourse;
+        this.source = sourse;
         this.text = text;
         this.title = title;
         this.response = response;
@@ -19,7 +19,7 @@ public class Article
     }
 
     public Article(String sourse, String text, String title) {
-        this.sourse = sourse;
+        this.source = sourse;
         this.text = text;
         this.title = title;
     }

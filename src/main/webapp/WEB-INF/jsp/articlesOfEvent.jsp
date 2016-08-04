@@ -29,19 +29,20 @@
                             <div class="col-sm-6">
                                 <div class="form-group">
 									
-                                    <form id="event_form" action="/update/event" method="POST">
+                                    <form id="event_form" action="../update/event" method="POST">
                                         <br>Event title:<br>
-                                        <input type="text" id="eventId" readonly>
+                                        <textarea id = "eventId" name="eventId" cols="40" rows="1" readonly></textarea>
                                         <br>Event title:<br>
-                                        <input type="text" id="eventTitle">
+                                        <textarea id = "eventTitle" name="eventTitle" cols="40" rows="1"></textarea>
                                         <br>Date:<br>
-                                        <input type="date" id="eventDate">
+                                        <textarea id = "eventDate" name="eventDate" cols="40" rows="1"></textarea>
                                         <br>Description:<br>
-                                        <input type="text" id="eventDesc">
+                                        <textarea id = "eventDesc" name="eventDesc" cols="40" rows="1"></textarea>
                                         <br>Region:<br>
-                                        <input type="text" id="eventReg">
+                                        <textarea id = "eventReg" name="eventReg" cols="40" rows="1"></textarea>
                                         <br>Country:<br>
-                                        <input type="text" id="eventCountry">
+                                        <textarea id = "eventCountry" name="eventCountry" cols="40" rows="1"></textarea>
+                                        <br>
                                         <input type="submit" value="Update event" />
                                     </form>
             
@@ -49,19 +50,20 @@
                                         function addCell(cell, text) {
                                             if (text != null)
                                                 cell.innerHTML =  
-                                                    "<label style = \"font-weight: normal;\"><input name=\"checkbox\" value=\"value\";>" + text + "</label>"
+                                                    "<label style = \"font-weight: normal;\">" + text + "</label>"
                                                     ;
                                         }
                                         window.onload = function () {
                                             var myEvent = ${event};
                                             var articlesArray = ${docList};
+                                            console.log(myEvent);
 							
-                                                $("#eventId").value = myEvent.id;
-                                                $("#eventTitle").value = myEvent.title;
-                                                $("#eventDate").value = myEvent.date;
-                                                $("#eventDesc").value = myEvent.description;
-                                                $("#eventReg").value = myEvent.region;
-                                                $("#eventCountry").value = myEvent.country;
+                                                $("#event_form > #eventId").val(myEvent.id);
+                                                $("#event_form > #eventTitle").val(myEvent.title);
+                                                $("#event_form > #eventDate").val(myEvent.date);
+                                                $("#event_form > #eventDesc").val(myEvent.description);
+                                                $("#event_form > #eventReg").val(myEvent.region);
+                                                $("#event_form > #eventCountry").val(myEvent.country);
 
                                                 var i;
                                                 for (i = 0; i < articlesArray.length; i++) {

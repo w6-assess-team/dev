@@ -71,8 +71,8 @@ public class EndpointController {
     }
     
     @RequestMapping(value = "/update/event", method = RequestMethod.POST)
-    public void updateEvent(
-            @RequestParam("eventId") long id,    
+    public ModelAndView updateEvent(
+            @RequestParam("eventId") String id,    
             @RequestParam("eventTitle") String title ,                
             @RequestParam("eventDate") String date,
             @RequestParam("eventDesc") String description,
@@ -80,12 +80,13 @@ public class EndpointController {
             @RequestParam("eventCountry") String country
     ) throws IOException
     {
-        Event event = new Event(id, date, title, description, region, country);
+        Event event = new Event(Long.parseLong(id), date, title, description, region, country);
         try {
-            solrClient.uploadEventToSolr(event);
+            solrClient.updateEventInSolr(event);
         } catch (SolrServerException ex) {
             Logger.getLogger(EndpointController.class.getName()).log(Level.SEVERE, null, ex);
         }
+        return displayDocumentsByEvent(Long.parseLong(id));
     }
     
     @RequestMapping(value = "parse", method = RequestMethod.POST)
@@ -122,8 +123,8 @@ public class EndpointController {
         return INPUT_VIEW;
     }
     
-    @RequestMapping(value = "/events/view", method = RequestMethod.POST)
-    public ModelAndView displayDocumentsByEvent(@RequestParam("id") int docId) 
+    @RequestMapping(value = "/events/view", method = RequestMethod.GET)
+    public ModelAndView displayDocumentsByEvent(@RequestParam("id") long docId) 
             throws IOException
     {
         ModelAndView modelAndView = new ModelAndView(DOCUMENTS_BY_EVENT_VIEW);
