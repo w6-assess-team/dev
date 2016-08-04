@@ -46,6 +46,8 @@ public class MySolrClient
         {
             article.id = getNumberOfDocuments() + 1;
         }
+        clientSolr.deleteByQuery("id:"+article.id);
+        clientSolr.commit();
         clientSolr.add(createDocument(article));
         clientSolr.commit();
     }
@@ -72,9 +74,18 @@ public class MySolrClient
         
     public Article getDocumentById(long id) throws SolrServerException, IOException
     {
-        SolrDocument document = clientSolr.getById(Long.toString(id));
+        SolrQuery query = new SolrQuery();
+        query.setQuery( "id:" + id );
+   
+        QueryResponse response = clientSolr.query(query);
         
-        return parseArticle(document);
+        SolrDocumentList listOfDocuments = response.getResults();
+        SolrDocument document = listOfDocuments.get(0);
+        if (!listOfDocuments.isEmpty()) {
+            return parseArticle(document);
+        }
+        
+        return null;
     }
     
     public void setEventIdToArticle(long documentId, long eventId) 
@@ -88,6 +99,8 @@ public class MySolrClient
     public void updateDocument(Article article) 
             throws IOException, SolrServerException
     {
+        clientSolr.deleteByQuery("id:"+article.id);
+        clientSolr.commit();
         clientSolr.add(createDocument(article));
         clientSolr.commit();
     }
@@ -120,7 +133,7 @@ public class MySolrClient
         SolrInputDocument newDocument = new SolrInputDocument();
         newDocument.addField("id", article.id);
         newDocument.addField("title", article.title);
-        newDocument.addField("sourse", article.source);
+        newDocument.addField("sourse", article.sourse);
         newDocument.addField("text", article.text);
         newDocument.addField("response", article.response);
         newDocument.addField("eventId", article.eventId);        
@@ -168,7 +181,7 @@ public class MySolrClient
     {
         return new Article(
                 Long.parseLong(document.getFirstValue("id").toString()),
-                document.getFirstValue("source").toString(),
+                document.getFirstValue("sourse").toString(),
                 document.getFirstValue("text").toString(),
                 document.getFirstValue("title").toString(),
                 document.getFirstValue("response").toString(), 

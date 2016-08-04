@@ -4,7 +4,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-        <link rel="stylesheet" type="text/css" href="css/style.css">
+        <link rel="stylesheet" type="text/css" href="../css/style.css">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
         <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
@@ -19,7 +19,7 @@
                 <div class="row">
                     <div class="col-sm-12 header" id="header">
                         <h1 id="logo">
-                            <img id="logo" class="logo" src="logo/Logo/W6.png"/>
+                            <img id="logo" class="logo" src="../logo/Logo/W6.png"/>
                         </h1>
                         <h2 id="site-name">W6 assess</h2>
                         <h4 id="site-slogan">news based security profiling</h4>
@@ -30,7 +30,7 @@
                                 <div class="form-group">
 									
                                     <form id="event_form" action="../update/event" method="POST">
-                                        <br>Event title:<br>
+                                        <br>Event id:<br>
                                         <textarea id = "eventId" name="eventId" cols="40" rows="1" readonly></textarea>
                                         <br>Event title:<br>
                                         <textarea id = "eventTitle" name="eventTitle" cols="40" rows="1"></textarea>
@@ -44,6 +44,7 @@
                                         <textarea id = "eventCountry" name="eventCountry" cols="40" rows="1"></textarea>
                                         <br>
                                         <input type="submit" value="Update event" />
+                                        <br>
                                     </form>
             
                                     <script>
@@ -71,7 +72,7 @@
                                                     var x = table.rows.length;
                                                     var row = table.insertRow(x);
                                                     addCell(row.insertCell(0), articlesArray[i].id);
-                                                    addCell(row.insertCell(1), articlesArray[i].source);
+                                                    addCell(row.insertCell(1), articlesArray[i].sourse);
                                                     addCell(row.insertCell(2), articlesArray[i].title);
                                                     addCell(row.insertCell(3), articlesArray[i].text);
                                                 }
@@ -84,7 +85,7 @@
                                                 <thead>
                                                         <tr>
                                                                 <th ><span class="fa fa-circle id headertable" aria-hidden="true"></span> Id</th>
-                                                                <th ><span class="fa fa-circle source headertable" aria-hidden="true"></span> Source</th>
+                                                                <th ><span class="fa fa-circle source headertable" aria-hidden="true"></span> Sourse</th>
                                                                 <th ><span class="fa fa-circle title headertable" aria-hidden="true"></span> Title</th>
                                                                 <th ><span class="fa fa-circle text headertable" aria-hidden="true"></span> Text</th>
 

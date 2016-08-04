@@ -71,7 +71,7 @@ public class EndpointController {
     }
     
     @RequestMapping(value = "/update/event", method = RequestMethod.POST)
-    public ModelAndView updateEvent(
+    public ModelAndView  updateEvent(
             @RequestParam("eventId") String id,    
             @RequestParam("eventTitle") String title ,                
             @RequestParam("eventDate") String date,
