@@ -80,9 +80,11 @@ public class MySolrClient
         QueryResponse response = clientSolr.query(query);
         
         SolrDocumentList listOfDocuments = response.getResults();
-        SolrDocument document = listOfDocuments.get(0);
         if (!listOfDocuments.isEmpty()) {
-            return parseArticle(document);
+            SolrDocument document = listOfDocuments.get(0);
+            if (!listOfDocuments.isEmpty()) {
+                return parseArticle(document);
+            }
         }
         
         return null;

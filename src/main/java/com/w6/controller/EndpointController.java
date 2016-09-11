@@ -57,6 +57,10 @@ public class EndpointController {
         Article text;
         try { 
             text = solrClient.getDocumentById(docId);
+            if (text == null) {
+                return new ModelAndView(W6_VIEW);
+            }
+            
             ModelAndView modelAndView = new ModelAndView(W6_VIEW);
             modelAndView.addObject("response", gson.toJson(new Parser().generateResponse(text)));
             modelAndView.addObject("events", gson.toJson(solrClient.getEvents()));
