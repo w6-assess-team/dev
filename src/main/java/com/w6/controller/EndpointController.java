@@ -36,23 +36,19 @@ public class EndpointController {
             @RequestParam("sourse") String sourse,
             @RequestParam("title") String title,           
             @RequestParam("text") String text
-            ) throws IOException
+            ) throws IOException, SolrServerException
     {
-        try {
-            Article article = new Article(new Long(-1), sourse, text, title, 
-                    "",
-                    -1
-            );
-            article.response = gson.toJson(new Parser().generateResponse(article));
-            solrClient.uploadDataToSolr(article);
-        } catch (SolrServerException ex) {
-            Logger.getLogger(EndpointController.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return new ModelAndView(UPLOAD_VIEW);
+        Article article = new Article(new Long(-1), sourse, text, title, 
+                "",
+                -1
+        );
+        article.response = gson.toJson(new Parser().generateResponse(article));
+        solrClient.uploadDataToSolr(article);
+        return parse(article.id);
     }
 
     @RequestMapping(value = "parse", method = RequestMethod.GET)
-    public ModelAndView parse(@RequestParam("id") int docId) throws IOException
+    public ModelAndView parse(@RequestParam("id") Long docId) throws IOException
     {
         Article text;
         try { 
@@ -62,7 +58,7 @@ public class EndpointController {
             }
             
             ModelAndView modelAndView = new ModelAndView(W6_VIEW);
-            modelAndView.addObject("response", gson.toJson(new Parser().generateResponse(text)));
+            modelAndView.addObject("article", gson.toJson(solrClient.getDocumentById(docId)));
             modelAndView.addObject("events", gson.toJson(solrClient.getEvents()));
             modelAndView.addObject("id", docId);
             
@@ -98,7 +94,9 @@ public class EndpointController {
             @RequestParam("id") long docId,    
             @RequestParam("event_select") long eventId,                
             @RequestParam("title") String title,
-            @RequestParam("date") String date
+            @RequestParam("date") String date,
+            @RequestParam("region") String region,
+            @RequestParam("country") String country            
     ) throws IOException, SolrServerException
     {
         if (eventId == -1)
@@ -107,9 +105,9 @@ public class EndpointController {
                     -1,
                     date,
                     title,
-                    "Something happened",
-                    "",
-                    ""
+                    "Please provide description",
+                    region,
+                    country                    
             );
             eventId = solrClient.uploadEventToSolr(event);
         }
@@ -117,11 +115,11 @@ public class EndpointController {
         Article document = solrClient.getDocumentById(docId);
         document.eventId = eventId;
         solrClient.uploadDataToSolr(document);
-        return new ModelAndView(W6_VIEW);
+        return parse();
         
     }
     
-    @RequestMapping(value = "/", method = RequestMethod.GET)
+    @RequestMapping(value = "/input", method = RequestMethod.GET)
     public String displayInput() 
     {
         return INPUT_VIEW;
@@ -162,7 +160,23 @@ public class EndpointController {
     {
         ModelAndView modelAndView = new ModelAndView(REPORT_VIEW);
         ArrayList<Event> eventsInRange = solrClient.getEventsInRange(month.concat("-01"), month.concat("-31"));
-        modelAndView.addObject("events", eventsInRange);
+        modelAndView.addObject("events", gson.toJson(eventsInRange));
+        ArrayList<String[] > sourses = new ArrayList<>();
+        
+        for (Event event: eventsInRange)
+        {
+            sourses.add(
+                    solrClient.getArticlesByEventId(event.id)
+                            .stream()
+                            .map(article -> article.sourse)
+                            .toArray(size -> new String[size])
+            );
+        }
+            
+
+        modelAndView.addObject("sourses", gson.toJson(sourses));
+        modelAndView.addObject("month", month);
+        
         return modelAndView;
     }  
     

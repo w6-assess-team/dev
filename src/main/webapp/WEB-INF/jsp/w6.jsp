@@ -44,12 +44,16 @@
                                         }
                                         window.onload = function () {
                                             var i, output;
-                                            var json = ${response};
+                                            var json = ${article};
                                             var events = ${events};
                                             output = "";
-                                            for (i = 0; i < json.text.length; i++) {
-                                                var word = json.text[i].content;
-                                                var tag = json.text[i].tag;
+                                            var response = JSON.parse(json.response);
+
+                                            var text = response.text;
+                                            console.log(text);
+                                            for (i = 0; i < text.length; i++) {
+                                                var word = text[i].content;
+                                                var tag = text[i].tag;
                                                 if (tag == "weapon")
                                                 {
                                                     output +=
@@ -86,7 +90,7 @@
                                             }
                                             document.getElementById("fake_textarea").innerHTML = output;
                                             var i;
-                                            var table = json.table;
+                                            var table = response.table;
                                             var who = table.who;
                                             var what = table.what;
                                             var weapon = table.weapon;
@@ -114,6 +118,8 @@
                                             }
                                             $("#selectable").selectable();      
                                             $("#id").attr("value",${id});
+                   
+                                            $("#event_select").val(json.eventId);
                                             $( "#date" ).datepicker({ dateFormat: 'yy-mm-dd' });
                                         }
                                     </script>
@@ -141,6 +147,8 @@
                                     </select>
                                     <p>Title: <textarea id = "title" name="title" cols="140" rows="1"></textarea> </p>
                                     <p>Date: <input type="text" id="date" name = "date"></p>                                            
+                                    <p>Region: <textarea id = "region" name="region" cols="140" rows="1"></textarea> </p>
+                                    <p>Country: <input type="text" id="country" name = "country"></p>                                            
                                     <input type="submit" value="Upload document" />
 
                                 </form>

@@ -26,8 +26,11 @@
       </div>
       <div>
         <form action="post" method="POST">
+            Sourse:
             <textarea id = "sourse" name="sourse" cols="140" rows="1"></textarea>
+            Title:
             <textarea id = "title" name="title" cols="140" rows="1"></textarea>
+            Text:
             <textarea id = "text" name="text" cols="140" rows="22"></textarea>
             <input type="submit" value="Upload document" />
         </form>
