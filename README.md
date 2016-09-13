@@ -6,11 +6,11 @@ http://lucene.apache.org/solr/
 # Start solr
 solr start -p 8983
 
-# Craete databases 
-solr create -c core // for articles, todo:rename
+# Create databases 
+solr create -c core // for articles, todo:rename <br>
 solr create -c events // for events
 
-# Download netbeans full version includin appache solr
+# Download netbeans full version including apache tomcat
 https://netbeans.org/downloads/
 
 # Open this project with netbeans
