@@ -152,7 +152,7 @@ public class MySolrClient
         
         newDocument.addField("id", article.id);
         newDocument.addField("title", article.title);
-        newDocument.addField("date", article.date);
+        newDocument.addField("Date", article.date);
         newDocument.addField("description", article.description);
         newDocument.addField("country", article.country);
         newDocument.addField("region", article.region);
@@ -205,12 +205,11 @@ public class MySolrClient
             document = listOfDocuments.get(0);
             return new Event(
                 id, 
-                document.getFirstValue("date").toString(),   
+                document.getFirstValue("Date").toString(),   
                 document.getFirstValue("title").toString(),
                 document.getFirstValue("description").toString(),
-                document.getFieldValue("region").toString(),
-                document.getFieldValue("country").toString()
-                    
+                document.getFirstValue("region") == null ? "" : document.getFirstValue("region").toString(),
+                document.getFirstValue("country") == null ? "" : document.getFirstValue("country").toString()
             );
         }
 
@@ -227,7 +226,7 @@ public class MySolrClient
                     Long.parseLong(document.getFieldValue("id").toString()),                
                     document.getFieldValue("description").toString(),
                     document.getFieldValue("title").toString(),
-                    document.getFieldValue("date").toString(),
+                    document.getFieldValue("Date").toString(),
                     document.getFieldValue("region").toString(),
                     document.getFieldValue("country").toString()
                     )
