@@ -3,9 +3,11 @@ package com.w6.nlp;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.w6.data.Article;
+import com.w6.data.Email;
 import com.w6.data.Event;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,9 +27,11 @@ public class MySolrClient
     final private String client = "user";
     final private String password = "220895";
     final private String url = "http://localhost:8983/solr/core/";   
-    final private String urlEvents = "http://localhost:8983/solr/events/";   
+    final private String urlEvents = "http://localhost:8983/solr/events/"; 
+    final private String urlEmails = "http://localhost:8983/solr/emails/"; 
     final private SolrClient clientSolr;
     final private SolrClient clientSolrEvent;
+    final private SolrClient clientSolrEmail;
     private static final Gson gson = new GsonBuilder().create();
 
     
@@ -35,7 +39,7 @@ public class MySolrClient
     {
         clientSolr = new HttpSolrClient(url);
         clientSolrEvent = new HttpSolrClient(urlEvents);
-
+        clientSolrEmail = new HttpSolrClient(urlEmails);
     }
     
     public void uploadDataToSolr(
@@ -257,6 +261,57 @@ public class MySolrClient
             events.add(getEventById(documentId));
         }
         return events;
+    }
+    
+    public Email getEmailById( long id ) throws SolrServerException, IOException
+    {
+        SolrQuery query = new SolrQuery();
+        query.setQuery("id:" + id);
+   
+        QueryResponse response = clientSolrEmail.query(query);
+        
+        SolrDocumentList listOfDocuments = response.getResults();
+        Email email = null;
+        if (!listOfDocuments.isEmpty()) {
+            SolrDocument document = listOfDocuments.get(0);
+            email = new Email(
+                        Long.parseLong(document.getFirstValue("id").toString()),
+                        document.getFirstValue("date").toString(),   
+                        document.getFirstValue("subject").toString(),
+                        document.getFirstValue("text").toString(),
+                        document.getFirstValue("from").toString(),
+                        false
+                    );
+            
+        }
+        return email;
+    }
+    
+    
+    public List<Email> getAllNewEmails() throws SolrServerException, IOException
+    {
+        SolrQuery query = new SolrQuery();
+        query.setQuery( "used:false");
+   
+        QueryResponse response = clientSolrEmail.query(query);
+        
+        SolrDocumentList listOfDocuments = response.getResults();
+        List<Email> emails = new ArrayList<>();
+        if (!listOfDocuments.isEmpty()) {
+            listOfDocuments.forEach((document) -> {
+                emails.add(
+                    new Email(
+                        Long.parseLong(document.getFirstValue("id").toString()),
+                        document.getFirstValue("date").toString(),   
+                        document.getFirstValue("subject").toString(),
+                        document.getFirstValue("text").toString(),
+                        document.getFirstValue("from").toString(),
+                        false
+                    ));
+            });
+            
+        }
+        return emails;
     }
     
     public ArrayList<Event> getEventsInRange(String startDate, String endDate) throws SolrServerException, IOException

@@ -39,5 +39,15 @@
   </div>
 </div>
  
+    <script>
+        window.onload = function (){
+            var email = ${email};
+            if (email != null){
+                document.getElementById("sourse").value = email.from;
+                document.getElementById("title").value = email.subject;
+                document.getElementById("text").value = email.text;
+            }
+        }
+    </script>
 </body>
 </html>
