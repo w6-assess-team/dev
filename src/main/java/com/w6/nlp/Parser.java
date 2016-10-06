@@ -19,6 +19,9 @@ import edu.stanford.nlp.trees.Tree;
 import edu.stanford.nlp.trees.TreebankLanguagePack;
 import edu.stanford.nlp.trees.TypedDependency;
 import edu.stanford.nlp.util.Pair;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import java.io.IOException;
 
 import java.io.StringReader;
@@ -33,20 +36,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class Parser {    
-    static LexicalizedParser lp = LexicalizedParser.loadModel("edu/stanford/nlp/models/lexparser/englishPCFG.ser.gz");
-    static ViolentVerbsParser violentVerbsParser;
-    static WeaponsParser weaponsParser;
-    static CountryParser countryParser;
+public class Parser {
+
+    @Autowired
+    private LexicalizedParser lp;
+
+    @Autowired
+    private ViolentVerbsParser violentVerbsParser;
+
+    @Autowired
+    private WeaponsParser weaponsParser;
+
+    @Autowired
+    private CountryParser countryParser;
+
+    @Autowired
     private TokenizerFactory<CoreLabel> tokenizerFactory;
-    
-    public Parser() throws IOException{
-        tokenizerFactory =
-                PTBTokenizer.factory(new CoreLabelTokenFactory(), "");
-        violentVerbsParser = new ViolentVerbsParser(lp);
-        weaponsParser = new WeaponsParser(lp);
-        countryParser = new CountryParser();
-    }
     
     public Response generateResponse(final Article article) {
 
