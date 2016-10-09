@@ -240,7 +240,7 @@ public class Parser {
     }
 
     private void removeEqualsAndSortInDesc(List<String> list) {
-        List<String> tmpList = new ArrayList<>();
+        List<String> listWithoutEquals = new ArrayList<>();
         list.sort(Collections.reverseOrder());
 
         String pattern = "";
@@ -249,12 +249,12 @@ public class Parser {
                 continue;
             }
 
-            tmpList.add(element);
+            listWithoutEquals.add(element);
             pattern = element;
         }
 
         list.clear();
-        list.addAll(tmpList);
+        list.addAll(listWithoutEquals);
     }
     
     private void addValueToRatedArray(int value, List<Pair<String,Integer>> where, List<String> what){
