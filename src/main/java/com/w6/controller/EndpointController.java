@@ -124,9 +124,8 @@ public class EndpointController {
     @RequestMapping(value = "/input", method = RequestMethod.GET)
     public ModelAndView displayInput(@RequestParam(value = "emailid", required = false) Long emailId) throws IOException 
     {
-        ModelAndView modelAndView = new ModelAndView(INPUT_VIEW);
-        
         try {
+            ModelAndView modelAndView = new ModelAndView(INPUT_VIEW);
             if (emailId != null) 
             {
                 Email email = solrClient.getEmailById(emailId+1);
@@ -135,11 +134,12 @@ public class EndpointController {
                     modelAndView.addObject("email", gson.toJson(email));
                 }
             }
+            return modelAndView;
         } catch (SolrServerException e) {
             Logger.getLogger(EndpointController.class.getName()).log(Level.SEVERE, null, e);
+            return new ModelAndView(INPUT_VIEW);
         }
-        
-        return modelAndView;
+
     }
     
     @RequestMapping(value = "/events/view", method = RequestMethod.GET)

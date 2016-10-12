@@ -13,8 +13,7 @@ import javax.mail.URLName;
 import javax.mail.search.FlagTerm;
 
 public class GmailClient {
-    private Session session = null;
-    private Store store = null;
+    private Store store;
     private String username, password;
     private Folder folder;
 
@@ -40,7 +39,7 @@ public class GmailClient {
         URLName url = new URLName("pop3", "pop.gmail.com", 995, "",
                 username, password);
 
-        session = Session.getInstance(pop3Props, null);
+        Session session = Session.getInstance(pop3Props, null);
         store = new POP3SSLStore(session, url);
         store.connect();
 
@@ -62,8 +61,10 @@ public class GmailClient {
         }
     }
 
-    public void closeFolder() throws Exception {
-        folder.close(false);
+    private void closeFolder() throws Exception {
+        if (folder != null) {
+            folder.close(false);
+        }
     }
 
     public int getMessageCount() throws Exception {
