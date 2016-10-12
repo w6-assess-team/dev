@@ -97,6 +97,7 @@
                                             var whom = table.whom;
                                             var when = table.when;
                                             var where = table.where;
+                                            var countries = table.country;
                                             var tableLength = Math.max(who.length, what.length, weapon.length, whom.length, when.length, where.length);
                                             for (i = 0; i < tableLength; i++) {
                                                 var table = document.getElementById("myTable");
@@ -121,6 +122,13 @@
                    
                                             $("#event_select").val(json.eventId);
                                             $( "#date" ).datepicker({ dateFormat: 'yy-mm-dd' });
+
+                                            for (i = 0; i < countries.length; ++i) {
+                                                $('#countries')
+                                                        .append($("<option></option>")
+                                                                .attr("value", i.toString())
+                                                                .text(countries[i]));
+                                            }
                                         }
                                     </script>
 
@@ -148,7 +156,9 @@
                                     <p>Title: <textarea id = "title" name="title" cols="140" rows="1"></textarea> </p>
                                     <p>Date: <input type="text" id="date" name = "date"></p>                                            
                                     <p>Region: <textarea id = "region" name="region" cols="140" rows="1"></textarea> </p>
-                                    <p>Country: <input type="text" id="country" name = "country"></p>                                            
+                                    <p><select id="countries" name="countries">
+                                        <option value="-1">Country</option>
+                                    </select></p>
                                     <input type="submit" value="Upload document" />
 
                                 </form>

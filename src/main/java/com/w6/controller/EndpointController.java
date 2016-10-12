@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.solr.client.solrj.SolrServerException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -26,7 +27,11 @@ public class EndpointController {
     protected static final String DOCUMENTS_BY_EVENT_VIEW = "articlesOfEvent";
     protected static final String REPORT_VIEW = "report";
 
-    protected MySolrClient solrClient = new MySolrClient();
+    @Autowired
+    private Parser parser;
+
+    @Autowired
+    protected MySolrClient solrClient;
     
     
     private static final Gson gson = new GsonBuilder().create();
@@ -42,7 +47,7 @@ public class EndpointController {
                 "",
                 -1
         );
-        article.response = gson.toJson(new Parser().generateResponse(article));
+        article.response = gson.toJson(parser.generateResponse(article));
         solrClient.uploadDataToSolr(article);
         return parse(article.id);
     }
