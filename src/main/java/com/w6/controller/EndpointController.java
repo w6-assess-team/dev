@@ -123,9 +123,14 @@ public class EndpointController {
         return parse();
         
     }
-    
+
+    @RequestMapping(value = "/", method = RequestMethod.GET)
+    public String homePage() {
+        return "redirect:/input";
+    }
+
     @RequestMapping(value = "/input", method = RequestMethod.GET)
-    public String displayInput() 
+    public String displayInput()
     {
         return INPUT_VIEW;
     }
