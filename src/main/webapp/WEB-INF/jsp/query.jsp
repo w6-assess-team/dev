@@ -42,6 +42,7 @@
                                             var i, output;
                                             var tableElement = document.getElementById("myTable");
                                             var json = ${response}; 
+
                                             for (i = 0; i < json.length; i++)
                                             {
                                                 var table = JSON.parse(json[i]["response"]).table;

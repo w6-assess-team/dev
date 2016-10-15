@@ -19,6 +19,9 @@ import edu.stanford.nlp.trees.Tree;
 import edu.stanford.nlp.trees.TreebankLanguagePack;
 import edu.stanford.nlp.trees.TypedDependency;
 import edu.stanford.nlp.util.Pair;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import java.io.IOException;
 
 import java.io.StringReader;
@@ -33,18 +36,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class Parser {    
-    static LexicalizedParser lp = LexicalizedParser.loadModel("edu/stanford/nlp/models/lexparser/englishPCFG.ser.gz");
-    static ViolentVerbsParser violentVerbsParser;
-    static WeaponsParser weaponsParser;
+public class Parser {
+
+    @Autowired
+    private LexicalizedParser lp;
+
+    @Autowired
+    private ViolentVerbsParser violentVerbsParser;
+
+    @Autowired
+    private WeaponsParser weaponsParser;
+
+    @Autowired
+    private CountryParser countryParser;
+
+    @Autowired
     private TokenizerFactory<CoreLabel> tokenizerFactory;
-    
-    public Parser() throws IOException{
-        tokenizerFactory =
-                PTBTokenizer.factory(new CoreLabelTokenFactory(), "");
-        violentVerbsParser = new ViolentVerbsParser(lp);
-        weaponsParser = new WeaponsParser(lp);
-    }
     
     public Response generateResponse(final Article article) {
 
@@ -55,6 +62,7 @@ public class Parser {
         List<String> where = new ArrayList<String>();
         List<String> when = new ArrayList<String>();
         List<String> what = new ArrayList<String>();
+        List<String> country = new ArrayList<>();
         List<Word> text = new ArrayList<Word>();
         
         List<Pair<String,Integer>> ratedWhen = new ArrayList<>();
@@ -76,6 +84,7 @@ public class Parser {
             List<String> sentenseWhere = new ArrayList<String>();
             List<String> sentenseWhen = new ArrayList<String>();
             List<String> sentenseWhat = new ArrayList<String>();
+            List<String> sentenceCountry = new ArrayList<>();
             
             Tree tree = lp.apply(
                     tokenizerFactory.getTokenizer(new StringReader(sentence.text()))
@@ -88,8 +97,8 @@ public class Parser {
             Collection<TypedDependency> listOfDependencies = grammaticalStructureOfSentance.typedDependenciesCollapsed();
             
             DependencyTree dependencyTree = new DependencyTree(listOfDependencies);
-            
-            
+
+
             
             
             sentenseWhat = violentVerbsParser.getAllViolentVerbs(tree);
@@ -100,6 +109,10 @@ public class Parser {
             
             int weightOfSentence = 1;
             sentenseWeapon = weaponsParser.getAllWeapons(dependencyTree, tree);
+
+
+            sentenceCountry.addAll(countryParser.getAllCountries(tree));
+
             
             if (!sentenseWhat.isEmpty())
             {
@@ -155,6 +168,7 @@ public class Parser {
             whom.addAll(sentenseWhom);
             when.addAll(sentenseWhen);
             weapon.addAll(sentenseWeapon);
+            country.addAll(sentenceCountry);
         }
         
         
@@ -168,9 +182,10 @@ public class Parser {
         removeAndCountRatedEquals(ratedWhen,when);
         //removeAndCountRatedEquals(ratedWhere,where);
 
+        removeEqualsAndSortInDesc(country);
 
         
-        return new Response(text, new Table(who, weapon, what, whom, where, when));
+        return new Response(text, new Table(who, weapon, what, whom, where, when, country));
     }
     
     private void removeEquals(
@@ -222,6 +237,24 @@ public class Parser {
             list.add(p.first);
         }
         
+    }
+
+    private void removeEqualsAndSortInDesc(List<String> list) {
+        List<String> listWithoutEquals = new ArrayList<>();
+        list.sort(Collections.reverseOrder());
+
+        String pattern = "";
+        for (String element : list) {
+            if (element.equals(pattern)) {
+                continue;
+            }
+
+            listWithoutEquals.add(element);
+            pattern = element;
+        }
+
+        list.clear();
+        list.addAll(listWithoutEquals);
     }
     
     private void addValueToRatedArray(int value, List<Pair<String,Integer>> where, List<String> what){

@@ -1,5 +1,8 @@
 package com.w6.nlp;
 
+import com.google.code.geocoder.Geocoder;
+import com.google.code.geocoder.model.GeocodeResponse;
+import com.google.code.geocoder.model.GeocoderRequest;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.w6.data.Article;
@@ -118,13 +121,15 @@ public class MySolrClient
         return listOfDocuments.getNumFound();
     }
     
-    public ArrayList<Article> getDocuments() throws SolrServerException, IOException
+    public ArrayList<Article> getDocuments(String keywords) throws SolrServerException, IOException
     {
         ArrayList<Article> listOfDocuments = new ArrayList<>();
-        long numberOfDocs = getNumberOfDocuments();
-        for (long documentId = 1; documentId <= numberOfDocs; ++documentId)
+        SolrQuery query = new SolrQuery(keywords);
+        query.setRows(100);
+        QueryResponse response = clientSolr.query(query);
+        for (final SolrDocument solrDocument : response.getResults())
         {
-            listOfDocuments.add(getDocumentById(documentId));
+            listOfDocuments.add(parseArticle(solrDocument));
         }
         return listOfDocuments;
     }

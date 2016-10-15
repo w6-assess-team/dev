@@ -1,9 +1,16 @@
 package com.w6.controller;
 
+import com.google.code.geocoder.Geocoder;
+import com.google.code.geocoder.model.GeocodeResponse;
+import com.google.code.geocoder.model.GeocoderRequest;
+import com.google.code.geocoder.model.GeocoderStatus;
+import static com.google.code.geocoder.model.GeocoderStatus.OK;
+import com.google.code.geocoder.model.LatLng;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.w6.data.Article;
 import com.w6.data.Event;
+import com.w6.data.Response;
 import com.w6.nlp.Parser;
 import com.w6.nlp.MySolrClient;
 import java.io.IOException;
@@ -11,6 +18,7 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.solr.client.solrj.SolrServerException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -26,7 +34,11 @@ public class EndpointController {
     protected static final String DOCUMENTS_BY_EVENT_VIEW = "articlesOfEvent";
     protected static final String REPORT_VIEW = "report";
 
-    protected MySolrClient solrClient = new MySolrClient();
+    @Autowired
+    private Parser parser;
+
+    @Autowired
+    protected MySolrClient solrClient;
     
     
     private static final Gson gson = new GsonBuilder().create();
@@ -42,7 +54,7 @@ public class EndpointController {
                 "",
                 -1
         );
-        article.response = gson.toJson(new Parser().generateResponse(article));
+        article.response = gson.toJson(parser.generateResponse(article));
         solrClient.uploadDataToSolr(article);
         return parse(article.id);
     }
@@ -145,7 +157,7 @@ public class EndpointController {
     {
         ArrayList<Article> text;
         try { 
-            text = solrClient.getDocuments();
+            text = solrClient.getDocuments("*:*");
             ModelAndView modelAndView = new ModelAndView(QUERY_VIEW);
             modelAndView.addObject("response", gson.toJson(text));
             return modelAndView;
@@ -154,7 +166,96 @@ public class EndpointController {
             return new ModelAndView(W6_VIEW);
         }
     }
+    @RequestMapping(value = "relevant", method = RequestMethod.GET)
+    public ModelAndView relevant() throws IOException
+    {
+        ModelAndView modelAndView = new ModelAndView(QUERY_VIEW);
+        ArrayList<Article> documents;
+        try { 
+            documents = solrClient.getDocuments("   Involved\n" +
+"   Incident\n" +
+"   Staff\n" +
+"   IMC\n" +
+"   aid\n" +
+"   Office\n" +
+"    security\n" +
+"    NGO\n" +
+"    killed\n" +
+"    Afghanistan\n" +
+"    Deaths\n" +
+"    police\n" +
+"    workers\n" +
+"    Afghan\n" +
+"    Taliban\n" +
+"    Vehicle\n" +
+"    international\n" +
+"    government\n" +
+"    humanitarian\n" +
+"    Security\n" +
+"    UN\n" +
+"    Incidents\n" +
+"    Pakistan\n" +
+"    kidnapped\n" +
+"    armed\n" +
+"    hospital\n" +
+"    Injuries\n" +
+"    WFP\n" +
+"    CMT \n" +
+"    HQ\n" +
+"    AOG\n" +
+"    Evacuation\n" +
+"    Relocation\n" +
+"    Weapon\n" +
+"    Violation\n" +
+"    Property\n" +
+"    Equipment\n" +
+"    members\n" +
+"    military\n" +
+"    officials\n" +
+"    Chad\n" +
+"    foreign\n" +
+"    suicide\n" +
+"    Darfur\n" +
+"    NGOs\n" +
+"    MSF\n" +
+"   ICRC\n" +
+"  U.N.\n" +
+"    injured");
+            modelAndView.addObject("response", gson.toJson(documents));
+            modelAndView.addObject("locations", gson.toJson(locations));
+            return modelAndView;
+        } catch (SolrServerException ex) {
+            Logger.getLogger(EndpointController.class.getName()).log(Level.SEVERE, null, ex);
+            return new ModelAndView(W6_VIEW);
+        }
+    }
     
+    @RequestMapping(value = "", method = RequestMethod.GET)
+    public ModelAndView map() throws IOException, SolrServerException
+    {
+        ArrayList<Article> documents = solrClient.getDocuments("*:*");
+        Geocoder geocoder = new Geocoder();
+        ModelAndView modelAndView = new ModelAndView("index");
+        ArrayList<LatLng> locations = new ArrayList<>();
+        for( Article article: documents)
+        {
+            Response fromJson = gson.fromJson(article.response, Response.class);
+            LatLng location = new LatLng();
+            for (String where: fromJson.getTable().getWhere())
+            {
+                GeocoderRequest request = new GeocoderRequest(where, "EN");
+                GeocodeResponse geocode = geocoder.geocode(request);
+                if (geocode.getStatus() == GeocoderStatus.OK)
+                {
+                    location = geocode.getResults().get(0).getGeometry().getLocation();
+                }
+            }
+            locations.add(location);
+        }
+        modelAndView.addObject("locations", gson.toJson(locations));
+        return modelAndView;
+
+    }
     @RequestMapping(value = "report", method = RequestMethod.GET)
     public ModelAndView report(@RequestParam("month") String month) throws IOException, SolrServerException
     {
@@ -179,5 +280,6 @@ public class EndpointController {
         
         return modelAndView;
     }  
+    
     
 }
