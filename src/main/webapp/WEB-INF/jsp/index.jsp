@@ -36,36 +36,42 @@
 	}).addTo(map);
 
         var features = [];
-        var locations = ${locations};
-        console.log(locations);
-        locations.forEach(function(location)
+        var articles = ${articles};
+        console.log(articles);
+        articles.forEach(function(article)
         {
-            if (location.hasOwnProperty('lat'))
-            features.push({
-                "geometry": {
+            if (article.hasOwnProperty('location'))
+            {
+                var location = JSON.parse(article.location);
+                console.log(location);  
+                features.push(
+                    {
+                        "geometry": {
 
-                    "type": "Point", 
+                            "type": "Point", 
 
-                    "coordinates": [
-                        location.lng, 
-                        location.lat
-                    ]
-                }, 
+                            "coordinates": [
+                                location.lng, 
+                                location.lat
+                            ]
+                        }, 
 
-                "type": "Feature", 
+                        "type": "Feature", 
 
-                "properties": {
+                        "properties": {
 
-                    "type_of_area": "Road", 
+                            "type_of_area": "Road", 
 
-                    "event_description": "2 MDM aid workers are abducted by Somali gunmen", 
+                            "event_description": "2 MDM aid workers are abducted by Somali gunmen", 
 
-                    "location": "at the border village of Laas Caanood, Ogaden Region", 
+                            "location": "at the border village of Laas Caanood, Ogaden Region", 
 
-                    "perpetratordetails": "Clan militia"
+                            "perpetratordetails": "Clan militia"
 
-                }
-            });
+                        }
+                    }
+                );
+            }
         });
         console.log(features);
         var events = {

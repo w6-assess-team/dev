@@ -1,5 +1,7 @@
 package com.w6.data;
 
+import com.google.code.geocoder.model.LatLng;
+
 public class Article 
 {
     public String sourse;
@@ -8,6 +10,7 @@ public class Article
     public long id;
     public String response;
     public long eventId;
+    public String location;
 
     public Article(long id, String sourse, String text, String title, String response, long eventId) {
         this.id = id;

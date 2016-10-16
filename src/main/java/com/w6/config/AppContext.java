@@ -1,5 +1,7 @@
 package com.w6.config;
 
+import com.google.code.geocoder.Geocoder;
+import com.w6.external_api.Geolocator;
 import com.w6.nlp.*;
 import edu.stanford.nlp.ling.CoreLabel;
 import edu.stanford.nlp.parser.lexparser.LexicalizedParser;
@@ -74,5 +76,17 @@ public class AppContext {
     @Bean
     public Parser parser() throws IOException {
         return new Parser();
+    }
+    
+    @Bean
+    public Geolocator geolator()
+    {
+        return new Geolocator();
+    }
+
+    @Bean
+    public Geocoder geocoder()
+    {
+        return new Geocoder();
     }
 }

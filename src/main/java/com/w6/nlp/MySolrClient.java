@@ -3,6 +3,7 @@ package com.w6.nlp;
 import com.google.code.geocoder.Geocoder;
 import com.google.code.geocoder.model.GeocodeResponse;
 import com.google.code.geocoder.model.GeocoderRequest;
+import com.google.code.geocoder.model.LatLng;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.w6.data.Article;
@@ -125,7 +126,7 @@ public class MySolrClient
     {
         ArrayList<Article> listOfDocuments = new ArrayList<>();
         SolrQuery query = new SolrQuery(keywords);
-        query.setRows(100);
+        query.setRows(200);
         QueryResponse response = clientSolr.query(query);
         for (final SolrDocument solrDocument : response.getResults())
         {
@@ -143,7 +144,11 @@ public class MySolrClient
         newDocument.addField("sourse", article.sourse);
         newDocument.addField("text", article.text);
         newDocument.addField("response", article.response);
-        newDocument.addField("eventId", article.eventId);        
+        newDocument.addField("eventId", article.eventId);  
+        if (article.location != null)
+        {
+            newDocument.addField("location", article.location);
+        }
         
         return newDocument;
     }
@@ -186,7 +191,7 @@ public class MySolrClient
 
     private Article parseArticle(final SolrDocument document)
     {
-        return new Article(
+        Article article = new Article(
                 Long.parseLong(document.getFirstValue("id").toString()),
                 document.getFirstValue("sourse").toString(),
                 document.getFirstValue("text").toString(),
@@ -194,6 +199,11 @@ public class MySolrClient
                 document.getFirstValue("response").toString(), 
                 (long) document.getFirstValue("eventId")
         );
+        if (document.keySet().contains("location"))
+        {
+            article.location = document.getFirstValue("location").toString();
+        }
+        return article;
     }
     
     public Event getEventById(long id) throws SolrServerException, IOException

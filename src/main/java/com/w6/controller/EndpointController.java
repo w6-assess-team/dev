@@ -11,6 +11,7 @@ import com.google.gson.GsonBuilder;
 import com.w6.data.Article;
 import com.w6.data.Event;
 import com.w6.data.Response;
+import com.w6.external_api.Geolocator;
 import com.w6.nlp.Parser;
 import com.w6.nlp.MySolrClient;
 import java.io.IOException;
@@ -40,6 +41,9 @@ public class EndpointController {
     @Autowired
     protected MySolrClient solrClient;
     
+    @Autowired 
+    private Geolocator geolocator;
+    
     
     private static final Gson gson = new GsonBuilder().create();
     
@@ -55,6 +59,7 @@ public class EndpointController {
                 -1
         );
         article.response = gson.toJson(parser.generateResponse(article));
+        article.location = gson.toJson(geolocator.findLocation(article));
         solrClient.uploadDataToSolr(article);
         return parse(article.id);
     }
@@ -222,7 +227,6 @@ public class EndpointController {
 "  U.N.\n" +
 "    injured");
             modelAndView.addObject("response", gson.toJson(documents));
-            modelAndView.addObject("locations", gson.toJson(locations));
             return modelAndView;
         } catch (SolrServerException ex) {
             Logger.getLogger(EndpointController.class.getName()).log(Level.SEVERE, null, ex);
@@ -233,26 +237,10 @@ public class EndpointController {
     @RequestMapping(value = "", method = RequestMethod.GET)
     public ModelAndView map() throws IOException, SolrServerException
     {
-        ArrayList<Article> documents = solrClient.getDocuments("*:*");
-        Geocoder geocoder = new Geocoder();
         ModelAndView modelAndView = new ModelAndView("index");
-        ArrayList<LatLng> locations = new ArrayList<>();
-        for( Article article: documents)
-        {
-            Response fromJson = gson.fromJson(article.response, Response.class);
-            LatLng location = new LatLng();
-            for (String where: fromJson.getTable().getWhere())
-            {
-                GeocoderRequest request = new GeocoderRequest(where, "EN");
-                GeocodeResponse geocode = geocoder.geocode(request);
-                if (geocode.getStatus() == GeocoderStatus.OK)
-                {
-                    location = geocode.getResults().get(0).getGeometry().getLocation();
-                }
-            }
-            locations.add(location);
-        }
-        modelAndView.addObject("locations", gson.toJson(locations));
+
+        ArrayList<Article> articles = solrClient.getDocuments("*:*");
+        modelAndView.addObject("articles", gson.toJson(articles));
         return modelAndView;
 
     }
