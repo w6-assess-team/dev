@@ -12,6 +12,7 @@ import com.w6.data.Article;
 import com.w6.data.Event;
 import com.w6.data.Response;
 import com.w6.external_api.Geolocator;
+import com.w6.nlp.EventGuesser;
 import com.w6.nlp.Parser;
 import com.w6.nlp.MySolrClient;
 import java.io.IOException;
@@ -44,6 +45,9 @@ public class EndpointController {
     @Autowired 
     private Geolocator geolocator;
     
+    @Autowired
+    private EventGuesser eventGuesser;
+    
     
     private static final Gson gson = new GsonBuilder().create();
     
@@ -75,8 +79,9 @@ public class EndpointController {
             }
             
             ModelAndView modelAndView = new ModelAndView(W6_VIEW);
-            modelAndView.addObject("article", gson.toJson(solrClient.getDocumentById(docId)));
-            modelAndView.addObject("events", gson.toJson(solrClient.getEvents()));
+            Article article = solrClient.getDocumentById(docId);
+            modelAndView.addObject("article", gson.toJson(article));
+            modelAndView.addObject("events", gson.toJson(eventGuesser.guessEvent(article)));
             modelAndView.addObject("id", docId);
             
             return modelAndView;

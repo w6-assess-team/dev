@@ -89,4 +89,10 @@ public class AppContext {
     {
         return new Geocoder();
     }
+    
+    @Bean
+    public EventGuesser eventGuesser()
+    {
+        return new EventGuesser();
+    }
 }

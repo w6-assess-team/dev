@@ -125,7 +125,7 @@
                                             $( "#date" ).datepicker({ dateFormat: 'yy-mm-dd' });
 
                                             for (i = 0; i < countries.length; ++i) {
-                                                $('#countries')
+                                                $('#country')
                                                         .append($("<option></option>")
                                                                 .attr("value", i.toString())
                                                                 .text(countries[i]));
@@ -157,7 +157,7 @@
                                     <p>Title: <textarea id = "title" name="title" cols="140" rows="1"></textarea> </p>
                                     <p>Date: <input type="text" id="date" name = "date"></p>                                            
                                     <p>Region: <textarea id = "region" name="region" cols="140" rows="1"></textarea> </p>
-                                    <p><select id="countries" name="countries">
+                                    <p><select id="country" name="country">
                                         <option value="-1">Country</option>
                                     </select></p>
                                     <input type="submit" value="Upload document" />

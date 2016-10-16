@@ -11,7 +11,9 @@ import com.w6.data.Event;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrQuery;
@@ -127,12 +129,39 @@ public class MySolrClient
         ArrayList<Article> listOfDocuments = new ArrayList<>();
         SolrQuery query = new SolrQuery(keywords);
         query.setRows(200);
+        query.add("fl", "*,score");
         QueryResponse response = clientSolr.query(query);
         for (final SolrDocument solrDocument : response.getResults())
         {
             listOfDocuments.add(parseArticle(solrDocument));
         }
         return listOfDocuments;
+    }
+    public Map<Long, Float> getEventsRating(long articleId) throws SolrServerException, IOException
+    {
+        SolrQuery query = new SolrQuery("id:" + articleId + "or mlt.fl=text");
+        query.setRows(20);
+        query.add("fl", "*,score");
+        Map<Long, Float> map = new HashMap<Long, Float>();
+        QueryResponse response = clientSolr.query(query);
+        for (final SolrDocument solrDocument : response.getResults())
+        {
+            Long eventId = (Long) solrDocument.getFirstValue("eventId");
+            Float score = (Float) solrDocument.getFirstValue("score");
+            System.err.println(eventId);
+            System.err.println(score);
+            if (map.containsKey(eventId))
+            {
+                Float newScore = map.get(eventId) + score;
+                map.put(eventId, newScore);
+            }
+            else
+            {
+                map.put(eventId, score);
+            }
+            
+        }
+        return map;
     }
     private SolrInputDocument createDocument(
             Article article
