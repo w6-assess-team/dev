@@ -17,10 +17,49 @@
     <body >
             <div class="container-fluid">
                 <div class="row">
-                    <div class="col-sm-12 header" id="header">
-                        <h1 id="logo">
+                <nav class="navbar navbar-default" style="margin-top:-10px; background:black;border:0px; " id="#myNavbar">
+                <div class="container-fluid">
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                                data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                            <span class="sr-only">Toggle navigation</span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+                        <a class="navbar-brand">
+                           <h1 id="logo">
                             <img id="logo" class="logo" src="../logo/Logo/W6.png"/>
-                        </h1>
+                        </h1>      </div>
+
+                    <div id="navbar" class="navbar-collapse collapse">
+                        <ul class="nav navbar-nav navbar-right" style="margin-top:15px;">
+
+                            
+                                <li>
+                                    <a href="https://www.ifixe.ch/comment-ca-marche/">Comment ça marche?</a>
+                                </li>
+
+                                <li><a href="https://www.ifixe.ch/wp-login.php?action=login"><i
+                                            class="login-awsome"></i>Se connecter</a>
+                                </li>
+
+
+
+                                                    </ul>
+                    </div>
+                    <!--/.nav-collapse -->
+                </div>
+                <!--/.container-fluid -->
+            </nav>
+
+        </div>
+    </div>
+</nav>
+
+
+                    <div class="col-sm-12 header" id="header">
+                        
                         <h2 id="site-name">W6 assess</h2>
                         <h4 id="site-slogan">news based security profiling</h4>
                     </div>

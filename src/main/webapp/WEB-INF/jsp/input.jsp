@@ -11,10 +11,10 @@
   <script type="text/javascript" src="../ls/table.js"></script>
   <script type="text/javascript" src="../ls/readTextFile.js"></script>
 </head>
-<body >
+<body style="background-color: #E5E4E2">
 
 
-<div class="container">
+<div class="container" style="width:80%">
   <div class="container-fluid">
     <div class="row">
       <div class="col-sm-12 header" id="header">
@@ -23,17 +23,61 @@
         </h1>
         <h2 id="site-name">W6 assess</h2>
         <h4 id="site-slogan">news based security profiling</h4>
+        <br><br>
+        <nav class="navbar navbar-inverse" style="background-color:black">
+    
+    <ul class="nav navbar-nav">
+      <li class="active"><a href="#">Home</a></li>
+      <li><a href="#">Input</a></li>
+      <li><a href="#">Reports</a></li>
+      <li><a href="#">Add Events</a></li>
+    </ul>
+</nav>
       </div>
-      <div>
+       <div id="main_wrapper" class="myMainWrapper">
+    <div class="wrapper noMainRow">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="" id="main-title" >
+                    <h1 style="color:#39B7CD" >Input</h1>
+                   
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12  index-main-row">
+                    <div class="row row-index">
+
+                        <div class="col-lg-6  col-md-3 col-xs-12 col-md-offset-0 index-img-client">
+
         <form action="post" method="POST">
-            Sourse:
-            <textarea id = "sourse" name="sourse" cols="140" rows="1"></textarea>
+            Source:            
+            <textarea class="form-control" id = "sourse" name="sourse" cols="140" rows="1"></textarea>
+            
             Title:
-            <textarea id = "title" name="title" cols="140" rows="1"></textarea>
+            <textarea class="form-control" id = "title" name="title" cols="140" rows="1"></textarea>
             Text:
-            <textarea id = "text" name="text" cols="140" rows="22"></textarea>
-            <input type="submit" value="Upload document" />
+            <textarea class="form-control" id = "text" name="text" cols="140" rows="14"></textarea>
+            <br>
+            <input type="submit" class="btn btn-warning" value="Upload document" />
+            <input type="submit" class="btn btn-warning" value="Reset" />
+  
         </form>
+      </div><br>
+                        <div class="col-lg-6 col-offset-3 col-md-3 col-xs-12 ">
+
+                             <div class="panel panel-primary" >
+                             <div class="panel-heading" style="background-color:#39B7CD">Description</div>
+                             <div class="panel-body"> <p style="font-size: 15px"> Paste the raw text into the box.<br>If available,add source and title to the document and press upload to analyse the text</p></div>
+                              </div>
+ 
+                        </div>
+     
+
+
+                    </div><br>
+     <div id="footer" style="font-size: 15px;" >
+      <div class="container">
+        <p class="muted credit">W6 project copyright <a href="">2016 </p>
       </div>
     </div>
   </div>
