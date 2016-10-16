@@ -16,30 +16,93 @@
 
     </head>
 
-    <body >
+    <body style="background-color: #E5E4E2">
+         <div class="container "  style="width:80%">
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-sm-12 header" id="header">
-                        <h1 id="logo">
-                            <img id="logo" class="logo" src="logo/Logo/W6.png"/>
-                        </h1>
-                        <h2 id="site-name">W6 assess</h2>
-                        <h4 id="site-slogan">news based security profiling</h4>
-                    </div>
-                    <div>
-                        <div class="row">
-                            <div class="col-sm-6">
-                                <div class="form-group">
+        <h1 id="logo">
+          <img id="logo" class="logo" src="logo/Logo/W6.png"/>
+        </h1>
+        <h2 id="site-name">W6 assess</h2>
+        <h4 id="site-slogan">news based security profiling</h4>
+        <br><br>
+        <nav class="navbar navbar-inverse" style="background-color:black">
+    
+    <ul class="nav navbar-nav">
+      <li class="active"><a href="#">Home</a></li>
+      <li><a href="#">Input</a></li>
+      <li><a href="#">reports</a></li>
+      <li><a href="#">Add Events</a></li>
+    </ul>
+</nav>
+      </div> <div id="main_wrapper" class="myMainWrapper">
+    <div class="wrapper noMainRow">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="" id="main-title" >
+                    <h1 style="color:#39B7CD" >Event</h1>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12  index-main-row">
+                    <div class="row row-index">
+                        
+                            <div  class="col-lg-8  col-md-3 col-xs-12"  >
+                                <div class="panel panel-primary" style="background:#E5E4E2; margin-left:-10px">
+                                <div class="panel-heading" style="background-color:#39B7CD">Panel Heading</div>
+                                
+                                <div class="panel-body">
+  
+ 
+                                    <form data-spy="scroll"  action="parse" method="POST">
+
+                                    <table id="myTable" class="table" >
+                                        <thead>
+                                            <tr>
+                                                <th class="col-sm-3" ><span class="  fa fa-circle who headertable" aria-hidden="true"></span> Who</th>
+                                                <th class="col-sm-3"><span class=" fa fa-circle weapon headertable" aria-hidden="true"></span> Weapon</th>
+                                                <th class="col-sm-3"><span class=" fa fa-circle what headertable" aria-hidden="true"></span> What</th>
+                                                <th class="col-sm-3"><span class=" fa fa-circle whom headertable" aria-hidden="true"></span> Whom</th>
+                                                <th class="col-sm-3" ><span class=" fa fa-circle where headertable" aria-hidden="true"></span> Where</th>
+                                                <th class="col-sm-3"><span class=" fa fa-circle when headertable" aria-hidden="true"></span> When</th>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                    <input name="id" class="col-sm-2" id="id" hidden="hidden">
+                                    <select class="form-control" id = "event_select" name="event_select">
+                                        <option value="-1"> Create new event<option/>
+                                    </select>
+                                    <p>Title: <textarea class="form-control" id = "title" name="title" cols="140" rows="1"></textarea> </p>
+                                    <p>Date: <input type="text" class="form-control" id="date" name = "date"></p>                                            
+                                    <p>Region: <textarea class="form-control" id = "region" name="region" cols="140" rows="1"></textarea> </p>
+                                    <p><select class="form-control bfh-countries" data-country="US" id="countries" name="countries">
+                                        <option value="-1">Country</option>
+                                    </select></p>
+                                    <input type="submit "  class="btn btn-primary" value="Upload document" />
+
+                                </form>
+</div>
+                        </div>
+                        
+                            </div>
+                        
+                                     <div class="col-lg-4  col-md-3 col-xs-12 col-md-offset-0 index-img-client">
+<div class="panel panel-primary">
+  <div class="panel-heading" style="background-color:#39B7CD">Panel Heading</div>
+  <div class="panel-body" style="height:100%;">
+                   <div class="form-group">
 
 
-                                    <form id="fake_textarea" class="form-control" style="height:500px;font-size: 16px;overflow:scroll">
-                                        <input type='hidden' id='fake_textarea_content' name='foobar' /></form>
-
+                                    <form id="fake_textarea" class="form-control" style="height:100%; font-size: 16px; border:none">
+                                        <input class="form-control" type='hidden' id='fake_textarea_content' name='foobar' /></form>
+</div>
+</div>
                                     <script>
                                         function addCell(cell, text) {
                                             if (text != null)
                                                 cell.innerHTML =  
-                                                    "<label style = \"font-weight: normal;\"><input type=\"checkbox\" name=\"checkbox\" value=\"value\";>" + text + "</label>"
+                                                    "<label style = \"font-weight: normal;\"><input type=\"checkbox\" name=\"checkbox\" value=\"value\";>&nbsp;" + text + "</label>"
                                                     ;
                                         }
                                         window.onload = function () {
@@ -135,37 +198,12 @@
 
                                 </div>
                             </div>
-                            <div class="col-sm-6" style="background:lightgray" >
-                                <form action="parse" method="POST">
-
-                                    <table id="myTable" class="table" style = "overflow:scroll">
-                                        <thead>
-                                            <tr>
-                                                <th ><span class="fa fa-circle who headertable" aria-hidden="true"></span> Who</th>
-                                                <th ><span class="fa fa-circle weapon headertable" aria-hidden="true"></span> Weapon</th>
-                                                <th ><span class="fa fa-circle what headertable" aria-hidden="true"></span> What</th>
-                                                <th ><span class="fa fa-circle whom headertable" aria-hidden="true"></span> Whom</th>
-                                                <th ><span class="fa fa-circle where headertable" aria-hidden="true"></span> Where</th>
-                                                <th ><span class="fa fa-circle when headertable" aria-hidden="true"></span> When</th>
-                                            </tr>
-                                        </thead>
-                                    </table>
-                                    <input name="id" id="id" hidden="hidden">
-                                    <select id = "event_select" name="event_select">
-                                        <option value="-1"> Create new event<option/>
-                                    </select>
-                                    <p>Title: <textarea id = "title" name="title" cols="140" rows="1"></textarea> </p>
-                                    <p>Date: <input type="text" id="date" name = "date"></p>                                            
-                                    <p>Region: <textarea id = "region" name="region" cols="140" rows="1"></textarea> </p>
-                                    <p><select id="country" name="country">
-                                        <option value="-1">Country</option>
-                                    </select></p>
-                                    <input type="submit" value="Upload document" />
-
-                                </form>
-
-                            </div>
                         </div>
+                       <div id="footer" style="font-size: 15px;" >
+      <div class="container">
+        <p class="muted credit">W6 project copyright <a href="">2016 </p>
+      </div>
+    </div>                     
                     </div>
                 </div>
             </div>
