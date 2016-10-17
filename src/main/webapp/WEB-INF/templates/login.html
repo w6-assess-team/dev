@@ -19,7 +19,7 @@
             <div th:if="${param.logout}">
                 You have been signed out
             </div>
-            <form action="login.html" th:action="@{/login}" method="post">
+            <form th:action="@{/login}" method="post">
                 <table class="table">
                     <tr>
                         <td>User name:</td>
