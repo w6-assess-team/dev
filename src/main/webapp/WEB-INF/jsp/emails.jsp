@@ -43,7 +43,7 @@
                                 </table>
                               </div>
                             <form action="input" method="GET" id="input_form" hidden>
-                                <input id = "email_id" name="emailid">
+                                <input id = "email_id" name="email_id">
                             </form>
                                 <script>
                                   window.onload = function () {

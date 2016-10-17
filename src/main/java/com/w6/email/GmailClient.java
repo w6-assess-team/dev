@@ -1,8 +1,11 @@
 package com.w6.email;
 
 import com.sun.mail.pop3.POP3SSLStore;
+import com.sun.tools.internal.ws.wsdl.document.jaxws.Exception;
 
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.mail.Flags;
 import javax.mail.Folder;
 import javax.mail.Message;
@@ -12,20 +15,24 @@ import javax.mail.Store;
 import javax.mail.URLName;
 import javax.mail.search.FlagTerm;
 
-public class GmailClient {
+class GmailClient {
+
     private Store store;
     private String username, password;
     private Folder folder;
 
-    public GmailClient() {
-    }
-
-    public void setUserPass(String username, String password) {
+    public GmailClient(String username, String password, String folderName) {
         this.username = username;
         this.password = password;
+        try {
+            connect();
+            openFolder(folderName);
+        } catch (MessagingException e) {
+            Logger.getLogger(GmailClient.class.getName()).log(Level.SEVERE, null, e);
+        }
     }
 
-    public void connect() throws Exception {
+    private void connect() throws MessagingException {
 
         String SSL_FACTORY = "javax.net.ssl.SSLSocketFactory";
 
@@ -45,45 +52,51 @@ public class GmailClient {
 
     }
 
-    public void openFolder(String folderName) throws Exception {
+    private void openFolder(String folderName) throws MessagingException {
         folder = store.getFolder(folderName);
 
         if (folder == null) {
-            throw new Exception("Invalid folder");
+            throw new MessagingException("Invalid folder");
         }
 
         try {
-
             folder.open(Folder.READ_WRITE);
-
         } catch (MessagingException ex) {
             folder.open(Folder.READ_ONLY);
         }
     }
 
-    private void closeFolder() throws Exception {
+    private void closeFolder() throws MessagingException {
         if (folder != null) {
             folder.close(false);
         }
     }
 
-    public int getMessageCount() throws Exception {
-        return folder.getMessageCount();
+    public int getMessageCount() throws MessagingException {
+        if (folder == null) {
+            throw new MessagingException("Folder is not open!");
+        } else {
+            return folder.getMessageCount();
+        }
     }
 
-    
-    public Message getMessageById(int id) throws Exception {
-        if (folder != null) {
+
+    public Message getMessageById(int id) throws MessagingException {
+        if (folder == null) {
+            throw new MessagingException("Folder is not open!");
+        } else {
             return folder.getMessage(id);
         }
-
-        return null;
     }
 
-    public int getNewMessageCount() throws Exception {
-        return folder.getNewMessageCount();
+    public int getNewMessageCount() throws MessagingException {
+        if (folder == null) {
+            throw new MessagingException("Folder is not open!");
+        } else {
+            return folder.getNewMessageCount();
+        }
     }
-    
+
     public Collection<Message> getUnreadMessages() throws MessagingException {
         if (folder != null) {
             Message[] messages = folder.search(new FlagTerm(new Flags(Flags.Flag.SEEN), false));
@@ -92,23 +105,12 @@ public class GmailClient {
         return null;
     }
 
-    public void disconnect() throws Exception {
+    public void disconnect() throws MessagingException {
         if (folder != null) {
             closeFolder();
         }
-        store.close();
-    }
-
-    public void printMessage(int messageNo) throws Exception {
-        System.out.println("Getting message number: " + messageNo);
-
-        Message m = null;
-
-        try {
-            m = folder.getMessage(messageNo);
-        } catch (IndexOutOfBoundsException iex) {
-            System.out.println("Message number out of range");
+        if (store != null) {
+            store.close();
         }
     }
-
 }

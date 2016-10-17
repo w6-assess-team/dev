@@ -122,7 +122,7 @@ public class EndpointController {
     }
     
     @RequestMapping(value = "/input", method = RequestMethod.GET)
-    public ModelAndView displayInput(@RequestParam(value = "emailid", required = false) Long emailId) throws IOException 
+    public ModelAndView displayInput(@RequestParam(value = "email_id", required = false) Long emailId) throws IOException
     {
         try {
             ModelAndView modelAndView = new ModelAndView(INPUT_VIEW);
