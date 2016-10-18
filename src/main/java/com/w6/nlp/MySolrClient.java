@@ -209,7 +209,7 @@ public class MySolrClient
             document = listOfDocuments.get(0);
             return new Event(
                 id, 
-                document.getFirstValue("Date").toString(),   
+                document.getFirstValue("date").toString(),
                 document.getFirstValue("title").toString(),
                 document.getFirstValue("description").toString(),
                 document.getFirstValue("region") == null ? "" : document.getFirstValue("region").toString(),
@@ -224,18 +224,16 @@ public class MySolrClient
     {
         List<Event> events = new ArrayList<>();
         
-        list.forEach((document) -> {
-            events.add(
-                new Event(
-                    Long.parseLong(document.getFieldValue("id").toString()),                
-                    document.getFieldValue("description").toString(),
-                    document.getFieldValue("title").toString(),
-                    document.getFieldValue("Date").toString(),
-                    document.getFieldValue("region").toString(),
-                    document.getFieldValue("country").toString()
-                    )
-            );
-        });
+        list.forEach((document) -> events.add(
+            new Event(
+                Long.parseLong(document.getFieldValue("id").toString()),
+                document.getFieldValue("description").toString(),
+                document.getFieldValue("title").toString(),
+                document.getFieldValue("date").toString(),
+                document.getFieldValue("region").toString(),
+                document.getFieldValue("country").toString()
+                )
+        ));
         
         return events;
     }
@@ -327,12 +325,7 @@ public class MySolrClient
                 events.add(event);            
             }
         }
-        events.sort(new Comparator<Event>() {
-            @Override
-            public int compare(Event a, Event b) {
-                return a.date.compareTo(b.date);
-            }
-        });
+        events.sort((a, b) -> a.date.compareTo(b.date));
         return events;        
     }
 }

@@ -20,15 +20,15 @@ import org.springframework.web.servlet.ModelAndView;
 
 @Controller
 public class EndpointController {
-    protected static final String INPUT_VIEW = "input";
-    protected static final String W6_VIEW = "w6";
-    protected static final String UPLOAD_VIEW = "upload";
-    protected static final String QUERY_VIEW = "query";
-    protected static final String DOCUMENTS_BY_EVENT_VIEW = "articlesOfEvent";
-    protected static final String REPORT_VIEW = "report";
-    protected static final String EMAILS_VIEW = "emails";
+    private static final String INPUT_VIEW = "input";
+    private static final String W6_VIEW = "w6";
+    private static final String UPLOAD_VIEW = "upload";
+    private static final String QUERY_VIEW = "query";
+    private static final String DOCUMENTS_BY_EVENT_VIEW = "articlesOfEvent";
+    private static final String REPORT_VIEW = "report";
+    private static final String EMAILS_VIEW = "emails";
 
-    protected MySolrClient solrClient = new MySolrClient();
+    private MySolrClient solrClient = new MySolrClient();
     
     
     private static final Gson gson = new GsonBuilder().create();

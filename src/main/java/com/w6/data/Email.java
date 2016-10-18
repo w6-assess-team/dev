@@ -1,12 +1,12 @@
 package com.w6.data;
 
 public class Email {
-    public long id;
-    public String subject;
-    public String  date;
-    public String from;
-    public String text;
-    public Boolean used;
+    private long id;
+    private String subject;
+    private String  date;
+    private String from;
+    private String text;
+    private Boolean used;
     //todo: add boolean "used"
     
     public Email(long id, String date, String subject, 
