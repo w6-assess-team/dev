@@ -14,7 +14,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
 
     private static final String VIEW_RESOLVER_PREFIX = "/WEB-INF/templates/";
     private static final String VIEW_RESOLVER_SUFFIX = ".html";
-    private static final String TEMPLATE_MODE = "HTML5";
+    private static final String TEMPLATE_MODE = "HTML";
 
 
     @Bean
