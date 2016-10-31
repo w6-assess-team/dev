@@ -1,4 +1,6 @@
-<html lang="en">
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
     <head>
         <title>W6 analysis</title>
         <meta charset="utf-8">
@@ -42,12 +44,12 @@
                                   </tbody>
                                 </table>
                               </div>
-                            <form action="input" method="GET" id="input_form" hidden>
+                            <form action="w6.html" th:action="@{/input}" method="get" id="input_form" hidden>
                                 <input id = "email_id" name="email_id">
                             </form>
                                 <script>
                                   window.onload = function () {
-                                      var emailsArray =${emails};
+                                      var emailsArray =[(${emails})];
                                       var i;
                                       var output = "";
                                       for (i = 0; i < emailsArray.length; i++) {

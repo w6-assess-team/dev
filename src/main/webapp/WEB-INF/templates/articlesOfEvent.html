@@ -1,14 +1,15 @@
-<html lang="en">
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="en">
     <head>
         <title>W6 analysis</title>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-        <link rel="stylesheet" type="text/css" href="../css/style.css">
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css"/>
+        <link rel="stylesheet" type="text/css" href="../css/style.css"/>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css"/>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
         <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
-        <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+        <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css"/>
         <script src="//code.jquery.com/jquery-1.10.2.js"></script>
         <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
 
@@ -51,12 +52,12 @@
                                         function addCell(cell, text) {
                                             if (text != null)
                                                 cell.innerHTML =  
-                                                    "<label style = \"font-weight: normal;\">" + text + "</label>"
+                                                    '<label style = "font-weight: normal;">' + text + "</label>"
                                                     ;
                                         }
                                         window.onload = function () {
-                                            var myEvent = ${event};
-                                            var articlesArray = ${docList};
+                                            var myEvent = [(${event})];
+                                            var articlesArray = [(${docList})];
                                             console.log(myEvent);
 							
                                                 $("#event_form > #eventId").val(myEvent.id);
