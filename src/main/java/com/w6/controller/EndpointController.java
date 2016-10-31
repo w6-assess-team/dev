@@ -3,6 +3,7 @@ package com.w6.controller;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.w6.data.Article;
+import com.w6.data.Email;
 import com.w6.data.Event;
 import com.w6.nlp.Parser;
 import com.w6.nlp.MySolrClient;
@@ -26,12 +27,13 @@ import javax.servlet.http.HttpServletResponse;
 
 @Controller
 public class EndpointController {
-    protected static final String INPUT_VIEW = "input";
-    protected static final String W6_VIEW = "w6";
-    protected static final String UPLOAD_VIEW = "upload";
-    protected static final String QUERY_VIEW = "query";
-    protected static final String DOCUMENTS_BY_EVENT_VIEW = "articlesOfEvent";
-    protected static final String REPORT_VIEW = "report";
+    private static final String INPUT_VIEW = "input";
+    private static final String W6_VIEW = "w6";
+    private static final String UPLOAD_VIEW = "upload";
+    private static final String QUERY_VIEW = "query";
+    private static final String DOCUMENTS_BY_EVENT_VIEW = "articlesOfEvent";
+    private static final String REPORT_VIEW = "report";
+    private static final String EMAILS_VIEW = "emails";
 
     @Autowired
     private Parser parser;
@@ -131,9 +133,24 @@ public class EndpointController {
     }
 
     @RequestMapping(value = "/input", method = RequestMethod.GET)
-    public String displayInput()
+    public ModelAndView displayInput(@RequestParam(value = "email_id", required = false) Long emailId) throws IOException
     {
-        return INPUT_VIEW;
+        try {
+            ModelAndView modelAndView = new ModelAndView(INPUT_VIEW);
+            if (emailId != null)
+            {
+                Email email = solrClient.getEmailById(emailId+1);
+                if (email != null)
+                {
+                    modelAndView.addObject("email", gson.toJson(email));
+                }
+            }
+            return modelAndView;
+        } catch (SolrServerException e) {
+            Logger.getLogger(EndpointController.class.getName()).log(Level.SEVERE, null, e);
+            return new ModelAndView(INPUT_VIEW);
+        }
+
     }
     
     @RequestMapping(value = "/events/view", method = RequestMethod.GET)
@@ -145,7 +162,7 @@ public class EndpointController {
            modelAndView.addObject("event", gson.toJson(solrClient.getEventById(docId))); 
            modelAndView.addObject("docList", gson.toJson(solrClient.getArticlesByEventId(docId)));
         } catch (SolrServerException e) {
-             Logger.getLogger(EndpointController.class.getName()).log(Level.SEVERE, null, e);
+            Logger.getLogger(EndpointController.class.getName()).log(Level.SEVERE, null, e);
         }
         
         return modelAndView;
@@ -166,6 +183,18 @@ public class EndpointController {
         }
     }
     
+    @RequestMapping(value = "emails", method = RequestMethod.GET)
+    public ModelAndView emails() throws IOException
+    {
+        ModelAndView modelAndView = new ModelAndView(EMAILS_VIEW);
+        try {
+            modelAndView.addObject("emails", gson.toJson(solrClient.getAllNewEmails()));
+        } catch (SolrServerException ex) {
+            Logger.getLogger(EndpointController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return modelAndView;
+    }
+
     @RequestMapping(value = "report", method = RequestMethod.GET)
     public ModelAndView report(@RequestParam("month") String month) throws IOException, SolrServerException
     {
