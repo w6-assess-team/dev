@@ -21,7 +21,6 @@
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jackson.version>2.6.3</jackson.version>
-        <!--<slf4j.version>1.7.7</slf4j.version>-->
         <thymeleaf.version>3.0.0.RELEASE</thymeleaf.version>
         <thymeleaf-layout-dialect.version>2.0.0</thymeleaf-layout-dialect.version>
     </properties>
