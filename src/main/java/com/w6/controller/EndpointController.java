@@ -204,4 +204,9 @@ public class EndpointController {
         }
         return "redirect:/login?logout";
     }
+
+    @RequestMapping(value = "/", method = RequestMethod.GET)
+    public String home() {
+        return "redirect:/input";
+    }
 }
