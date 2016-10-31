@@ -124,7 +124,6 @@
                                             for (i = 0; i < countries.length; ++i) {
                                                 $('#countries')
                                                         .append($("<option></option>")
-                                                                .attr("value", i.toString())
                                                                 .text(countries[i]));
                                             }
                                         }
@@ -133,7 +132,7 @@
                                 </div>
                             </div>
                             <div class="col-sm-6" style="background:lightgray" >
-                                <form action="parse" method="POST">
+                                <form action="w6.html" th:action="@{/parse}" method="post">
 
                                     <table id="myTable" class="table" style = "overflow:scroll">
                                         <thead>
@@ -154,10 +153,16 @@
                                     <p>Title: <textarea id = "title" name="title" cols="140" rows="1"></textarea> </p>
                                     <p>Date: <input type="text" id="date" name = "date"/></p>
                                     <p>Region: <textarea id = "region" name="region" cols="140" rows="1"></textarea> </p>
-                                    <p><select id="countries" name="countries">
-                                        <option value="-1">Country</option>
-                                    </select></p>
-                                    <input type="submit" value="Upload document"/>
+
+                                    <!--<p><select id="countries" name="countries">-->
+                                        <!--<option selected="selected">Country</option>-->
+                                    <!--</select></p>-->
+
+                                    <p>Country: <input id="country" name="country" list="countries" type="text"></p>
+                                    <datalist id="countries">
+                                    </datalist>
+
+                                    <p><input type="submit" value="Upload document"/></p>
 
                                 </form>
 
