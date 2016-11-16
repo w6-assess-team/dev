@@ -235,6 +235,61 @@ public class MySolrClient {
         return events;
     }
 
+    public boolean isEmailInSolr(Email email) throws IOException, SolrServerException {
+        SolrQuery query = new SolrQuery();
+        query.setQuery(createEmailQuery(email));
+        QueryResponse response = clientSolrEmail.query(query);
+        SolrDocumentList listOfDocuments = response.getResults();
+        return !listOfDocuments.isEmpty();
+    }
+
+    private SolrInputDocument createEmail(Email email) {
+        SolrInputDocument newEmail = new SolrInputDocument();
+
+        if (email != null) {
+            newEmail.addField("id", email.getId());
+            newEmail.addField("subject", "\"" + email.getSubject() + "\"");
+            newEmail.addField("date", "\"" + email.getDate() + "\"");
+            newEmail.addField("text", "\"" + email.getText() + "\"");
+            newEmail.addField("from", "\"" + email.getFrom() + "\"");
+            newEmail.addField("used", email.getUsed());
+        }
+
+        return newEmail;
+    }
+
+    public void updateEmailsInSolr(List<Email> emails) throws IOException, SolrServerException {
+        if (emails != null) {
+            emails.forEach((email -> {
+                try {
+                    clientSolrEmail.add(createEmail(email));
+                } catch (SolrServerException | IOException e) {
+                    e.printStackTrace();
+                }
+            }));
+            clientSolrEvent.commit();
+        }
+    }
+
+
+    private String createEmailQuery(Email email) {
+        StringBuilder query = new StringBuilder("");
+        if (email != null) {
+            query.append("subject:" + "\"")
+                    .append(email.getSubject())
+                    .append("\" ");
+            query.append("AND ");
+            query.append("date:" + "\"")
+                    .append(email.getDate())
+                    .append("\" ");
+            query.append("AND ");
+            query.append("from:" + "\"")
+                    .append(email.getFrom())
+                    .append("\" ");
+        }
+        return query.toString();
+    }
+
     public Email getEmailById(long id) throws SolrServerException, IOException {
         SolrQuery query = new SolrQuery();
         query.setQuery("id:" + id);

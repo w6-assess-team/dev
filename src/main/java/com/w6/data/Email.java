@@ -7,10 +7,9 @@ public class Email {
     private String from;
     private String text;
     private Boolean used;
-    //todo: add boolean "used"
-    
-    public Email(long id, String date, String subject, 
-             String text, String from, Boolean used) 
+
+    public Email(long id, String date, String subject,
+                 String text, String from, Boolean used)
     {
         this.id = id;
         this.date = date;
@@ -19,5 +18,29 @@ public class Email {
         this.from = from;
         this.used = used;
     }
-    
+
+    public String getSubject() {
+        return subject;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public String getFrom() {
+        return from;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public Boolean getUsed() {
+        return used;
+    }
+
 }

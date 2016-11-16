@@ -39,8 +39,7 @@ public class EndpointController {
     private Parser parser;
 
     @Autowired
-    protected MySolrClient solrClient;
-    
+    private MySolrClient solrClient;
     
     private static final Gson gson = new GsonBuilder().create();
     
@@ -186,13 +185,9 @@ public class EndpointController {
     @RequestMapping(value = "emails", method = RequestMethod.GET)
     public ModelAndView emails() throws IOException
     {
-        ModelAndView modelAndView = new ModelAndView(EMAILS_VIEW);
-        try {
-            modelAndView.addObject("emails", gson.toJson(solrClient.getAllNewEmails()));
-        } catch (SolrServerException ex) {
-            Logger.getLogger(EndpointController.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return modelAndView;
+
+        return new ModelAndView(EMAILS_VIEW);
+
     }
 
     @RequestMapping(value = "report", method = RequestMethod.GET)

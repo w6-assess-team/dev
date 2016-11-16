@@ -1,29 +1,42 @@
 package com.w6.email;
 
 import com.sun.mail.pop3.POP3SSLStore;
-import com.sun.tools.internal.ws.wsdl.document.jaxws.Exception;
+import com.w6.data.Email;
+import com.w6.nlp.MySolrClient;
+import org.apache.solr.client.solrj.SolrServerException;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import java.io.*;
 import java.util.*;
+import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.mail.Flags;
-import javax.mail.Folder;
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.Session;
-import javax.mail.Store;
-import javax.mail.URLName;
+import javax.mail.*;
 import javax.mail.search.FlagTerm;
 
-class GmailClient {
+public class GmailClient {
 
     private Store store;
     private String username, password;
     private Folder folder;
+    private final ScheduledExecutorService fScheduler;
+    private static final int NUM_THREADS = 1;
+    private static final long fInitialDelay = 0;
+    private static final long fDelayBetweenRuns = 3600;
+    private ScheduledFuture<?> emailLoadingFuture;
+    private static final boolean DONT_INTERRUPT_IF_RUNNING = false;
+
+    @Autowired
+    private MySolrClient mySolrClient;
 
     public GmailClient(String username, String password, String folderName) {
         this.username = username;
         this.password = password;
+        fScheduler = Executors.newScheduledThreadPool(NUM_THREADS);
         try {
             connect();
             openFolder(folderName);
@@ -102,8 +115,9 @@ class GmailClient {
             Message[] messages = folder.search(new FlagTerm(new Flags(Flags.Flag.SEEN), false));
             return new ArrayList<>(Arrays.asList(messages));
         }
-        return null;
+        return new ArrayList<>();
     }
+
 
     public void disconnect() throws MessagingException {
         if (folder != null) {
@@ -111,6 +125,84 @@ class GmailClient {
         }
         if (store != null) {
             store.close();
+        }
+    }
+
+    public static Email parseMessage(Message message, int id) throws MessagingException, IOException {
+        String from = "", subject = "", date = "", text = "";
+        if (message != null) {
+            List<Address> fromArray = new ArrayList<>(Arrays.asList(message.getFrom()));
+            StringBuilder fromBuilder = new StringBuilder("");
+            fromArray.forEach((address -> fromBuilder.append(address.toString())));
+            from = fromBuilder.toString();
+            date = message.getSentDate().toString();
+            subject = message.getSubject();
+            text = writePart(message);
+        }
+
+        return new Email(id, date, subject, text, from, false);
+    }
+
+    private static String writePart(Part p) throws IOException, MessagingException {
+        if (p.isMimeType("text/plain")) {
+            return (String) p.getContent();
+        } else if (p.isMimeType("multipart/*")) {
+            Multipart mp = (Multipart) p.getContent();
+            BodyPart bp = mp.getBodyPart(0);
+            return (String) bp.getContent();
+        } else if (p.isMimeType("message/rfc822")) {
+            return writePart((Part) p.getContent());
+        } else {
+            Object o = p.getContent();
+            if (o instanceof String) {
+                return (String) o;
+            }
+        }
+        return "";
+
+    }
+
+    public void activateEmailLoading() {
+        Runnable emailLoader = new EmailLoadingTask();
+        emailLoadingFuture = fScheduler.scheduleWithFixedDelay(
+                emailLoader, fInitialDelay, fDelayBetweenRuns, TimeUnit.SECONDS
+        );
+    }
+
+    public void deactivateEmailLoading() {
+        Runnable deactivateEmailLoading = new DeactivateEmailLoadingTask();
+        fScheduler.schedule(deactivateEmailLoading, 0, TimeUnit.SECONDS);
+    }
+
+    private class DeactivateEmailLoadingTask implements Runnable {
+        @Override
+        public void run() {
+            emailLoadingFuture.cancel(DONT_INTERRUPT_IF_RUNNING);
+            fScheduler.shutdown();
+        }
+    }
+
+
+    private class EmailLoadingTask implements Runnable {
+        @Override
+        public void run() {
+            try {
+                final int[] maxIndex = {
+                        mySolrClient.getAllNewEmails().size()
+                };
+                List<Email> emailList = new ArrayList<>();
+                List<Message> unreadMessages = new ArrayList<>(getUnreadMessages());
+                unreadMessages.forEach((message -> {
+                    try {
+                        emailList.add(parseMessage(message, ++maxIndex[0]));
+                    } catch (MessagingException | IOException e) {
+                        e.printStackTrace();
+                    }
+                }));
+                mySolrClient.updateEmailsInSolr(emailList);
+            } catch (MessagingException | SolrServerException | IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 }
