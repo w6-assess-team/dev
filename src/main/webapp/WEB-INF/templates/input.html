@@ -28,7 +28,7 @@
       <div>
         <form th:action="@{/post}" method="post">
             Sourse:
-            <textarea id = "sourse" name="sourse" cols="140" rows="1"></textarea>
+            <textarea id = "source" name="source" cols="140" rows="1"></textarea>
             Title:
             <textarea id = "title" name="title" cols="140" rows="1"></textarea>
             Text:
@@ -49,7 +49,7 @@
         window.onload = function (){
             var email = [(${email})];
             if (email != null){
-                document.getElementById("sourse").value = email.from;
+                document.getElementById("source").value = email.from;
                 document.getElementById("title").value = email.subject;
                 document.getElementById("text").value = email.text;
             }
