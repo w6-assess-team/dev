@@ -5,13 +5,11 @@ import com.google.gson.GsonBuilder;
 import com.w6.data.Article;
 import com.w6.data.Email;
 import com.w6.data.Event;
+import com.w6.data.dao.article.ArticleService;
+import com.w6.data.dao.email.EmailService;
+import com.w6.data.dao.event.EventService;
 import com.w6.nlp.Parser;
-import com.w6.nlp.MySolrClient;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.apache.solr.client.solrj.SolrServerException;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -24,6 +22,10 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 
 @Controller
 public class EndpointController {
@@ -39,184 +41,150 @@ public class EndpointController {
     private Parser parser;
 
     @Autowired
-    protected MySolrClient solrClient;
-    
-    
+    private ArticleService articleService;
+
+    @Autowired
+    private EventService eventService;
+
+    @Autowired
+    private EmailService emailService;
+
     private static final Gson gson = new GsonBuilder().create();
-    
+
     @RequestMapping(value = "post", method = RequestMethod.POST)
     public ModelAndView post(
-            @RequestParam("sourse") String sourse,
-            @RequestParam("title") String title,           
+            @RequestParam("source") String source,
+            @RequestParam("title") String title,
             @RequestParam("text") String text
-            ) throws IOException, SolrServerException
-    {
-        Article article = new Article(new Long(-1), sourse, text, title, 
-                "",
-                -1
-        );
-        article.response = gson.toJson(parser.generateResponse(article));
-        solrClient.uploadDataToSolr(article);
-        return parse(article.id);
+    ) {
+        Article article = new Article(-1, source, text, title, "", -1);
+        article.setResponse(gson.toJson(parser.generateResponse(article)));
+
+        articleService.save(article);
+
+        return parse(article.getId());
     }
 
     @RequestMapping(value = "parse", method = RequestMethod.GET)
-    public ModelAndView parse(@RequestParam("id") Long docId) throws IOException
-    {
-        Article text;
-        try { 
-            text = solrClient.getDocumentById(docId);
-            if (text == null) {
-                return new ModelAndView(W6_VIEW);
-            }
-            
-            ModelAndView modelAndView = new ModelAndView(W6_VIEW);
-            modelAndView.addObject("article", gson.toJson(solrClient.getDocumentById(docId)));
-            modelAndView.addObject("events", gson.toJson(solrClient.getEvents()));
-            modelAndView.addObject("id", docId);
-            
-            return modelAndView;
-        } catch (SolrServerException ex) {
-            Logger.getLogger(EndpointController.class.getName()).log(Level.SEVERE, null, ex);
+    public ModelAndView parse(@RequestParam("id") Long id) {
+        Article article = articleService.findById(id);
+        if (article == null) {
             return new ModelAndView(W6_VIEW);
         }
-        
+
+        ModelAndView modelAndView = new ModelAndView(W6_VIEW);
+        modelAndView.addObject("article", gson.toJson(articleService.findById(id)));
+        modelAndView.addObject("events", gson.toJson(eventService.findAll()));
+        modelAndView.addObject("id", id);
+
+        return modelAndView;
     }
-    
+
     @RequestMapping(value = "/update/event", method = RequestMethod.POST)
-    public ModelAndView  updateEvent(
-            @RequestParam("eventId") String id,    
-            @RequestParam("eventTitle") String title ,                
+    public ModelAndView updateEvent(
+            @RequestParam("eventId") String id,
+            @RequestParam("eventTitle") String title,
             @RequestParam("eventDate") String date,
             @RequestParam("eventDesc") String description,
             @RequestParam("eventReg") String region,
             @RequestParam("eventCountry") String country
-    ) throws IOException
-    {
+    ) {
         Event event = new Event(Long.parseLong(id), date, title, description, region, country);
-        try {
-            solrClient.updateEventInSolr(event);
-        } catch (SolrServerException ex) {
-            Logger.getLogger(EndpointController.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        eventService.save(event);
+
         return displayDocumentsByEvent(Long.parseLong(id));
     }
-    
+
     @RequestMapping(value = "parse", method = RequestMethod.POST)
     public ModelAndView update(
-            @RequestParam("id") long docId,    
-            @RequestParam("event_select") long eventId,                
+            @RequestParam("id") long id,
+            @RequestParam("event_select") long eventId,
             @RequestParam("title") String title,
             @RequestParam("date") String date,
             @RequestParam("region") String region,
-            @RequestParam("country") String country            
-    ) throws IOException, SolrServerException
-    {
-        if (eventId == -1)
-        {
+            @RequestParam("country") String country
+    ) {
+        if (eventId == -1) {
             Event event = new Event(
                     -1,
                     date,
                     title,
                     "Please provide description",
                     region,
-                    country                    
+                    country
             );
-            eventId = solrClient.uploadEventToSolr(event);
+            event = eventService.save(event);
+            eventId = event.getId();
         }
-        
-        Article document = solrClient.getDocumentById(docId);
-        document.eventId = eventId;
-        solrClient.uploadDataToSolr(document);
+
+        Article article = articleService.findById(id);
+        article.setEventId(eventId);
+        articleService.save(article);
+
         return parse();
-        
     }
 
     @RequestMapping(value = "/input", method = RequestMethod.GET)
-    public ModelAndView displayInput(@RequestParam(value = "email_id", required = false) Long emailId) throws IOException
-    {
-        try {
-            ModelAndView modelAndView = new ModelAndView(INPUT_VIEW);
-            if (emailId != null)
-            {
-                Email email = solrClient.getEmailById(emailId+1);
-                if (email != null)
-                {
-                    modelAndView.addObject("email", gson.toJson(email));
-                }
+    public ModelAndView displayInput(@RequestParam(value = "email_id", required = false) Long emailId) {
+        ModelAndView modelAndView = new ModelAndView(INPUT_VIEW);
+        if (emailId != null) {
+            Email email = emailService.findById(emailId + 1);
+            if (email != null) {
+                modelAndView.addObject("email", gson.toJson(email));
             }
-            return modelAndView;
-        } catch (SolrServerException e) {
-            Logger.getLogger(EndpointController.class.getName()).log(Level.SEVERE, null, e);
-            return new ModelAndView(INPUT_VIEW);
         }
 
-    }
-    
-    @RequestMapping(value = "/events/view", method = RequestMethod.GET)
-    public ModelAndView displayDocumentsByEvent(@RequestParam("id") long docId) 
-            throws IOException
-    {
-        ModelAndView modelAndView = new ModelAndView(DOCUMENTS_BY_EVENT_VIEW);
-        try {
-           modelAndView.addObject("event", gson.toJson(solrClient.getEventById(docId))); 
-           modelAndView.addObject("docList", gson.toJson(solrClient.getArticlesByEventId(docId)));
-        } catch (SolrServerException e) {
-            Logger.getLogger(EndpointController.class.getName()).log(Level.SEVERE, null, e);
-        }
-        
         return modelAndView;
     }
-    
-    @RequestMapping(value = "view", method = RequestMethod.GET)
-    public ModelAndView parse() throws IOException
-    {
-        ArrayList<Article> text;
-        try { 
-            text = solrClient.getDocuments();
-            ModelAndView modelAndView = new ModelAndView(QUERY_VIEW);
-            modelAndView.addObject("response", gson.toJson(text));
-            return modelAndView;
-        } catch (SolrServerException ex) {
-            Logger.getLogger(EndpointController.class.getName()).log(Level.SEVERE, null, ex);
-            return new ModelAndView(W6_VIEW);
-        }
+
+    @RequestMapping(value = "/events/view", method = RequestMethod.GET)
+    public ModelAndView displayDocumentsByEvent(@RequestParam("id") long eventId) {
+        ModelAndView modelAndView = new ModelAndView(DOCUMENTS_BY_EVENT_VIEW);
+        modelAndView.addObject("event", gson.toJson(eventService.findById(eventId)));
+        List<Article> articlesByEventId = articleService.findAllByEventId(eventId);
+        modelAndView.addObject("docList", gson.toJson(articlesByEventId));
+
+        return modelAndView;
     }
-    
+
+    @RequestMapping(value = "view", method = RequestMethod.GET)
+    public ModelAndView parse() {
+        List<Article> text = articleService.findAll();
+        ModelAndView modelAndView = new ModelAndView(QUERY_VIEW);
+        modelAndView.addObject("response", gson.toJson(text));
+
+        return modelAndView;
+    }
+
     @RequestMapping(value = "emails", method = RequestMethod.GET)
-    public ModelAndView emails() throws IOException
-    {
+    public ModelAndView emails() {
         ModelAndView modelAndView = new ModelAndView(EMAILS_VIEW);
-        try {
-            modelAndView.addObject("emails", gson.toJson(solrClient.getAllNewEmails()));
-        } catch (SolrServerException ex) {
-            Logger.getLogger(EndpointController.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        modelAndView.addObject("emails", gson.toJson(emailService.findAllByUsedFalse()));
+
         return modelAndView;
     }
 
     @RequestMapping(value = "report", method = RequestMethod.GET)
-    public ModelAndView report(@RequestParam("month") String month) throws IOException, SolrServerException
-    {
+    public ModelAndView report(@RequestParam("month") String month) {
         ModelAndView modelAndView = new ModelAndView(REPORT_VIEW);
-        ArrayList<Event> eventsInRange = solrClient.getEventsInRange(month.concat("-01"), month.concat("-31"));
+        String datePrefix = DateTime.now().getYear() + "-" + month;
+        List<Event> eventsInRange = eventService.findByDateStartingWith(datePrefix);
         modelAndView.addObject("events", gson.toJson(eventsInRange));
-        ArrayList<String[] > sourses = new ArrayList<>();
-        
-        for (Event event: eventsInRange)
-        {
-            sourses.add(
-                    solrClient.getArticlesByEventId(event.id)
+
+        List<List<String>> sources = new ArrayList<>();
+        for (Event event : eventsInRange) {
+            sources.add(
+                    articleService.findAllByEventId(event.getId())
                             .stream()
-                            .map(article -> article.sourse)
-                            .toArray(size -> new String[size])
+                            .map(Article::getSource)
+                            .collect(Collectors.toList())
             );
         }
-            
 
-        modelAndView.addObject("sourses", gson.toJson(sourses));
+
+        modelAndView.addObject("sources", gson.toJson(sources));
         modelAndView.addObject("month", month);
-        
+
         return modelAndView;
     }
 
@@ -225,10 +193,10 @@ public class EndpointController {
         return "login";
     }
 
-    @RequestMapping(value="/logout", method = RequestMethod.GET)
-    public String logout (HttpServletRequest request, HttpServletResponse response) {
+    @RequestMapping(value = "/logout", method = RequestMethod.GET)
+    public String logout(HttpServletRequest request, HttpServletResponse response) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null){
+        if (auth != null) {
             new SecurityContextLogoutHandler().logout(request, response, auth);
         }
         return "redirect:/login?logout";
