@@ -15,7 +15,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
                 .authorizeRequests()
-                    .antMatchers("/gettingstarted").permitAll()
+                    .antMatchers("/gettingstarted", "/css/**", "/logo/**").permitAll()
                     .antMatchers("/", "/**").hasRole("USER")
                     .anyRequest().authenticated()
                     .and()
