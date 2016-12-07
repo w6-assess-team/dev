@@ -20,9 +20,6 @@ public class ArticleServiceImpl implements ArticleService {
 
     @Override
     public List<Article> findAllByEventId(long eventId) {
-        List<Article> result = new ArrayList<>();
-        articleRepository.findAllByEventId(eventId).forEach(result::add);
-
         return articleRepository.findAllByEventId(eventId);
     }
 

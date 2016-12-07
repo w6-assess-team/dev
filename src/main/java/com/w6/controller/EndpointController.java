@@ -206,4 +206,9 @@ public class EndpointController {
     public String home() {
         return "redirect:/input";
     }
+
+    @RequestMapping(value = "/gettingstarted", method = RequestMethod.GET)
+    public String gettingStarted() {
+        return "gettingstarted";
+    }
 }
