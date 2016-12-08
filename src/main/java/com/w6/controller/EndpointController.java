@@ -181,7 +181,6 @@ public class EndpointController {
             );
         }
 
-
         modelAndView.addObject("sources", gson.toJson(sources));
         modelAndView.addObject("month", month);
 
